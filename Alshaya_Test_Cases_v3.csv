@@ -1,0 +1,1907 @@
+TestCaseID,ProblemID,Category,Severity,TestType,Title,Preconditions,Steps,ExpectedResult,ActualResult,Status,Priority,EstimatedMinutes
+TC-P001-001,P001,Security,CRITICAL,Integration,Verify X-Frame-Options header is DENY,Application running with next.config.js,"1. Make HTTP request
+2. Check response headers
+3. Verify X-Frame-Options value","X-Frame-Options = ""DENY""",,Not Run,P1,15
+TC-P001-002,P001,Security,CRITICAL,Security,Test clickjacking prevention with iframe,HTML test file and browser,"1. Create iframe pointing to app
+2. Load in browser
+3. Verify iframe blocked",Iframe fails to load due to X-Frame-Options,,Not Run,P1,20
+TC-P001-003,P001,Security,CRITICAL,API,Verify header in all endpoints,Multiple API endpoints accessible,"1. Test /api/members, /admin, /user
+2. Check header in each response",All endpoints return X-Frame-Options: DENY,,Not Run,P1,25
+TC-P001-004,P001,Security,CRITICAL,Unit,Test cross-origin frame embedding,Two different domains,"1. Host attacker.com with iframe
+2. Try to embed app.com
+3. Verify blocked",Cross-origin frame request blocked,,Not Run,P1,20
+TC-P001-005,P001,Security,CRITICAL,Unit,Verify header not weaker values,HTTP traffic capture,"1. Intercept response
+2. Check X-Frame-Options value
+3. Ensure not ALLOWALL","X-Frame-Options = ""DENY"" only",,Not Run,P1,15
+TC-P001-006,P001,Security,CRITICAL,Security,Malicious website clickjacking test,Malicious site simulator,"1. Create overlay attack
+2. Try to capture clicks
+3. Monitor iframe access",Clickjacking attack prevented,,Not Run,P1,20
+TC-P002-001,P002,Security,CRITICAL,Security,Verify admin code hashed with bcrypt,"Database access, Admin record exists","1. SELECT accessCode FROM Admin
+2. Check if $2b$ prefix
+3. Verify 60-char length",accessCode is bcrypt hash,,Not Run,P1,15
+TC-P002-002,P002,Security,CRITICAL,Security,Test bcrypt hash cannot be reversed,"Admin hash, bcrypt library","1. Get hash
+2. Try reverse with john/hashcat
+3. Verify failure",Hash cannot be reversed,,Not Run,P1,25
+TC-P002-003,P002,Security,CRITICAL,API,Verify bcrypt.compare used,Admin auth endpoint,"1. Enable code profiling
+2. Submit admin code
+3. Check bcrypt.compare in logs","bcrypt.compare() used, not ===",,Not Run,P1,20
+TC-P002-004,P002,Security,CRITICAL,Unit,Test plaintext codes not in git,Git repository,"1. Run git log grep
+2. Check for hardcoded codes",No plaintext codes in history,,Not Run,P1,20
+TC-P002-005,P002,Security,CRITICAL,Unit,Verify no default codes,Source code,"1. Grep for admin patterns
+2. Check seed files",No plaintext defaults found,,Not Run,P1,20
+TC-P002-006,P002,Security,CRITICAL,API,Test wrong code rejected,Admin auth endpoint,"1. Submit wrong code
+2. Monitor bcrypt result
+3. Verify auth fails",Wrong code rejected,,Not Run,P1,15
+TC-P003-001,P003,Security,CRITICAL,Unit,Search for hardcoded passwords,Source code,"1. Grep for hardcoded passwords
+2. Check ensure-admin.ts
+3. Check defaults",No hardcoded passwords found,,Not Run,P1,15
+TC-P003-002,P003,Security,CRITICAL,UI,Verify password requires env variable,Startup script,"1. Unset ADMIN_PASSWORD
+2. Run startup
+3. Check error message",Application fails with env var error,,Not Run,P1,20
+TC-P003-003,P003,Security,CRITICAL,UI,Test build logs safe,Build logs,"1. Run build
+2. Check output
+3. Grep for passwords",No passwords in logs,,Not Run,P1,20
+TC-P003-004,P003,Security,CRITICAL,Integration,Verify deployment scripts safe,Deploy scripts,"1. Check deploy.sh
+2. Check Dockerfile
+3. Verify env vars used",No hardcoded defaults,,Not Run,P1,25
+TC-P004-001,P004,Auth,CRITICAL,Security,Password only set on creation,"Fresh database, App","1. Create admin
+2. Note hash
+3. Restart app
+4. Verify hash unchanged",Hash unchanged after restart,,Not Run,P1,25
+TC-P004-002,P004,Auth,CRITICAL,Security,Test admin lockout on password change,"Two passwords, App","1. Create admin with pwd1
+2. Change env to pwd2
+3. Restart
+4. Login with pwd2",Admin locked if re-syncing,,Not Run,P1,30
+TC-P004-003,P004,Auth,CRITICAL,Security,Verify idempotent creation,Admin record,"1. Run ensure-admin twice
+2. Compare hashes",Hashes match,,Not Run,P1,20
+TC-P004-004,P004,Auth,CRITICAL,Unit,Password change needs user action,Profile page,"1. Admin changes password
+2. Verify not overwritten by deploy",Password only via UI,,Not Run,P1,20
+TC-P005-001,P005,Security,CRITICAL,Performance,Verify snapshots encrypted,"Database, ChangeHistory","1. Query fullSnapshot
+2. Try parse as JSON
+3. Verify encrypted",Snapshot encrypted,,Not Run,P1,15
+TC-P005-002,P005,Security,CRITICAL,Security,Sensitive fields masked,Change logging enabled,"1. Update member
+2. Check fullSnapshot
+3. Verify phone/email encrypted",Sensitive data encrypted,,Not Run,P1,20
+TC-P005-003,P005,Security,CRITICAL,Integration,Cannot access without key,Database backup,"1. Export database
+2. Try read snapshot
+3. Verify unreadable",Snapshot unreadable without key,,Not Run,P1,20
+TC-P005-004,P005,Security,CRITICAL,Security,Audit trail protects data,Audit view available,"1. Generate audit trail
+2. Check if sensitive exposed
+3. Verify encryption",Audit trail encrypted,,Not Run,P1,25
+TC-P006-001,P006,Security,CRITICAL,Performance,Verify phones encrypted at rest,"Database, FamilyMember","1. Query phoneNumber
+2. Check if encrypted",Phone encrypted,,Not Run,P1,15
+TC-P006-002,P006,Security,CRITICAL,Performance,Decryption only for authorized,"User roles, Phone data","1. Login as member
+2. Query own phone
+3. Try others phone",Phone decryption enforced,,Not Run,P1,20
+TC-P006-003,P006,Security,CRITICAL,Unit,Phone not in logs,Application logs,"1. Add member with phone
+2. Check all logs
+3. Verify phone absent",Phone not leaked in logs,,Not Run,P1,20
+TC-P006-004,P006,Security,CRITICAL,Security,Phone validation with encryption,Phone endpoint,"1. Submit phone
+2. Verify validation works
+3. Test invalid format",Validation works on encrypted,,Not Run,P1,15
+TC-P007-001,P007,Security,CRITICAL,Performance,Codes are hashed,"Database, User with 2FA","1. Query twoFactorBackupCodes
+2. Check if bcrypt",Codes hashed,,Not Run,P1,15
+TC-P007-002,P007,Security,CRITICAL,API,Validation uses comparison,2FA recovery endpoint,"1. Submit backup code
+2. Check validation",bcrypt.compare used,,Not Run,P1,20
+TC-P007-003,P007,Security,CRITICAL,Unit,Codes not displayed plaintext,2FA setup flow,"1. Enable 2FA
+2. Check code display
+3. Check storage",Codes not cached,,Not Run,P1,20
+TC-P007-004,P007,Security,CRITICAL,Unit,Codes not in logs,Logs,"1. Generate codes
+2. Use code
+3. Check logs",Codes not logged,,Not Run,P1,15
+TC-P008-001,P008,Security,CRITICAL,Performance,Secret encrypted in database,Database with TOTP,"1. Query twoFactorSecret
+2. Try use raw value
+3. Verify fails",Secret encrypted,,Not Run,P1,15
+TC-P008-002,P008,Security,CRITICAL,Security,TOTP works with encryption,2FA endpoint,"1. Submit TOTP code
+2. Backend decrypts
+3. Verify validation",TOTP works with encryption,,Not Run,P1,20
+TC-P008-003,P008,Security,CRITICAL,Unit,Secret not in QR code,QR code generation,"1. Generate QR
+2. Decode content
+3. Check for plaintext",QR contains plaintext (normal),,Not Run,P1,20
+TC-P008-004,P008,Security,CRITICAL,Performance,Secret not accessible to users,Admin/user accounts,"1. Query twoFactorSecret
+2. Verify not exposed",Secret not in responses,,Not Run,P1,15
+TC-P009-001,P009,Security,CRITICAL,API,State generated on authorize,OAuth endpoint,"1. Go to /auth/oauth/authorize
+2. Check redirect state
+3. Verify random",State in URL and session,,Not Run,P1,15
+TC-P009-002,P009,Security,CRITICAL,API,State validated in callback,OAuth callback,"1. Submit with original state
+2. Try with wrong state
+3. Verify rejected",Wrong state rejected,,Not Run,P1,20
+TC-P009-003,P009,Security,CRITICAL,Security,CSRF attack blocked,CSRF simulator,"1. Create attacker link
+2. Try state mismatch attack
+3. Verify prevented",CSRF prevented by state,,Not Run,P1,25
+TC-P009-004,P009,Security,CRITICAL,Unit,State expires after timeout,State storage,"1. Generate state
+2. Wait for expiry
+3. Use expired state",Expired state rejected,,Not Run,P1,20
+TC-P009-005,P009,Security,CRITICAL,API,State unique per request,Multiple authorize,"1. Request twice
+2. Capture states
+3. Verify different",Each request unique state,,Not Run,P1,20
+TC-P010-001,P010,Security,CRITICAL,Unit,Token in httpOnly cookie,Browser dev tools,"1. Login
+2. Open DevTools
+3. Check cookie flags",httpOnly and Secure flags set,,Not Run,P1,15
+TC-P010-002,P010,Security,CRITICAL,Unit,Token not in localStorage,Dev tools,"1. Check LocalStorage
+2. Verify no tokens",No tokens in localStorage,,Not Run,P1,15
+TC-P010-003,P010,Security,CRITICAL,API,Token not in sessionStorage,Dev tools,"1. Check SessionStorage
+2. Verify empty",No tokens in sessionStorage,,Not Run,P1,15
+TC-P010-004,P010,Security,CRITICAL,API,Token not in Network requests,Network monitor,"1. Make API requests
+2. Check headers
+3. Verify cookie only",Token in cookie only,,Not Run,P1,20
+TC-P010-005,P010,Security,CRITICAL,Security,XSS cannot steal token,XSS injection,"1. Inject JS to access cookie
+2. Verify httpOnly blocks",httpOnly prevents JS access,,Not Run,P1,20
+TC-P011-001,P011,Security,CRITICAL,Unit,Token not in URL,Password reset email,"1. Request reset
+2. Check email link
+3. Verify no token in URL",No token in query params,,Not Run,P1,15
+TC-P011-002,P011,Security,CRITICAL,Unit,Token in POST body,Reset form,"1. Load reset form
+2. Check for hidden field
+3. Verify POST submission",Token in POST body,,Not Run,P1,20
+TC-P011-003,P011,Security,CRITICAL,Unit,Token not in history,Browser history,"1. Click reset link
+2. Submit form
+3. Check history",No token in history,,Not Run,P1,15
+TC-P011-004,P011,Security,CRITICAL,Unit,Token not in logs,Server logs,"1. Request reset
+2. Check logs
+3. Verify absent",Reset tokens not logged,,Not Run,P1,20
+TC-P012-001,P012,Auth,CRITICAL,API,Expiry server-side only,"Session, 30 min config","1. Login
+2. Wait 31 min
+3. Make request
+4. Verify 401",Session expires server-side,,Not Run,P1,40
+TC-P012-002,P012,Auth,CRITICAL,API,Client cannot extend session,"DevTools, Session","1. Modify cookie expiry
+2. Make request
+3. Verify rejected",Server rejects despite modified cookie,,Not Run,P1,20
+TC-P012-003,P012,Auth,CRITICAL,API,Session timestamp validated,Session token,"1. Decode token
+2. Modify issuedAt
+3. Submit
+4. Verify rejected",Server validates token time,,Not Run,P1,20
+TC-P012-004,P012,Auth,CRITICAL,Integration,Idle timeout enforced,Idle timeout config,"1. Login
+2. Wait 16 min
+3. Make request
+4. Verify expired",Idle timeout enforced,,Not Run,P1,35
+TC-P013-001,P013,Input Validation,CRITICAL,API,Email format validated,Admin init endpoint,"1. Submit invalid email
+2. Verify validation
+3. Check error",Invalid email rejected,,Not Run,P1,15
+TC-P013-002,P013,Input Validation,CRITICAL,Unit,Email uniqueness checked,Admin init,"1. Create admin with email1
+2. Try to create with same email
+3. Verify rejected",Duplicate email rejected,,Not Run,P1,20
+TC-P013-003,P013,Input Validation,CRITICAL,Unit,Email sanitization applied,Admin init,"1. Submit email with HTML
+2. Verify sanitized",Email sanitized,,Not Run,P1,15
+TC-P014-001,P014,DataIntegrity,CRITICAL,Unit,Member ID generation unique,Create members concurrently,"1. Create 10 members simultaneously
+2. Check all IDs
+3. Verify no duplicates",All IDs unique,,Not Run,P1,30
+TC-P014-002,P014,DataIntegrity,CRITICAL,Integration,ID counter thread-safe,Database locks,"1. Check database locking
+2. Create concurrent members
+3. Verify atomicity",ID counter thread-safe,,Not Run,P1,25
+TC-P015-001,P015,Input Validation,CRITICAL,API,Token format validated,Reset endpoint,"1. Submit invalid token
+2. Verify validation
+3. Check error",Invalid token rejected,,Not Run,P1,15
+TC-P015-002,P015,Input Validation,CRITICAL,API,Token not found handling,Reset endpoint,"1. Submit non-existent token
+2. Verify proper error",Non-existent token rejected,,Not Run,P1,15
+TC-P015-003,P015,Input Validation,CRITICAL,API,Token expiry checked,Reset endpoint,"1. Use expired token
+2. Verify rejected",Expired token rejected,,Not Run,P1,15
+TC-P016-001,P016,Input Validation,CRITICAL,UI,Required fields checked,CSV import,"1. Upload CSV missing required field
+2. Verify validation",Missing fields rejected,,Not Run,P1,20
+TC-P016-002,P016,Input Validation,CRITICAL,Unit,Data type validation,CSV import,"1. Upload CSV with wrong types
+2. Verify validation",Type validation enforced,,Not Run,P1,20
+TC-P016-003,P016,Input Validation,CRITICAL,Unit,Size validation checked,CSV import,"1. Upload large CSV
+2. Verify size limit",Size validation enforced,,Not Run,P1,15
+TC-P017-001,P017,Input Validation,CRITICAL,API,File size limit enforced,Upload endpoint,"1. Upload large file
+2. Check size limit
+3. Verify rejection",File size limit enforced,,Not Run,P1,20
+TC-P017-002,P017,Input Validation,CRITICAL,Performance,Memory not exhausted,Large upload,"1. Upload huge file
+2. Check memory
+3. Verify graceful fail",Memory protected,,Not Run,P1,25
+TC-P018-001,P018,DataIntegrity,CRITICAL,Integration,Family name configurable,"Settings, Database","1. Check family name
+2. Verify not hardcoded
+3. Verify configurable",Family name configurable,,Not Run,P1,20
+TC-P018-002,P018,DataIntegrity,CRITICAL,Unit,Family name in queries,Code search,"1. Grep for hardcoded name
+2. Verify none found",No hardcoded names,,Not Run,P1,15
+TC-P019-001,P019,Authorization,HIGH,API,Server enforces permissions,API endpoint,"1. User bypasses UI
+2. Makes unauthorized API call
+3. Verify rejected server-side",Server enforces authorization,,Not Run,P2,20
+TC-P019-002,P019,Authorization,HIGH,API,API checks permissions,Code review,"1. Check API handlers
+2. Verify permission checks
+3. Verify enforced before data return",Authorization in API,,Not Run,P2,20
+TC-P020-001,P020,Authorization,HIGH,API,Cannot access others members,Member API,"1. User A queries member P0042
+2. Verify access denied if no permission",IDOR access denied,,Not Run,P2,20
+TC-P020-002,P020,Authorization,HIGH,API,Cannot edit others profiles,Member update,"1. Try PATCH /api/members/P0043
+2. Verify rejected",Cannot edit others,,Not Run,P2,20
+TC-P020-003,P020,Authorization,HIGH,Unit,Relationship-based access,Member view,"1. User A related to B
+2. User A can view B
+3. User C unrelated
+4. User C cannot view B",Access based on relationships,,Not Run,P2,25
+TC-P021-001,P021,Security,HIGH,Security,Rate limit on login,Login endpoint,"1. Make 10 login attempts
+2. Check rate limiting
+3. Verify after threshold blocked",Rate limiting enforced,,Not Run,P2,20
+TC-P021-002,P021,Security,HIGH,Security,Rate limit on password reset,Reset endpoint,"1. Make 5 reset requests
+2. Verify limited",Rate limit on reset,,Not Run,P2,20
+TC-P022-001,P022,Auth,HIGH,API,Session validated after callback,OAuth callback,"1. Complete OAuth flow
+2. Check session validation
+3. Verify proper session created",Session properly validated,,Not Run,P2,20
+TC-P022-002,P022,Auth,HIGH,API,Callback user verified,OAuth callback,"1. Check OAuth callback
+2. Verify user matches token",User verified in callback,,Not Run,P2,20
+TC-P023-001,P023,Auth,HIGH,Security,Lockout after failed attempts,Login endpoint,"1. Make 5 wrong password attempts
+2. Verify account locked
+3. Try again, verify still locked",Account lockout enforced,,Not Run,P2,20
+TC-P023-002,P023,Auth,HIGH,Security,Lockout duration correct,Login after lockout,"1. Account locked
+2. Wait configured duration
+3. Verify can login",Lockout duration respected,,Not Run,P2,25
+TC-P024-001,P024,Authorization,HIGH,UI,Deletion requires verification,Admin delete,"1. Attempt to delete admin
+2. Verify multi-step process
+3. Verify confirmation required",Deletion requires verification,,Not Run,P2,20
+TC-P025-001,P025,Authorization,HIGH,API,Cannot escalate own role,Role update endpoint,"1. User tries to set role to ADMIN
+2. Verify rejected",Role escalation prevented,,Not Run,P2,20
+TC-P025-002,P025,Authorization,HIGH,Security,Only super-admin can set roles,Role assignment,"1. Admin tries to set roles
+2. Verify only super-admin can",Role assignment restricted,,Not Run,P2,20
+TC-P026-001,P026,Input Validation,HIGH,Security,Search input sanitized,Search endpoint,"1. Submit: "" OR 1=1
+2. Verify properly escaped
+3. Verify no injection",SQL injection prevented,,Not Run,P2,20
+TC-P026-002,P026,Input Validation,HIGH,Performance,Parameterized queries used,Code review,"1. Check search query code
+2. Verify parameterized queries
+3. No string concatenation",Parameterized queries used,,Not Run,P2,20
+TC-P027-001,P027,Input Validation,HIGH,API,Invalid relationship rejected,Relationship endpoint,"1. Submit invalid type
+2. Verify validation
+3. Check error",Invalid type rejected,,Not Run,P2,15
+TC-P028-001,P028,Input Validation,HIGH,Unit,Email format validated,Email input,"1. Submit invalid email
+2. Verify validation",Invalid email rejected,,Not Run,P2,15
+TC-P029-001,P029,Input Validation,HIGH,Unit,International format accepted,Phone input,"1. Submit +966501234567
+2. Verify accepted",International format works,,Not Run,P2,15
+TC-P030-001,P030,Functionality,HIGH,API,Cascade operations work,Update endpoint,"1. Update member
+2. Verify cascades execute
+3. Verify correctness",Cascade updates work,,Not Run,P2,25
+TC-P031-001,P031,DataIntegrity,HIGH,Unit,Gender case normalized,Member create,"1. Submit gender=""male""
+2. Verify stored as ""Male""
+3. Verify case consistent",Gender normalized,,Not Run,P2,15
+TC-P032-001,P032,Input Validation,HIGH,Security,Email injection prevented,Admin email,"1. Inject newline in email
+2. Verify rejected",Email injection prevented,,Not Run,P2,15
+TC-P033-001,P033,Input Validation,HIGH,Unit,Father must be male,Relationship create,"1. Try to set female as father
+2. Verify rejected
+3. Set male as father
+4. Verify accepted",Father gender validated,,Not Run,P2,20
+TC-P034-001,P034,Input Validation,HIGH,API,Email format in API,Email field,"1. Submit invalid email
+2. Verify API validation",API validates email,,Not Run,P2,15
+TC-P035-001,P035,Authorization,HIGH,UI,Relationship verified,Request access,"1. User claims relationship
+2. Verify verification required
+3. Verify not auto-approved",Relationship verified,,Not Run,P2,20
+TC-P036-001,P036,Performance,HIGH,Performance,Children loaded in one query,Member page,"1. Load /members/P0001
+2. Enable query logging
+3. Count queries
+4. Verify 1 query with JOIN",One query with JOIN,,Not Run,P2,25
+TC-P036-002,P036,Performance,HIGH,Performance,Performance <2 seconds,Performance test,"1. Load member with 100 children
+2. Measure response time
+3. Verify <2 seconds",Response <2 seconds,,Not Run,P2,30
+TC-P037-001,P037,Performance,HIGH,Performance,Tree cached during session,Tree expand/collapse,"1. Expand node
+2. Check query count
+3. Collapse and expand again
+4. Verify no recalculation",Tree cached properly,,Not Run,P2,25
+TC-P038-001,P038,Performance,HIGH,Performance,Virtual scrolling implemented,Member list,"1. Load list
+2. Check DOM
+3. Verify only visible rows rendered",Virtual scrolling works,,Not Run,P2,30
+TC-P039-001,P039,Performance,HIGH,Performance,Ancestor chain efficient,Ancestor query,"1. Get ancestors of P0050
+2. Monitor performance
+3. Verify <500ms",Ancestor chain efficient,,Not Run,P2,25
+TC-P040-001,P040,Performance,HIGH,Performance,Virtual scrolling in lists,List component,"1. Load 1000+ item list
+2. Check rendering
+3. Verify only visible rendered",Virtual scrolling works,,Not Run,P2,30
+TC-P041-001,P041,Performance,HIGH,API,Pagination implemented,Member list API,"1. Check /api/members
+2. Verify pagination params
+3. Verify limit enforced",Pagination enforced,,Not Run,P2,20
+TC-P042-001,P042,Performance,HIGH,Performance,D3 memoization applied,D3 component,"1. Check memoization
+2. Monitor re-renders
+3. Verify only on data change",D3 re-renders optimized,,Not Run,P2,25
+TC-P043-001,P043,Performance,HIGH,UI,Lazy loading implemented,Image components,"1. Check lazy load
+2. Load page
+3. Verify images load on scroll",Lazy loading works,,Not Run,P2,20
+TC-P044-001,P044,Performance,HIGH,Unit,Search debounced,Search input,"1. Type in search
+2. Monitor requests
+3. Verify debounced",Search debounced,,Not Run,P2,20
+TC-P045-001,P045,Performance,HIGH,API,Requests batched,API calls,"1. Monitor concurrent requests
+2. Verify batched/combined
+3. Verify reduced",Requests optimized,,Not Run,P2,20
+TC-P046-001,P046,Performance,HIGH,Performance,Member list cached,List endpoint,"1. First request
+2. Second request
+3. Verify second is faster/cached",Caching implemented,,Not Run,P2,20
+TC-P047-001,P047,Performance,HIGH,Performance,Cache TTL appropriate,Permission cache,"1. Check cache TTL
+2. Verify reasonable duration
+3. Monitor performance",Cache TTL optimized,,Not Run,P2,20
+TC-P048-001,P048,Performance,HIGH,Performance,Algorithm optimized,Duplicate detection,"1. Run on 1000 members
+2. Monitor memory
+3. Verify <500MB",Algorithm memory efficient,,Not Run,P2,25
+TC-P049-001,P049,Performance,HIGH,Integration,Server-side detection,Duplicate check,"1. Submit large member list
+2. Verify server processes
+3. Verify client not overloaded",Server-side processing,,Not Run,P2,20
+TC-P050-001,P050,Performance,MEDIUM,Unit,State objects optimized,Form state,"1. Check state size
+2. Verify <10KB
+3. Verify compressed",State size optimized,,Not Run,P3,20
+TC-P051-001,P051,Functionality,MEDIUM,UI,TypeScript build strict,Build process,"1. Run build
+2. Check for errors
+3. Verify no ignores",TypeScript strict enabled,,Not Run,P3,15
+TC-P052-001,P052,Functionality,MEDIUM,UI,ESLint enforced,Build process,"1. Run ESLint
+2. Verify no ignores
+3. Check config",ESLint enforced,,Not Run,P3,15
+TC-P053-001,P053,Security,MEDIUM,Security,CSRF tokens on forms,Forms,"1. Check form for CSRF token
+2. Verify token validated
+3. Verify on POST requests",CSRF protection enforced,,Not Run,P3,20
+TC-P054-001,P054,Security,MEDIUM,Unit,innerHTML removed,Code review,"1. Search for innerHTML
+2. Replace with text content
+3. Verify sanitization",innerHTML replaced safely,,Not Run,P3,15
+TC-P055-001,P055,Security,MEDIUM,Unit,HTML sanitized,Sanitization,"1. Check dangerouslySetInnerHTML
+2. Verify DOMPurify used
+3. Verify sanitized",HTML sanitized,,Not Run,P3,15
+TC-P056-001,P056,Functionality,MEDIUM,Integration,Migrations tracked incrementally,Migration system,"1. Check migration files
+2. Verify numbered
+3. Verify rollback possible",Migrations tracked,,Not Run,P3,15
+TC-P057-001,P057,Functionality,MEDIUM,Integration,Rollback possible,Migration,"1. Create migration
+2. Rollback
+3. Verify data intact",Rollback works,,Not Run,P3,20
+TC-P058-001,P058,Security,MEDIUM,Security,Database encryption enabled,Database config,"1. Check encryption at rest
+2. Verify TDE enabled
+3. Verify key management",Database encryption enabled,,Not Run,P3,20
+TC-P059-001,P059,Security,MEDIUM,Integration,RLS policies enabled,Database RLS,"1. Check RLS enabled
+2. Verify policies enforced
+3. Verify queries respects RLS",RLS enforced,,Not Run,P3,20
+TC-P060-001,P060,Functionality,MEDIUM,Unit,Permanent delete option,Admin delete,"1. Check delete options
+2. Verify permanent delete available
+3. Verify GDPR compliance",Permanent delete available,,Not Run,P3,20
+TC-P061-001,P061,Functionality,MEDIUM,Integration,Automated deployment,CI/CD,"1. Check CI/CD config
+2. Verify all steps automated
+3. Verify no manual steps",Deployment automated,,Not Run,P3,25
+TC-P062-001,P062,Functionality,MEDIUM,Integration,Deploy scripts available,Deployment,"1. Check deploy script
+2. Verify for Vercel/Railway
+3. Verify documented",Deploy script available,,Not Run,P3,20
+TC-P063-001,P063,Functionality,MEDIUM,API,Health endpoint available,API,"1. Test /health endpoint
+2. Verify response 200
+3. Verify required services checked",Health check works,,Not Run,P3,15
+TC-P064-001,P064,Security,MEDIUM,Integration,Credentials removed from CI,CI env vars,"1. Check CI config
+2. Verify no test credentials
+3. Use only secrets",No test credentials in CI,,Not Run,P3,20
+TC-P065-001,P065,Functionality,MEDIUM,Unit,Graceful shutdown implemented,Server shutdown,"1. Send shutdown signal
+2. Verify ongoing requests finish
+3. Verify clean shutdown",Graceful shutdown works,,Not Run,P3,25
+TC-P001-007,P001,Security,CRITICAL,Integration,Test SAMEORIGIN not accepted,next.config.js,"Set X-Frame-Options to SAMEORIGIN
+Verify application fails or defaults to DENY
+Test framing from same origin","X-Frame-Options must be DENY, not SAMEORIGIN",,Not Run,P1,20
+TC-P001-008,P001,Security,CRITICAL,Integration,Verify header with custom headers,Custom middleware,"Add X-Frame-Options in middleware
+Verify next.config.js also sets it
+Check for conflicts",No header conflicts,,Not Run,P1,20
+TC-P002-007,P002,Security,CRITICAL,Integration,Test bcrypt salt rounds correct,Bcrypt config,"Check SALT_ROUNDS value
+Verify set to 12 or higher
+Hash test code
+Measure hash generation time","SALT_ROUNDS >= 12, hash ~100ms",,Not Run,P1,15
+TC-P002-008,P002,Security,CRITICAL,Integration,Test access code rotation,Admin management,"Change access code
+Verify old code stops working
+Verify new code works
+Check migration for old codes","Code rotation works, old code invalid",,Not Run,P1,25
+TC-P003-005,P003,Security,CRITICAL,Integration,Verify environment variable enforcement,Startup,"Try to start without ADMIN_PASSWORD
+Verify clear error message
+Check error format for security",Error thrown with helpful message,,Not Run,P1,15
+TC-P003-006,P003,Security,CRITICAL,Integration,Check deployment documentation,Docs,"Review DEPLOYMENT.md
+Verify ADMIN_PASSWORD documented
+Check example configs",Documentation clear and complete,,Not Run,P1,15
+TC-P004-005,P004,Auth,CRITICAL,Integration,Test multi-admin scenario,Multiple admins,"Create multiple admins
+Change one password
+Verify others unchanged
+Verify deployment preserves all",Multiple admins managed independently,,Not Run,P1,30
+TC-P005-005,P005,Security,CRITICAL,Integration,Test snapshot restoration,Snapshot restore,"Create snapshot
+Modify member
+Restore snapshot
+Verify encryption/decryption",Snapshot restoration works securely,,Not Run,P1,30
+TC-P005-006,P005,Security,CRITICAL,Integration,Verify sensitive field masking in audit,Audit logs,"Update PII fields
+Generate audit
+Verify report masks sensitive data",Sensitive data masked in audit,,Not Run,P1,20
+TC-P006-005,P006,Security,CRITICAL,Integration,Test phone number search,Search function,"Search for phone number
+Verify works on encrypted data
+Verify results correct",Phone search works on encrypted,,Not Run,P1,20
+TC-P006-006,P006,Security,CRITICAL,Integration,Verify phone export secure,Export feature,"Export member data with phone
+Verify phone encrypted in export
+Verify cannot be read plaintext",Phone encrypted in export,,Not Run,P1,20
+TC-P007-005,P007,Security,CRITICAL,Integration,Test backup code single-use,Recovery,"Use backup code once
+Try to use again
+Verify second use rejected",Backup code single-use enforced,,Not Run,P1,20
+TC-P007-006,P007,Security,CRITICAL,Integration,Verify code count limits,Generation,"Check number of backup codes
+Verify typically 8-10 codes
+Verify documented count",Backup code count correct,,Not Run,P1,15
+TC-P008-005,P008,Security,CRITICAL,Integration,Test time-based updates,TOTP validation,"Get TOTP code at T0
+Wait 30 seconds
+Get code at T30
+Verify different codes",TOTP codes change every 30s,,Not Run,P1,25
+TC-P008-006,P008,Security,CRITICAL,Integration,Verify grace period for time drift,Time sync,"Submit code from time T-30
+Submit current code T0
+Verify both accepted (grace period)",Time drift grace period respected,,Not Run,P1,20
+TC-P009-006,P009,Security,CRITICAL,Integration,Test replay attack prevention,OAuth security,"Capture OAuth callback
+Repeat with same state
+Verify second attempt rejected",Replay attack prevented,,Not Run,P1,25
+TC-P009-007,P009,Security,CRITICAL,Integration,Verify state entropy sufficient,Random generation,"Generate 100 states
+Analyze entropy
+Verify truly random",State has sufficient entropy,,Not Run,P1,20
+TC-P010-006,P010,Security,CRITICAL,Integration,Test session fixation prevention,Session security,"Get session cookie
+Login
+Verify cookie changes
+Verify new cookie different",Session fixation prevented,,Not Run,P1,20
+TC-P010-007,P010,Security,CRITICAL,Integration,Verify SameSite attribute,Cookie security,"Check session cookie attributes
+Verify SameSite=Strict or Lax
+Test CSRF protection from cookies",SameSite attribute set correctly,,Not Run,P1,15
+TC-P011-005,P011,Security,CRITICAL,Integration,Test token in email only,Email delivery,"Request password reset
+Capture email
+Verify token only in email
+Verify not in URL
+Verify not in logs",Token securely delivered in email,,Not Run,P1,20
+TC-P011-006,P011,Security,CRITICAL,Integration,Verify token expiration,Token lifecycle,"Generate reset token
+Wait for expiry (e.g., 1 hour)
+Try to use expired token
+Verify rejected",Reset token expires appropriately,,Not Run,P1,40
+TC-P012-005,P012,Auth,CRITICAL,Integration,Test refresh token flow,Token refresh,"Make request near expiry
+Verify refresh works
+Get new token
+Verify old token invalid",Token refresh works correctly,,Not Run,P1,30
+TC-P012-006,P012,Auth,CRITICAL,Integration,Verify logout clears session,Logout,"Login
+Logout
+Try with old session
+Verify access denied",Logout clears session properly,,Not Run,P1,15
+TC-P013-004,P013,Input Validation,CRITICAL,Integration,Test email with spaces,Input validation,"Submit email with spaces
+Verify trimmed/rejected
+Test variations",Email with spaces handled,,Not Run,P1,15
+TC-P013-005,P013,Input Validation,CRITICAL,Integration,Test disposable email detection,Email validation,"Use disposable email
+Verify rejected if policy enforced
+Check email provider list",Disposable email policy enforced,,Not Run,P1,20
+TC-P014-003,P014,DataIntegrity,CRITICAL,Integration,Test concurrent creation stress,Stress test,"Create 100 members concurrently
+Query all IDs
+Verify all unique
+Check for sequence gaps","All IDs unique, no gaps",,Not Run,P1,40
+TC-P014-004,P014,DataIntegrity,CRITICAL,Integration,Verify database constraint,Database constraints,"Check unique constraint on ID
+Try to insert duplicate
+Verify database rejects",Database unique constraint enforced,,Not Run,P1,20
+TC-P020-004,P020,Authorization,HIGH,Integration,Test with API key enumeration,API security,"Enumerate member IDs
+Try each with different user
+Verify access control",IDOR prevented for all IDs,,Not Run,P2,30
+TC-P020-005,P020,Authorization,HIGH,Integration,Test with sequential ID guessing,API security,"Login as User A
+Guess User B ID (e.g., P0042)
+Try to access
+Verify denied",Sequential ID guessing prevented,,Not Run,P2,20
+TC-P021-003,P021,Security,HIGH,Integration,Test rate limit bypass attempts,Security,"Try to bypass with headers
+Try with different IPs
+Try with proxies
+Verify all limited",Rate limiting cannot be bypassed,,Not Run,P2,30
+TC-P021-004,P021,Security,HIGH,Integration,Verify rate limit response headers,API responses,"Make requests
+Check RateLimit-* headers
+Verify proper limits communicated",Rate limit headers present,,Not Run,P2,15
+TC-P036-003,P036,Performance,HIGH,Integration,Test with member having 1000 children,Performance stress,"Create member with 1000 children
+Load page
+Measure queries and time
+Verify still <2 sec",Performance scales to 1000 children,,Not Run,P2,45
+TC-P036-004,P036,Performance,HIGH,Integration,Verify query uses database-side filtering,Query optimization,"Check SQL
+Verify filtering in WHERE
+Not in application code",Database-side filtering used,,Not Run,P2,20
+TC-P038-002,P038,Performance,HIGH,Integration,Test list performance with 5000 members,Performance,"Load list with 5000 members
+Measure initial load
+Measure scroll performance
+Verify <100ms scroll",Rendering optimized for 5000+,,Not Run,P2,40
+TC-P038-003,P038,Performance,HIGH,Integration,Verify DOM node count,DOM optimization,"Load list
+Inspect DOM
+Count nodes
+Verify only visible nodes rendered",Only visible nodes in DOM,,Not Run,P2,20
+TC-P044-002,P044,Performance,HIGH,Integration,Test search debounce timing,Performance,"Type in search field
+Monitor network requests
+Count requests vs keystrokes
+Verify debounced properly",Search debounced to 300ms+,,Not Run,P2,20
+TC-P044-003,P044,Performance,HIGH,Integration,Verify search cancellation,Search,"Type search query
+Delete characters
+Verify pending requests cancelled",Pending requests cancelled,,Not Run,P2,15
+TC-P053-002,P053,Security,MEDIUM,Integration,Test POST without CSRF token,Security,"Make POST request
+Omit CSRF token
+Verify rejected with 403",Missing CSRF token rejected,,Not Run,P3,20
+TC-P053-003,P053,Security,MEDIUM,Integration,Verify token rotation after use,Security,"Submit form with token
+Token should be rotated
+Submit again with new token
+Verify second succeeds",CSRF token rotated after use,,Not Run,P3,20
+TC-P054-002,P054,Security,MEDIUM,Integration,Test with HTML content in data,Security,"Create member with <script>alert() in name
+Export to PDF
+Verify not executed",Script tags not executed,,Not Run,P3,20
+TC-P055-002,P055,Security,MEDIUM,Integration,Test XSS payload in description,Security,"Store <img src=x onerror=alert()>
+Render in component
+Verify not executed",XSS payload sanitized,,Not Run,P3,20
+TC-P055-003,P055,Security,MEDIUM,Integration,Verify DOMPurify whitelist,Security,"Check DOMPurify config
+Verify safe tags allowed
+Verify dangerous tags removed",DOMPurify configured correctly,,Not Run,P3,15
+TC-P058-002,P058,Security,MEDIUM,Integration,Test encryption key rotation,Database,"Create record with key1
+Rotate to key2
+Verify can still read
+Verify encrypted with key2",Key rotation works,,Not Run,P3,30
+TC-P059-002,P059,Security,MEDIUM,Integration,Test RLS with multiple roles,Database,"Query as MEMBER role
+Verify can only see own data
+Query as ADMIN role
+Verify can see all",RLS policies enforced by role,,Not Run,P3,30
+TC-P063-002,P063,Functionality,MEDIUM,Integration,Test health check includes dependencies,Monitoring,"Call /health
+Verify includes: db status, cache status
+Verify response time",Health check complete,,Not Run,P3,20
+TC-P063-003,P063,Functionality,MEDIUM,Integration,Test graceful degradation,Health check,"Kill a service (e.g., cache)
+Call /health
+Verify still returns 200
+Verify degraded flag",Health check handles failures,,Not Run,P3,25
+TC-P001-009,P001,Security,CRITICAL,Integration,Clickjacking - Invisible iframe overlay attack,Malicious website,"Create invisible full-screen iframe
+Move button under iframe
+User clicks on app button
+Button actually in iframe
+Capture click coordinates",Overlay clickjacking prevented by X-Frame-Options,,Not Run,P1,25
+TC-P001-010,P001,Security,CRITICAL,Integration,Test with multiple frame layers,Nested frames,"Create frame in frame in frame
+Verify all layers blocked
+Verify error message clear",All frame nesting prevented,,Not Run,P1,20
+TC-P001-011,P001,Security,CRITICAL,Integration,Verify CFO (Clickjacking Frame Option) respected,Browser compliance,"Check browser respects X-Frame-Options
+Test in Chrome, Firefox, Safari
+Verify consistent behavior",X-Frame-Options respected cross-browser,,Not Run,P1,25
+TC-P002-009,P002,Security,CRITICAL,Integration,Verify bcrypt cost factor correct,Password hashing,"Extract cost factor from hash
+Verify $2b$12$ (cost=12)
+Verify appropriate for security",Bcrypt cost factor is 12+,,Not Run,P1,15
+TC-P002-010,P002,Security,CRITICAL,Integration,Test access code different from password,Code vs password,"Check that admin code != admin password
+Both hashed separately
+Both required for access",Codes and passwords separate and hashed,,Not Run,P1,15
+TC-P002-011,P002,Security,CRITICAL,Integration,Verify access code length sufficient,Code requirements,"Check minimum code length
+Verify at least 16 chars
+Verify entropy sufficient",Access code minimum length enforced,,Not Run,P1,15
+TC-P003-007,P003,Security,CRITICAL,Integration,Test empty password env var,Env var handling,"Set ADMIN_PASSWORD=""""
+Run app
+Verify error for empty value",Empty password rejected,,Not Run,P1,15
+TC-P003-008,P003,Security,CRITICAL,Integration,Test null/undefined password,Env var handling,"Unset ADMIN_PASSWORD
+Verify error thrown
+Check error message helpful",Missing/null password caught,,Not Run,P1,15
+TC-P003-009,P003,Security,CRITICAL,Integration,Check npm scripts no password,Scripts security,"Review package.json scripts
+Verify no hardcoded passwords
+Check build scripts safe",npm scripts do not expose passwords,,Not Run,P1,15
+TC-P004-006,P004,Auth,CRITICAL,Integration,Test password change via admin UI,Password management,"Admin changes own password via UI
+Login with new password
+Verify old password no longer works",UI password change works,,Not Run,P1,20
+TC-P004-007,P004,Auth,CRITICAL,Integration,Test deployment does not reset password,Deployment safety,"Change admin password
+Redeploy application
+Verify password still same
+Admin can login",Deployment preserves password,,Not Run,P1,30
+TC-P005-007,P005,Security,CRITICAL,Integration,Test snapshot compression,Data size,"Create snapshot
+Measure size
+Verify compressed if enabled
+Verify still decryptable",Snapshot compressed and encrypted,,Not Run,P1,20
+TC-P005-008,P005,Security,CRITICAL,Integration,Test snapshot retention policy,Data management,"Create multiple snapshots
+Check retention limit
+Old snapshots deleted/archived
+Recent ones available",Snapshot retention policy enforced,,Not Run,P1,25
+TC-P006-007,P006,Security,CRITICAL,Integration,Test international phone formats,Phone validation,"Test +966-50-1234567
+Test +966501234567
+Test 0501234567
+Verify all normalized
+Verify all encrypted",International phone formats supported,,Not Run,P1,20
+TC-P006-008,P006,Security,CRITICAL,Integration,Verify phone not in api responses,API security,"Query member via API
+Check JSON response
+Verify phoneNumber not in plaintext",Phone encrypted in API response,,Not Run,P1,15
+TC-P007-007,P007,Security,CRITICAL,Integration,Test backup code generation randomness,Code generation,"Generate backup codes multiple times
+Verify different codes each time
+Verify sufficient entropy",Backup codes generated randomly,,Not Run,P1,20
+TC-P007-008,P007,Security,CRITICAL,Integration,Test using codes in different order,Recovery flow,"Generate 8 codes
+Use code 5
+Use code 2
+Use code 8
+Verify all work once
+Verify used codes invalid",Codes usable in any order,,Not Run,P1,20
+TC-P008-007,P008,Security,CRITICAL,Integration,Test TOTP grace period window,Time tolerance,"Get code at T-30
+Immediate code at T0
+Get code at T+30
+Verify grace window
+Verify old/future codes rejected after grace",TOTP grace period correct,,Not Run,P1,25
+TC-P008-008,P008,Security,CRITICAL,Integration,Test TOTP with different authenticator apps,Compatibility,"Test with Google Authenticator
+Test with Microsoft Authenticator
+Test with Authy
+Verify all generate same codes",TOTP compatible with standard apps,,Not Run,P1,25
+TC-P009-008,P009,Security,CRITICAL,Integration,Test CSRF token binding to session,CSRF prevention,"Get CSRF token from session A
+Try to use in session B
+Verify rejected",CSRF token bound to session,,Not Run,P1,20
+TC-P009-009,P009,Security,CRITICAL,Integration,Test CSRF token per request,CSRF prevention,"If per-request tokens:
+Get token1
+Make request (token1 invalid now)
+Get token2
+Make request (token2 valid)",CSRF token refresh correct,,Not Run,P1,20
+TC-P010-008,P010,Security,CRITICAL,Integration,Test token rotation on each request,Session security,"Get token from request 1
+Use token for request 2
+If rotation: token changes
+Verify new token works
+Old token invalid",Session token rotation works,,Not Run,P1,25
+TC-P010-009,P010,Security,CRITICAL,Integration,Test token revocation,Session management,"Get valid token
+Admin revokes session
+Try to use token
+Verify rejected",Session revocation works,,Not Run,P1,20
+TC-P011-007,P011,Security,CRITICAL,Integration,Test reset token length and entropy,Token security,"Generate reset token
+Measure length (should be 32+ chars)
+Analyze entropy
+Verify cryptographically secure",Reset token secure,,Not Run,P1,20
+TC-P011-008,P011,Security,CRITICAL,Integration,Test reset link cannot be guessed,Token uniqueness,"Generate 100 reset tokens
+Analyze patterns
+Verify impossible to guess
+Verify no sequential pattern",Reset tokens not guessable,,Not Run,P1,25
+TC-P012-007,P012,Auth,CRITICAL,Integration,Test session timeout warning,UX security,"Session about to expire
+Verify warning shown to user
+User can extend session
+Verify timeout extended",Session timeout warning works,,Not Run,P1,25
+TC-P012-008,P012,Auth,CRITICAL,Integration,Test simultaneous requests near expiry,Session handling,"Session expiring
+Make 3 simultaneous requests
+Verify all succeed or all fail gracefully
+No partial states",Concurrent requests handled,,Not Run,P1,30
+TC-P013-006,P013,Input Validation,CRITICAL,Integration,Test email domain validation,Email validation,"Valid: user@domain.com
+Invalid: user@domain
+Invalid: user@.com
+Verify validation rules",Email domain validation enforced,,Not Run,P1,15
+TC-P013-007,P013,Input Validation,CRITICAL,Integration,Test email verification requirement,Email verification,"Create admin with email
+Verify verification email sent
+Verify email not active until verified",Email verification enforced,,Not Run,P1,20
+TC-P014-005,P014,DataIntegrity,CRITICAL,Integration,Test ID uniqueness with database constraint,Data integrity,"Attempt to insert duplicate ID directly
+Database rejects
+Verify constraint error",Database constraint enforces uniqueness,,Not Run,P1,20
+TC-P014-006,P014,DataIntegrity,CRITICAL,Integration,Test ID sequence continuity,Data integrity,"Create 100 members
+Check ID sequence
+Verify no gaps (unless deleted)
+Deleted members have reserved IDs",ID sequence continuous,,Not Run,P1,25
+TC-P015-004,P015,Input Validation,CRITICAL,Integration,Test token format validation,Input validation,"Submit token with wrong format
+Verify validation error
+Validate regex pattern",Token format validated,,Not Run,P1,15
+TC-P015-005,P015,Input Validation,CRITICAL,Integration,Test token size limits,Input validation,"Submit very long token
+Verify max length enforced
+Submit empty token
+Verify rejected",Token size limits enforced,,Not Run,P1,15
+TC-P016-004,P016,Input Validation,CRITICAL,Integration,Test CSV column validation,CSV import,"CSV with extra columns
+CSV with missing columns
+CSV with wrong order
+Verify handling",CSV columns validated,,Not Run,P1,20
+TC-P016-005,P016,Input Validation,CRITICAL,Integration,Test CSV data type conversion,CSV import,"Date column with invalid format
+Number column with text
+Boolean with wrong value
+Verify validation",CSV data types validated,,Not Run,P1,20
+TC-P017-003,P017,Input Validation,CRITICAL,Integration,Test file size for different formats,File validation,"CSV 100MB - should fail
+CSV 10MB - should succeed
+JSON 50MB - should fail
+Verify per-format limits",File size limits per format,,Not Run,P1,20
+TC-P017-004,P017,Input Validation,CRITICAL,Integration,Test file type validation,File validation,"Upload .txt renamed to .csv
+Upload .exe as image
+Verify MIME type checked
+Verify magic bytes checked",File type validation enforced,,Not Run,P1,20
+TC-P018-003,P018,DataIntegrity,CRITICAL,Integration,Test family name in database queries,Data integrity,"Verify family name in WHERE clauses
+Verify parametrized
+Verify configurable via settings",Family name queries dynamic,,Not Run,P1,20
+TC-P018-004,P018,DataIntegrity,CRITICAL,Integration,Test family name in display logic,Functionality,"Change family name setting
+Verify all displays update
+Verify includes tree view
+Verify includes exports",Family name display updated,,Not Run,P1,20
+TC-P019-003,P019,Authorization,HIGH,Integration,Test permission enforcement on create,Authorization,"User without permission
+Try to create member
+Verify rejected server-side
+Verify error message clear",Create permission enforced server-side,,Not Run,P2,20
+TC-P019-004,P019,Authorization,HIGH,Integration,Test permission enforcement on delete,Authorization,"User without delete permission
+Try to delete member
+Verify rejected
+Verify member still exists",Delete permission enforced server-side,,Not Run,P2,20
+TC-P020-006,P020,Authorization,HIGH,Integration,Test IDOR with privacy settings,Authorization,"User A with privacy setting
+User B cannot view despite IDOR attempt
+Privacy enforced regardless",IDOR + privacy settings combined,,Not Run,P2,25
+TC-P020-007,P020,Authorization,HIGH,Integration,Test IDOR on related records,Authorization,"Member has photos, relationships
+User cannot access related IDOR
+PhotoID, RelationshipID protected",Related record IDOR protected,,Not Run,P2,25
+TC-P021-005,P021,Security,HIGH,Integration,Test rate limit key binding,Rate limiting,"Rate limit by IP
+Rate limit by user
+Verify correct binding
+Verify cannot bypass",Rate limit properly bound,,Not Run,P2,20
+TC-P021-006,P021,Security,HIGH,Integration,Test distributed rate limiting,Rate limiting,"Multiple servers
+Rate limit shared across servers
+Verify using Redis/cache
+Verify consistent limit",Distributed rate limiting works,,Not Run,P2,30
+TC-P036-005,P036,Performance,HIGH,Integration,Test with hierarchical depth,Query optimization,"Member with 5 levels deep (grandparents, etc)
+Load all relationships
+Verify single query
+Verify <500ms",Hierarchical query optimized,,Not Run,P2,25
+TC-P036-006,P036,Performance,HIGH,Integration,Test with spouse/multiple parents,Query optimization,"Member with multiple parent relationships
+Load all variants
+Verify single query
+Verify performance",Complex relationships query efficient,,Not Run,P2,25
+TC-P044-004,P044,Performance,HIGH,Integration,Test search filtering performance,Search performance,"Search for common term (1000+ results)
+Measure render time
+Verify <1 second
+Verify pagination works",Large search result set fast,,Not Run,P2,30
+TC-P044-005,P044,Performance,HIGH,Integration,Test full-text search optimization,Search performance,"Enable full-text search
+Compare with LIKE
+Verify FTS faster
+Verify results same",Full-text search optimized,,Not Run,P2,25
+TC-P053-004,P053,Security,MEDIUM,Integration,Test CSRF on file upload,CSRF protection,"Upload file without CSRF token
+Verify rejected
+Upload with token
+Verify succeeds",CSRF protection on uploads,,Not Run,P3,20
+TC-P053-005,P053,Security,MEDIUM,Integration,Test CSRF on AJAX requests,CSRF protection,"AJAX POST without token
+Verify rejected
+With token
+Verify succeeds",CSRF protection on AJAX,,Not Run,P3,20
+TC-P055-004,P055,Security,MEDIUM,Integration,Test XSS via user input fields,XSS prevention,"Store <script>alert(1)</script> in text field
+Display in various places
+Verify escaped
+Verify not executed",XSS in user input prevented,,Not Run,P3,20
+TC-P055-005,P055,Security,MEDIUM,Integration,Test DOM XSS via component props,XSS prevention,"Pass HTML to component
+Verify properly escaped
+Verify not rendered as HTML",DOM XSS via props prevented,,Not Run,P3,20
+TC-P058-003,P058,Security,MEDIUM,Integration,Test encryption at transit,Encryption,"Verify TLS/HTTPS used
+Capture traffic
+Verify encrypted
+Verify certificate valid",Encryption in transit enforced,,Not Run,P3,20
+TC-P058-004,P058,Security,MEDIUM,Integration,Test encryption backup/recovery,Encryption,"Backup database
+Recover to new instance
+Verify still encrypted
+Verify decryption works",Encryption persists in backups,,Not Run,P3,25
+TC-P059-003,P059,Security,MEDIUM,Integration,Test RLS with hierarchical permissions,RLS policies,"User can see self and descendants
+Cannot see unrelated branches
+Verify RLS enforces
+Verify no data leakage",RLS hierarchical permissions,,Not Run,P3,30
+TC-P059-004,P059,Security,MEDIUM,Integration,Test RLS policy updates,RLS policies,"Change user role
+RLS policies should apply immediately
+Verify access changes
+Verify consistent",RLS policy dynamic updates,,Not Run,P3,25
+TC-P001-012,P001,Security,CRITICAL,Integration,X-Frame-Options header case sensitivity,Response headers,"Check if header is case-insensitive
+x-frame-options vs X-Frame-Options
+Both should work",Header case-insensitive,,Not Run,P1,15
+TC-P001-013,P001,Security,CRITICAL,Integration,Multiple X-Frame-Options headers,Response validation,"Server sends multiple X-Frame-Options
+Verify no conflicts
+Verify browser uses first",Single consistent header value,,Not Run,P1,15
+TC-P002-012,P002,Security,CRITICAL,Integration,Bcrypt verification timing attack,Cryptography,"Compare valid vs invalid codes
+Measure response times
+Verify no timing difference
+Verify constant-time comparison",Timing attack prevented,,Not Run,P1,20
+TC-P002-013,P002,Security,CRITICAL,Integration,Access code update after compromise,Incident response,"Code compromised
+Admin changes code
+Old code stops working
+New code works
+No grace period",Immediate code invalidation,,Not Run,P1,20
+TC-P003-010,P003,Security,CRITICAL,Integration,Environment variable type checking,Config validation,"ADMIN_PASSWORD=123 (number)
+ADMIN_PASSWORD="""" (empty)
+ADMIN_PASSWORD=null (null)
+Verify all handled",Env var type validation,,Not Run,P1,15
+TC-P003-011,P003,Security,CRITICAL,Integration,Special characters in password,Password security,"ADMIN_PASSWORD with special chars
+Unicode characters
+Quotes and escapes
+Verify all work",Special characters supported,,Not Run,P1,15
+TC-P004-008,P004,Auth,CRITICAL,Integration,Password sync during load testing,Performance,"High load
+No password changes during load
+Verify hash consistency
+Verify no race conditions",Password safe under load,,Not Run,P1,25
+TC-P004-009,P004,Auth,CRITICAL,Integration,Concurrent admin creations,Data integrity,"Create two admins simultaneously
+Verify both passwords hashed
+Verify both can login separately",Concurrent admin creation safe,,Not Run,P1,20
+TC-P005-009,P005,Security,CRITICAL,Integration,Large snapshot handling,Performance,"Create snapshot with huge member record
+>10MB snapshot
+Verify encryption fast
+Verify storage efficient",Large snapshots handled,,Not Run,P1,25
+TC-P005-010,P005,Security,CRITICAL,Integration,Snapshot data integrity check,Data integrity,"Create snapshot
+Modify database directly
+Restore snapshot
+Verify checksum matches
+Verify tampering detected",Snapshot integrity verified,,Not Run,P1,25
+TC-P006-009,P006,Security,CRITICAL,Integration,Phone number international codes,Validation,"Test all country codes
++1, +44, +966, +33, +81
+Verify all accepted
+Verify properly formatted",All country codes supported,,Not Run,P1,20
+TC-P006-010,P006,Security,CRITICAL,Integration,Phone number filtering in reports,Data handling,"Generate report with phone data
+Verify phones encrypted in report
+Cannot be read as plaintext",Phones encrypted in exports,,Not Run,P1,15
+TC-P007-009,P007,Security,CRITICAL,Integration,Backup code collision prevention,Security,"Generate 1000 backup code sets
+Verify no duplicate codes
+Verify sufficient entropy",No code collisions,,Not Run,P1,25
+TC-P007-010,P007,Security,CRITICAL,Integration,Backup code recovery with wrong code,User experience,"User enters wrong backup code
+Verify clear error
+Remaining codes shown
+Account not locked",Wrong code error handling,,Not Run,P1,15
+TC-P008-009,P008,Security,CRITICAL,Integration,TOTP with different time zones,Compatibility,"Device in UTC, server in UTC+2
+Verify codes still match
+Verify time sync tolerance",TOTP works across time zones,,Not Run,P1,25
+TC-P008-010,P008,Security,CRITICAL,Integration,TOTP recovery without secret,Recovery,"Lost authenticator app
+Use backup codes to recover
+Reset TOTP secret
+Re-enable 2FA",TOTP recovery flow works,,Not Run,P1,20
+TC-P009-010,P009,Security,CRITICAL,Integration,OAuth state with URL encoding,Security,"State contains special chars: /\?#&=
+Proper URL encoding
+Decoding matches original",State URL encoding correct,,Not Run,P1,15
+TC-P009-011,P009,Security,CRITICAL,Integration,OAuth state cookie vs session,Configuration,"Verify state stored in session (not cookie)
+Verify server-side validation
+No leakage to client",State stored server-side,,Not Run,P1,20
+TC-P010-010,P010,Security,CRITICAL,Integration,Session token in third-party analytics,Privacy,"Verify session token not sent to analytics
+Check all outbound requests
+No tokens in query params or headers",Tokens not leaked to third parties,,Not Run,P1,20
+TC-P010-011,P010,Security,CRITICAL,Integration,Session token length and format,Security,"Verify token length sufficient (32+ bytes)
+Verify format consistent
+Verify no predictable patterns",Session token format secure,,Not Run,P1,15
+TC-P011-009,P011,Security,CRITICAL,Integration,Reset token consumed atomically,Data integrity,"Get reset token
+Two simultaneous reset requests
+First succeeds
+Second fails (token used)
+No race condition",Reset token atomic consumption,,Not Run,P1,25
+TC-P011-010,P011,Security,CRITICAL,Integration,Reset token with expired user,Edge case,"User receives reset token
+User account suspended
+Try to reset
+Verify prevented",Reset token respects account status,,Not Run,P1,20
+TC-P012-009,P012,Auth,CRITICAL,Integration,Session extension without activity,Session behavior,"Session inactive for 10 minutes
+Make API call
+Verify extends expiry
+Verify new 30 min countdown",Activity extends session,,Not Run,P1,25
+TC-P012-010,P012,Auth,CRITICAL,Integration,Remember me with different timeout,Authentication,"Normal session: 30 min
+Remember me: 30 days
+Verify different timeouts
+Verify both enforced",Remember me timeout different,,Not Run,P1,25
+TC-P013-008,P013,Input Validation,CRITICAL,Integration,Email case sensitivity,Email handling,"admin@example.com vs ADMIN@EXAMPLE.COM
+Verify both treated same
+Verify case-insensitive storage",Email case-insensitive,,Not Run,P1,15
+TC-P013-009,P013,Input Validation,CRITICAL,Integration,Email with plus addressing,Email validation,"user+tag@example.com
+Verify accepted
+Verify works for signup",Plus addressing supported,,Not Run,P1,15
+TC-P014-007,P014,DataIntegrity,CRITICAL,Integration,ID generation under high concurrency,Stress test,"500 concurrent creates
+All IDs unique
+No duplicates or skips
+Database lock contention measured",ID generation concurrent safe,,Not Run,P1,40
+TC-P014-008,P014,DataIntegrity,CRITICAL,Integration,ID uniqueness across instances,Distributed,"Multi-instance deployment
+Each instance creates members
+All IDs globally unique
+No sequence conflicts",ID unique across instances,,Not Run,P1,30
+TC-P015-006,P015,Input Validation,CRITICAL,Integration,Reset token format variations,Validation,"Valid token format
+Invalid: too short
+Invalid: non-alphanumeric
+Invalid: wrong algorithm marker
+Verify validation strict",Token format strictly validated,,Not Run,P1,20
+TC-P015-007,P015,Input Validation,CRITICAL,Integration,Token in different cases,Validation,"Lowercase token
+Mixed case token
+Verify case-sensitive comparison
+Wrong case rejected",Token case-sensitive,,Not Run,P1,15
+TC-P016-006,P016,Input Validation,CRITICAL,Integration,CSV with different line endings,CSV parsing,"Test \r\n (Windows)
+Test \n (Unix)
+Test \r (Mac)
+Verify all parsed correctly",CSV line endings handled,,Not Run,P1,15
+TC-P016-007,P016,Input Validation,CRITICAL,Integration,CSV with quoted fields,CSV parsing,"Fields with commas quoted
+Fields with newlines quoted
+Quotes within quoted fields
+Verify correct parsing",CSV quoting handled,,Not Run,P1,15
+TC-P017-005,P017,Input Validation,CRITICAL,Integration,File size just at boundary,File validation,"Upload 99% of max size - should pass
+Upload 101% of max size - should fail
+Verify exact boundary enforcement",File size boundary correct,,Not Run,P1,20
+TC-P017-006,P017,Input Validation,CRITICAL,Integration,File size with compression,Performance,"Upload large compressed file
+Server decompresses
+Verify size limit on decompressed
+No decompression bombs",Decompression size limits,,Not Run,P1,25
+TC-P018-005,P018,DataIntegrity,CRITICAL,Integration,Family name in UI strings,Internationalization,"Family name in Arabic
+Family name in English
+Verify both displayed correctly
+Verify in all screens",Family name i18n correct,,Not Run,P1,20
+TC-P018-006,P018,DataIntegrity,CRITICAL,Integration,Family name in database queries,Query correctness,"Hard-coded family in WHERE
+Change family name setting
+Queries should adapt
+Verify dynamic binding",Family name queries dynamic,,Not Run,P1,20
+TC-P019-005,P019,Authorization,HIGH,Integration,Permission cache invalidation,Performance,"Change user permissions
+Verify UI reflects change immediately
+Verify backend doesn't cache old permissions",Permission changes immediate,,Not Run,P2,20
+TC-P019-006,P019,Authorization,HIGH,Integration,Permission propagation to all pages,Authorization,"Change permission
+Access all pages
+Verify permission enforced everywhere
+No forgotten endpoints",Permission enforced consistently,,Not Run,P2,25
+TC-P020-008,P020,Authorization,HIGH,Integration,IDOR via relationship navigation,Security,"Access family member
+Guess related member ID
+Different branch
+Verify access denied
+Verify relationship boundary enforced",IDOR across relationships blocked,,Not Run,P2,25
+TC-P020-009,P020,Authorization,HIGH,Integration,IDOR on soft-deleted records,Security,"Delete member record
+Try to access deleted ID
+Verify 404 or 403
+Not accessible",Deleted record IDOR prevented,,Not Run,P2,20
+TC-P021-007,P021,Security,HIGH,Integration,Rate limit per endpoint,Granularity,"Different limits for different endpoints
+Login: 5/min
+Password reset: 3/hour
+Verify each enforced separately",Per-endpoint rate limits,,Not Run,P2,20
+TC-P021-008,P021,Security,HIGH,Integration,Rate limit reset timing,Accuracy,"Hit rate limit at :00
+Check reset at :01
+Verify immediately resetlimit can retry",Rate limit reset timing accurate,,Not Run,P2,20
+TC-P036-007,P036,Performance,HIGH,Integration,N+1 with circular relationships,Query,"Member A has children B, C
+B has child C (circular)
+Load member A
+Verify still single query",Circular relationships handled,,Not Run,P2,25
+TC-P036-008,P036,Performance,HIGH,Integration,N+1 with filtered children,Query optimization,"Load only children matching criteria
+Verify filtering in query
+Not filtering in app code",Filtered children query optimized,,Not Run,P2,25
+TC-P038-004,P038,Performance,HIGH,Integration,List with real-time updates,Performance,"Load large list
+Add member in another session
+Verify update appears
+No full re-render
+Scroll position maintained",Real-time updates without full re-render,,Not Run,P2,30
+TC-P038-005,P038,Performance,HIGH,Integration,List search during virtual scroll,Performance,"Large list with virtual scrolling
+Search with results
+Verify scroll updates
+Verify search works correctly",Search works with virtual scrolling,,Not Run,P2,25
+TC-P044-006,P044,Performance,HIGH,Integration,Search with special characters,Search,"Search for: أحمد (Arabic)
+Search for: user@domain.com (email)
+Verify searched correctly
+Verify escaped properly",Special characters in search,,Not Run,P2,20
+TC-P044-007,P044,Performance,HIGH,Integration,Search result highlighting,UI,"Search query highlighted in results
+Verify exact match highlighted
+Verify partial match highlighted",Search results highlighted,,Not Run,P2,20
+TC-P053-006,P053,Security,MEDIUM,Integration,CSRF double-submit cookie validation,CSRF,"Method 1: Token in form + cookie
+Method 2: Token in header + cookie
+Verify both tokens match
+Verify validation strict",CSRF double-submit validation,,Not Run,P3,20
+TC-P053-007,P053,Security,MEDIUM,Integration,CSRF token in custom headers,CSRF,"AJAX without X-Requested-With
+Requires CSRF token still
+Token in custom header
+Verify validation works",CSRF token in custom headers,,Not Run,P3,20
+TC-P055-006,P055,Security,MEDIUM,Integration,XSS via CSS injection,XSS,"Input with <style>body{display:none}</style>
+Verify escaped
+Verify not applied",CSS injection prevented,,Not Run,P3,20
+TC-P055-007,P055,Security,MEDIUM,Integration,XSS via data URLs,XSS,"Input with data:text/html,<script>...
+Verify escaped
+Verify not executed",Data URL injection prevented,,Not Run,P3,20
+TC-P058-005,P058,Security,MEDIUM,Integration,Encryption key storage,Key management,"Encryption key not in code
+Not in config files
+Stored in secure vault/env
+Verify access controlled",Encryption key stored securely,,Not Run,P3,25
+TC-P058-006,P058,Security,MEDIUM,Integration,Database password encryption,Credentials,"Database connection password encrypted
+Verify not in source code
+Verify not in logs
+Stored in secrets manager",Database password secured,,Not Run,P3,20
+TC-P059-005,P059,Security,MEDIUM,Integration,RLS bypass attempt via CTEs,RLS security,"CTE query that tries to bypass RLS
+Verify RLS still applies
+Verify cannot circumvent",RLS applied to CTEs,,Not Run,P3,25
+TC-P059-006,P059,Security,MEDIUM,Integration,RLS with superuser account,RLS configuration,"Superuser bypasses RLS (expected)
+Verify intentional
+Verify documented
+Verify only true superusers",RLS superuser behavior correct,,Not Run,P3,20
+TC-P022-003,P022,Auth,HIGH,Integration,OAuth token validation,OAuth callback,"Verify access_token received
+Verify token format valid
+Verify token not expired",Token validated and not expired,,Not Run,P2,15
+TC-P022-004,P022,Auth,HIGH,Integration,OAuth user info retrieval,OAuth callback,"Exchange code for token
+Fetch user info from provider
+Verify user created/linked",User info retrieved and linked,,Not Run,P2,20
+TC-P023-003,P023,Auth,HIGH,Integration,Account lockout duration correct,Lockout config,"Verify lockout duration set
+Default 15 min recommended
+Verify configurable",Lockout duration appropriate,,Not Run,P2,15
+TC-P023-004,P023,Auth,HIGH,Integration,Failed attempt counter resets,Lockout counter,"Successful login
+Failed counter should reset
+Verify counter at 0",Failed attempt counter resets,,Not Run,P2,15
+TC-P024-002,P024,Authorization,HIGH,Integration,Admin deletion confirmation,Admin management,"Attempt delete
+Verify confirmation required
+Verify admin email sent
+Verify recovery period",Admin deletion multi-step,,Not Run,P2,20
+TC-P024-003,P024,Authorization,HIGH,Integration,Super-admin cannot delete self,Admin safety,"Super-admin tries to delete own account
+Verify prevented
+Verify error message",Self-deletion prevented,,Not Run,P2,15
+TC-P025-003,P025,Authorization,HIGH,Integration,Role escalation via API,Authorization,"User attempts to set own role
+Verify API rejects
+Verify endpoint protected",Role escalation prevented,,Not Run,P2,20
+TC-P025-004,P025,Authorization,HIGH,Integration,Permission matrix integrity,Authorization,"Verify permission matrix correct
+Admin permissions subset of super-admin
+Member permissions most restrictive",Permission hierarchy correct,,Not Run,P2,20
+TC-P026-003,P026,Input Validation,HIGH,Integration,SQL injection in sorting,Input validation,"Sort parameter: name ASC; DROP TABLE
+Verify escaped
+Verify no injection",Sort parameter safe,,Not Run,P2,20
+TC-P026-004,P026,Input Validation,HIGH,Integration,SQL injection in pagination,Input validation,"Pagination offset: 1; DELETE FROM
+Verify safe handling
+No injection",Pagination parameter safe,,Not Run,P2,20
+TC-P027-002,P027,Input Validation,HIGH,Integration,Valid relationship types,Relationship validation,"Accepted: father, mother, brother, sister, spouse
+Rejected: invalid_type, null, empty
+Verify validation strict",Relationship type validation strict,,Not Run,P2,20
+TC-P027-003,P027,Input Validation,HIGH,Integration,Relationship consistency,Relationship validation,"Set A is father of B
+Verify B is child of A
+Consistency enforced",Relationship bidirectional consistency,,Not Run,P2,20
+TC-P028-002,P028,Input Validation,HIGH,Integration,Email with multiple @ symbols,Email validation,"user@@example.com
+Verify rejected
+Verify error message",Multiple @ symbols rejected,,Not Run,P2,15
+TC-P028-003,P028,Input Validation,HIGH,Integration,Whitespace in email,Email validation,"user @example.com (space)
+user@example .com (space)
+Verify trimmed/rejected",Email whitespace handled,,Not Run,P2,15
+TC-P029-002,P029,Input Validation,HIGH,Integration,Phone with alphanumeric,Phone validation,"1-800-FLOWERS
+Verify converted to numbers
+Or rejected if not numeric-only",Alphanumeric phone handled,,Not Run,P2,15
+TC-P029-003,P029,Input Validation,HIGH,Integration,Phone extension support,Phone validation,"+966-50-1234567x123
+Verify parsed correctly
+Or rejected if not supported",Phone extensions handled,,Not Run,P2,15
+TC-P030-002,P030,Functionality,HIGH,Integration,Cascade delete verification,Data integrity,"Delete member
+Verify cascade to: photos, journals, relationships
+Verify all cascaded",Cascade delete comprehensive,,Not Run,P2,25
+TC-P030-003,P030,Functionality,HIGH,Integration,Cascade update verification,Data integrity,"Update father
+Verify generation updated for children
+Verify all cascaded",Cascade update works,,Not Run,P2,25
+TC-P031-002,P031,DataIntegrity,HIGH,Integration,Gender Arabic normalization,Data normalization,"Input: ذكر, ذكر, male
+Verify normalized to single value
+Verify consistent",Gender normalization Arabic,,Not Run,P2,15
+TC-P031-003,P031,DataIntegrity,HIGH,Integration,Gender unknown/other support,Data normalization,"If supported: Prefer not to say
+Verify handled correctly
+Verify not mixed with male/female",Gender other options handled,,Not Run,P2,15
+TC-P032-002,P032,Input Validation,HIGH,Integration,Email with newline injection,Input validation,"email@domain.com\nBcc:attacker@evil.com
+Verify rejected
+No email injection",Email newline injection blocked,,Not Run,P2,20
+TC-P032-003,P032,Input Validation,HIGH,Integration,Email header injection,Input validation,"Admin email with: %0dSubject:
+Verify escaped
+Verify no header injection",Email header injection blocked,,Not Run,P2,20
+TC-P033-002,P033,Input Validation,HIGH,Integration,Father gender validation,Business logic,"Set member with gender=Female as father
+Verify rejected
+Verify only males can be fathers",Father gender validation enforced,,Not Run,P2,20
+TC-P033-003,P033,Input Validation,HIGH,Integration,Mother gender validation,Business logic,"Set member with gender=Male as mother
+Verify rejected
+Verify only females can be mothers",Mother gender validation enforced,,Not Run,P2,20
+TC-P034-002,P034,Input Validation,HIGH,Integration,Email validation on user update,Input validation,"Update user email to invalid format
+Verify validation
+Verify rejected",Email validation on update,,Not Run,P2,15
+TC-P034-003,P034,Input Validation,HIGH,Integration,Email uniqueness on update,Input validation,"User1 updates email to user2's email
+Verify prevented
+Verify error",Email uniqueness on update,,Not Run,P2,15
+TC-P035-002,P035,Authorization,HIGH,Integration,Relationship verification workflow,Authorization,"User claims relationship
+AdminVerifies claim
+Verify proof required
+Verify document upload",Relationship verification multi-step,,Not Run,P2,25
+TC-P035-003,P035,Authorization,HIGH,Integration,Reject false relationship claim,Authorization,"Other user rejects claim
+Claim marked rejected
+User cannot claim again immediately",Relationship claim rejection,,Not Run,P2,20
+TC-P037-002,P037,Performance,HIGH,Integration,Tree expand collapse state,Performance,"Expand node
+Collapse node
+Expand again
+Verify cached
+Verify no recalculation",Tree state cached correctly,,Not Run,P2,20
+TC-P037-003,P037,Performance,HIGH,Integration,Tree scroll position preservation,Performance,"Expand node
+Scroll down
+Collapse/expand
+Verify scroll position maintained",Scroll position preserved,,Not Run,P2,20
+TC-P039-002,P039,Performance,HIGH,Integration,Ancestor chain with multiple marriages,Genealogy,"Member with multiple parents from different marriages
+Get ancestors
+Verify all paths included
+Verify performance",Complex ancestry performance,,Not Run,P2,25
+TC-P039-003,P039,Performance,HIGH,Integration,Ancestor cycle prevention,Data integrity,"Prevent creating A->B->C->A cycle
+Verify validation
+Verify cycles impossible",Ancestry cycle prevention,,Not Run,P2,20
+TC-P040-002,P040,Performance,HIGH,Integration,Virtual scrolling with filtering,Performance,"Filter large list (5000+ items)
+Apply virtual scrolling
+Scroll through results
+Verify performance maintained",Virtual scrolling with filters,,Not Run,P2,30
+TC-P040-003,P040,Performance,HIGH,Integration,Virtual scrolling dynamic size,Performance,"Items with varying height
+Virtual scroll adapts
+Scroll smooth
+No jumping",Virtual scrolling dynamic height,,Not Run,P2,25
+TC-P041-002,P041,Performance,HIGH,Integration,Pagination with sorting,API design,"Request /api/members?page=2&sort=name
+Verify pagination respect after sort
+Verify results correct",Pagination with sorting works,,Not Run,P2,20
+TC-P041-003,P041,Performance,HIGH,Integration,Pagination edge case: page 0,Edge cases,"Request page=0 (invalid)
+Verify error or default to page 1
+Verify consistent behavior",Pagination invalid page handling,,Not Run,P2,15
+TC-P042-002,P042,Performance,HIGH,Integration,D3 data binding efficiency,Performance,"Monitor re-renders when data updates
+Verify only changed nodes re-render
+No full tree re-render",D3 selective re-render,,Not Run,P2,25
+TC-P042-003,P042,Performance,HIGH,Integration,D3 animation performance,Performance,"Node expand/collapse with animation
+Measure frame rate
+Verify 60fps maintained
+No jank",D3 animations smooth,,Not Run,P2,25
+TC-P043-002,P043,Performance,HIGH,Integration,Image placeholder while loading,UX performance,"Placeholder shown while image loads
+Image appears without reflow
+Layout stable",Image placeholder prevents layout shift,,Not Run,P2,20
+TC-P043-003,P043,Performance,HIGH,Integration,Image background color fallback,UX,"Image fails to load
+Fallback color shown
+No broken image icon
+Graceful degradation",Image load failure handling,,Not Run,P2,15
+TC-P045-002,P045,Performance,HIGH,Integration,Request batching implementation,API optimization,"Multiple requests to same endpoint
+Verify batched into single request
+Verify response handling",Request batching works,,Not Run,P2,25
+TC-P045-003,P045,Performance,HIGH,Integration,Request prioritization,Performance,"Multiple concurrent requests
+Prioritize critical requests
+Load UI requests first
+Background later",Request prioritization works,,Not Run,P2,25
+TC-P046-002,P046,Performance,HIGH,Integration,Cache invalidation on member update,Caching,"Update member data
+Cache should invalidate
+Next fetch gets fresh data
+No stale cache",Cache invalidation on update,,Not Run,P2,20
+TC-P046-003,P046,Performance,HIGH,Integration,Cache TTL configuration,Caching,"Verify cache TTL set appropriately
+5 min for lists
+1 min for single records
+Configurable",Cache TTL appropriate,,Not Run,P2,15
+TC-P047-002,P047,Performance,HIGH,Integration,Permission matrix refresh timing,Performance,"Verify when permission matrix cache refreshes
+Default TTL (e.g., 5 min)
+Can be manually refreshed
+Changes reflected soon",Permission cache refresh timing,,Not Run,P2,20
+TC-P047-003,P047,Performance,HIGH,Integration,Permission cache consistency,Data integrity,"Change permission
+Verify across all servers in cluster
+Consistent cache invalidation",Permission cache consistency,,Not Run,P2,25
+TC-P048-002,P048,Performance,HIGH,Integration,Levenshtein distance with large strings,Performance,"Compare 1000-char strings
+Measure time
+Verify <100ms
+Verify space complexity",Levenshtein scale performance,,Not Run,P2,25
+TC-P048-003,P048,Performance,HIGH,Integration,Levenshtein optimization options,Performance,"Verify algorithm choice: Wagner-Fischer
+Verify space-optimized variant
+O(min(m,n)) space instead of O(mn)",Levenshtein optimized algorithm,,Not Run,P2,20
+TC-P049-002,P049,Performance,HIGH,Integration,Duplicate detection threshold,Detection accuracy,"Members 90% similar
+Verify flagged as potential duplicate
+Verify below threshold not flagged",Duplicate threshold correct,,Not Run,P2,20
+TC-P049-003,P049,Performance,HIGH,Integration,Duplicate detection false positives,Testing,"Common names (e.g., Muhammad)
+Verify not auto-flagged
+Verify user review required",Duplicate detection false positive rate,,Not Run,P2,20
+TC-P050-002,P050,Performance,MEDIUM,Integration,State compression techniques,Performance,"Verify state object compressed
+Measure size before/after
+Verify decompression lossless",State compression works,,Not Run,P3,20
+TC-P050-003,P050,Performance,MEDIUM,Integration,State serialization format,Performance,"JSON vs MessagePack vs Protocol Buffers
+Compare sizes
+Verify chosen optimal
+Verify compatible",State serialization efficient,,Not Run,P3,20
+TC-P051-002,P051,Functionality,MEDIUM,Integration,TypeScript strict mode enabled,Code quality,"tsconfig.json strict: true
+No any types
+No implicit any
+Verify enforced in build",TypeScript strict enforced,,Not Run,P3,15
+TC-P051-003,P051,Functionality,MEDIUM,Integration,TypeScript compilation errors,Build quality,"Run tsc --noEmit
+Verify 0 errors
+Verify 0 warnings
+Build fails if errors",TypeScript compilation clean,,Not Run,P3,15
+TC-P052-002,P052,Functionality,MEDIUM,Integration,ESLint configuration,Code quality,".eslintrc.json configured
+Verify strict rules enabled
+Verify no rules disabled
+No @ts-ignore",ESLint config strict,,Not Run,P3,15
+TC-P052-003,P052,Functionality,MEDIUM,Integration,Pre-commit ESLint hook,Code quality,"Git pre-commit runs ESLint
+Failing lint blocks commit
+No way to bypass",ESLint pre-commit hook enforced,,Not Run,P3,15
+TC-P054-003,P054,Security,MEDIUM,Integration,innerHTML removed from code,Code review,"Search codebase for innerHTML
+Verify count 0
+No remaining usages",innerHTML usage removed,,Not Run,P3,15
+TC-P054-004,P054,Security,MEDIUM,Integration,innerHTML test coverage,Testing,"If innerHTML remains: verify tested
+Verify input sanitized
+Verify output encoded",innerHTML test coverage,,Not Run,P3,20
+TC-P056-002,P056,Functionality,MEDIUM,Integration,Migration file naming,Database,"Verify naming: TIMESTAMP_description.sql
+Verify incrementing
+Verify reversible",Migration naming convention,,Not Run,P3,15
+TC-P056-003,P056,Functionality,MEDIUM,Integration,Migration rollback testing,Database,"Run migration up
+Run migration down
+Verify schema matches initial
+No data loss",Migration rollback tested,,Not Run,P3,25
+TC-P057-002,P057,Functionality,MEDIUM,Integration,Single migration splitting,Database maintenance,"Break monolithic migration into 3-5 parts
+Each deployable separately
+Each reversible independently",Migration split for safety,,Not Run,P3,30
+TC-P057-003,P057,Functionality,MEDIUM,Integration,Migration dry-run capability,Database,"Dry-run migration on test
+Verify success
+Verify no production data
+Verify rollback works",Migration dry-run tested,,Not Run,P3,25
+TC-P060-002,P060,Functionality,MEDIUM,Integration,Permanent delete process,Data management,"Check if permanent delete available
+Multi-step confirmation
+Audit trail of deletion
+Irreversible",Permanent delete process safe,,Not Run,P3,25
+TC-P060-003,P060,Functionality,MEDIUM,Integration,GDPR right to be forgotten,Compliance,"User requests deletion
+Ensure cascading delete
+Verify no data in backups
+Verify compliance",GDPR deletion compliance,,Not Run,P3,30
+TC-P061-002,P061,Functionality,MEDIUM,Integration,CI/CD pipeline steps,Deployment,"Build
+Test
+Deploy to staging
+Smoke tests
+Deploy to production
+Verify all automated",CI/CD pipeline complete,,Not Run,P3,30
+TC-P061-003,P061,Functionality,MEDIUM,Integration,Deployment rollback process,Deployment,"Deployment fails
+Auto-rollback triggers
+Verify previous version active
+Alerts triggered",Deployment rollback automatic,,Not Run,P3,25
+TC-P062-002,P062,Functionality,MEDIUM,Integration,Railway deployment script,Deployment,"railway up command works
+Builds successfully
+Deploys to Railway
+Env vars configured",Railway deployment script works,,Not Run,P3,25
+TC-P062-003,P062,Functionality,MEDIUM,Integration,Vercel deployment script,Deployment,"vercel deploy command works
+Builds and deploys
+Environment variables set
+URL assigned",Vercel deployment script works,,Not Run,P3,25
+TC-P064-002,P064,Security,MEDIUM,Integration,GitHub Actions secrets,CI security,"Database password in GitHub Secrets
+Not in variables/config
+Not in logs
+Secure access",CI credentials secured,,Not Run,P3,20
+TC-P064-003,P064,Security,MEDIUM,Integration,Test isolation from production,Testing,"Test database separate
+Test data deleted after
+No production data in logs
+No cross-contamination",Test isolation enforced,,Not Run,P3,20
+TC-P065-002,P065,Functionality,MEDIUM,Integration,Server shutdown signal handling,Graceful shutdown,"Server receives SIGTERM
+Stops accepting new requests
+Waits for ongoing requests
+Shuts down cleanly",Signal handling implemented,,Not Run,P3,25
+TC-P065-003,P065,Functionality,MEDIUM,Integration,Database connection cleanup,Shutdown,"On shutdown: close DB connections
+Rollback pending transactions
+Flush caches
+Proper cleanup",Graceful database shutdown,,Not Run,P3,25
+TC-P001-014,P001,Security,CRITICAL,Unit,Error handling and edge cases for Verify X-Frame-Options header is DENY,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P001-015,P001,Security,CRITICAL,Integration,Integration verification for Verify X-Frame-Options header is DENY across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P001-016,P001,Security,CRITICAL,Performance,Load/stress testing for Verify X-Frame-Options header is DENY,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Verify X-Frame-Options header is DENY not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P002-014,P002,Security,CRITICAL,Unit,Error handling and edge cases for Verify admin code hashed with bcrypt,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P002-015,P002,Security,CRITICAL,Integration,Integration verification for Verify admin code hashed with bcrypt across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P002-016,P002,Security,CRITICAL,Performance,Load/stress testing for Verify admin code hashed with bcrypt,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Verify admin code hashed with bcrypt not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P003-012,P003,Security,CRITICAL,Unit,Error handling and edge cases for Search for hardcoded passwords,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P003-013,P003,Security,CRITICAL,Integration,Integration verification for Search for hardcoded passwords across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P003-014,P003,Security,CRITICAL,Performance,Load/stress testing for Search for hardcoded passwords,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Search for hardcoded passwords not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P004-010,P004,Auth,CRITICAL,Unit,Error handling and edge cases for Password only set on creation,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P004-011,P004,Auth,CRITICAL,Integration,Integration verification for Password only set on creation across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P004-012,P004,Auth,CRITICAL,Performance,Load/stress testing for Password only set on creation,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Password only set on creation not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P005-011,P005,Security,CRITICAL,Unit,Error handling and edge cases for Verify snapshots encrypted,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P005-012,P005,Security,CRITICAL,Integration,Integration verification for Verify snapshots encrypted across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P005-013,P005,Security,CRITICAL,Performance,Load/stress testing for Verify snapshots encrypted,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Verify snapshots encrypted not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P006-011,P006,Security,CRITICAL,Unit,Error handling and edge cases for Verify phones encrypted at rest,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P006-012,P006,Security,CRITICAL,Integration,Integration verification for Verify phones encrypted at rest across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P006-013,P006,Security,CRITICAL,Performance,Load/stress testing for Verify phones encrypted at rest,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Verify phones encrypted at rest not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P007-011,P007,Security,CRITICAL,Unit,Error handling and edge cases for Codes are hashed,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P007-012,P007,Security,CRITICAL,Integration,Integration verification for Codes are hashed across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P007-013,P007,Security,CRITICAL,Performance,Load/stress testing for Codes are hashed,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Codes are hashed not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P008-011,P008,Security,CRITICAL,Unit,Error handling and edge cases for Secret encrypted in database,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P008-012,P008,Security,CRITICAL,Integration,Integration verification for Secret encrypted in database across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P008-013,P008,Security,CRITICAL,Performance,Load/stress testing for Secret encrypted in database,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Secret encrypted in database not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P009-012,P009,Security,CRITICAL,Unit,Error handling and edge cases for State generated on authorize,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P009-013,P009,Security,CRITICAL,Integration,Integration verification for State generated on authorize across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P009-014,P009,Security,CRITICAL,Performance,Load/stress testing for State generated on authorize,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify State generated on authorize not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P010-012,P010,Security,CRITICAL,Unit,Error handling and edge cases for Token in httpOnly cookie,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P010-013,P010,Security,CRITICAL,Integration,Integration verification for Token in httpOnly cookie across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P010-014,P010,Security,CRITICAL,Performance,Load/stress testing for Token in httpOnly cookie,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Token in httpOnly cookie not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P011-011,P011,Security,CRITICAL,Unit,Error handling and edge cases for Token not in URL,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P011-012,P011,Security,CRITICAL,Integration,Integration verification for Token not in URL across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P011-013,P011,Security,CRITICAL,Performance,Load/stress testing for Token not in URL,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Token not in URL not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P012-011,P012,Auth,CRITICAL,Unit,Error handling and edge cases for Expiry server-side only,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P012-012,P012,Auth,CRITICAL,Integration,Integration verification for Expiry server-side only across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P012-013,P012,Auth,CRITICAL,Performance,Load/stress testing for Expiry server-side only,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Expiry server-side only not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P013-010,P013,Input Validation,CRITICAL,Unit,Error handling and edge cases for Email format validated,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P013-011,P013,Input Validation,CRITICAL,Integration,Integration verification for Email format validated across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P013-012,P013,Input Validation,CRITICAL,Performance,Load/stress testing for Email format validated,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Email format validated not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P014-009,P014,DataIntegrity,CRITICAL,Unit,Error handling and edge cases for Member ID generation unique,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P014-010,P014,DataIntegrity,CRITICAL,Integration,Integration verification for Member ID generation unique across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P014-011,P014,DataIntegrity,CRITICAL,Performance,Load/stress testing for Member ID generation unique,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Member ID generation unique not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P015-008,P015,Input Validation,CRITICAL,Unit,Error handling and edge cases for Token format validated,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P015-009,P015,Input Validation,CRITICAL,Integration,Integration verification for Token format validated across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P015-010,P015,Input Validation,CRITICAL,Performance,Load/stress testing for Token format validated,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Token format validated not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P016-008,P016,Input Validation,CRITICAL,Unit,Error handling and edge cases for Required fields checked,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P016-009,P016,Input Validation,CRITICAL,Integration,Integration verification for Required fields checked across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P016-010,P016,Input Validation,CRITICAL,Performance,Load/stress testing for Required fields checked,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Required fields checked not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P017-007,P017,Input Validation,CRITICAL,Unit,Error handling and edge cases for File size limit enforced,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P017-008,P017,Input Validation,CRITICAL,Integration,Integration verification for File size limit enforced across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P017-009,P017,Input Validation,CRITICAL,Performance,Load/stress testing for File size limit enforced,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify File size limit enforced not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P018-007,P018,DataIntegrity,CRITICAL,Unit,Error handling and edge cases for Family name configurable,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P1,20
+TC-P018-008,P018,DataIntegrity,CRITICAL,Integration,Integration verification for Family name configurable across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P1,25
+TC-P018-009,P018,DataIntegrity,CRITICAL,Performance,Load/stress testing for Family name configurable,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Family name configurable not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P1,30
+TC-P019-007,P019,Authorization,HIGH,Unit,Error handling and edge cases for Server enforces permissions,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P019-008,P019,Authorization,HIGH,Integration,Integration verification for Server enforces permissions across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P019-009,P019,Authorization,HIGH,Performance,Load/stress testing for Server enforces permissions,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Server enforces permissions not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P020-010,P020,Authorization,HIGH,Unit,Error handling and edge cases for Cannot access others members,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P020-011,P020,Authorization,HIGH,Integration,Integration verification for Cannot access others members across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P020-012,P020,Authorization,HIGH,Performance,Load/stress testing for Cannot access others members,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Cannot access others members not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P021-009,P021,Security,HIGH,Unit,Error handling and edge cases for Rate limit on login,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P021-010,P021,Security,HIGH,Integration,Integration verification for Rate limit on login across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P021-011,P021,Security,HIGH,Performance,Load/stress testing for Rate limit on login,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Rate limit on login not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P022-005,P022,Auth,HIGH,Unit,Error handling and edge cases for Session validated after callback,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P022-006,P022,Auth,HIGH,Integration,Integration verification for Session validated after callback across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P022-007,P022,Auth,HIGH,Performance,Load/stress testing for Session validated after callback,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Session validated after callback not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P023-005,P023,Auth,HIGH,Unit,Error handling and edge cases for Lockout after failed attempts,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P023-006,P023,Auth,HIGH,Integration,Integration verification for Lockout after failed attempts across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P023-007,P023,Auth,HIGH,Performance,Load/stress testing for Lockout after failed attempts,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Lockout after failed attempts not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P024-004,P024,Authorization,HIGH,Unit,Error handling and edge cases for Deletion requires verification,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P024-005,P024,Authorization,HIGH,Integration,Integration verification for Deletion requires verification across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P024-006,P024,Authorization,HIGH,Performance,Load/stress testing for Deletion requires verification,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Deletion requires verification not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P025-005,P025,Authorization,HIGH,Unit,Error handling and edge cases for Cannot escalate own role,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P025-006,P025,Authorization,HIGH,Integration,Integration verification for Cannot escalate own role across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P025-007,P025,Authorization,HIGH,Performance,Load/stress testing for Cannot escalate own role,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Cannot escalate own role not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P026-005,P026,Input Validation,HIGH,Unit,Error handling and edge cases for Search input sanitized,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P026-006,P026,Input Validation,HIGH,Integration,Integration verification for Search input sanitized across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P026-007,P026,Input Validation,HIGH,Performance,Load/stress testing for Search input sanitized,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Search input sanitized not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P027-004,P027,Input Validation,HIGH,Unit,Error handling and edge cases for Invalid relationship rejected,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P027-005,P027,Input Validation,HIGH,Integration,Integration verification for Invalid relationship rejected across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P027-006,P027,Input Validation,HIGH,Performance,Load/stress testing for Invalid relationship rejected,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Invalid relationship rejected not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P028-004,P028,Input Validation,HIGH,Unit,Error handling and edge cases for Email format validated,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P028-005,P028,Input Validation,HIGH,Integration,Integration verification for Email format validated across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P028-006,P028,Input Validation,HIGH,Performance,Load/stress testing for Email format validated,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Email format validated not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P029-004,P029,Input Validation,HIGH,Unit,Error handling and edge cases for International format accepted,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P029-005,P029,Input Validation,HIGH,Integration,Integration verification for International format accepted across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P029-006,P029,Input Validation,HIGH,Performance,Load/stress testing for International format accepted,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify International format accepted not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P030-004,P030,Functionality,HIGH,Unit,Error handling and edge cases for Cascade operations work,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P030-005,P030,Functionality,HIGH,Integration,Integration verification for Cascade operations work across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P030-006,P030,Functionality,HIGH,Performance,Load/stress testing for Cascade operations work,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Cascade operations work not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P031-004,P031,DataIntegrity,HIGH,Unit,Error handling and edge cases for Gender case normalized,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P031-005,P031,DataIntegrity,HIGH,Integration,Integration verification for Gender case normalized across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P031-006,P031,DataIntegrity,HIGH,Performance,Load/stress testing for Gender case normalized,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Gender case normalized not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P032-004,P032,Input Validation,HIGH,Unit,Error handling and edge cases for Email injection prevented,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P032-005,P032,Input Validation,HIGH,Integration,Integration verification for Email injection prevented across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P032-006,P032,Input Validation,HIGH,Performance,Load/stress testing for Email injection prevented,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Email injection prevented not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P033-004,P033,Input Validation,HIGH,Unit,Error handling and edge cases for Father must be male,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P033-005,P033,Input Validation,HIGH,Integration,Integration verification for Father must be male across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P033-006,P033,Input Validation,HIGH,Performance,Load/stress testing for Father must be male,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Father must be male not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P034-004,P034,Input Validation,HIGH,Unit,Error handling and edge cases for Email format in API,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P034-005,P034,Input Validation,HIGH,Integration,Integration verification for Email format in API across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P034-006,P034,Input Validation,HIGH,Performance,Load/stress testing for Email format in API,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Email format in API not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P035-004,P035,Authorization,HIGH,Unit,Error handling and edge cases for Relationship verified,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P035-005,P035,Authorization,HIGH,Integration,Integration verification for Relationship verified across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P035-006,P035,Authorization,HIGH,Performance,Load/stress testing for Relationship verified,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Relationship verified not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P036-009,P036,Performance,HIGH,Unit,Error handling and edge cases for Children loaded in one query,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P036-010,P036,Performance,HIGH,Integration,Integration verification for Children loaded in one query across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P036-011,P036,Performance,HIGH,Performance,Load/stress testing for Children loaded in one query,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Children loaded in one query not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P037-004,P037,Performance,HIGH,Unit,Error handling and edge cases for Tree cached during session,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P037-005,P037,Performance,HIGH,Integration,Integration verification for Tree cached during session across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P037-006,P037,Performance,HIGH,Performance,Load/stress testing for Tree cached during session,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Tree cached during session not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P038-006,P038,Performance,HIGH,Unit,Error handling and edge cases for Virtual scrolling implemented,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P038-007,P038,Performance,HIGH,Integration,Integration verification for Virtual scrolling implemented across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P038-008,P038,Performance,HIGH,Performance,Load/stress testing for Virtual scrolling implemented,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Virtual scrolling implemented not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P039-004,P039,Performance,HIGH,Unit,Error handling and edge cases for Ancestor chain efficient,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P039-005,P039,Performance,HIGH,Integration,Integration verification for Ancestor chain efficient across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P039-006,P039,Performance,HIGH,Performance,Load/stress testing for Ancestor chain efficient,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Ancestor chain efficient not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P040-004,P040,Performance,HIGH,Unit,Error handling and edge cases for Virtual scrolling in lists,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P040-005,P040,Performance,HIGH,Integration,Integration verification for Virtual scrolling in lists across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P040-006,P040,Performance,HIGH,Performance,Load/stress testing for Virtual scrolling in lists,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Virtual scrolling in lists not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P041-004,P041,Performance,HIGH,Unit,Error handling and edge cases for Pagination implemented,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P041-005,P041,Performance,HIGH,Integration,Integration verification for Pagination implemented across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P041-006,P041,Performance,HIGH,Performance,Load/stress testing for Pagination implemented,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Pagination implemented not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P042-004,P042,Performance,HIGH,Unit,Error handling and edge cases for D3 memoization applied,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P042-005,P042,Performance,HIGH,Integration,Integration verification for D3 memoization applied across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P042-006,P042,Performance,HIGH,Performance,Load/stress testing for D3 memoization applied,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify D3 memoization applied not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P043-004,P043,Performance,HIGH,Unit,Error handling and edge cases for Lazy loading implemented,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P043-005,P043,Performance,HIGH,Integration,Integration verification for Lazy loading implemented across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P043-006,P043,Performance,HIGH,Performance,Load/stress testing for Lazy loading implemented,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Lazy loading implemented not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P044-008,P044,Performance,HIGH,Unit,Error handling and edge cases for Search debounced,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P044-009,P044,Performance,HIGH,Integration,Integration verification for Search debounced across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P044-010,P044,Performance,HIGH,Performance,Load/stress testing for Search debounced,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Search debounced not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P045-004,P045,Performance,HIGH,Unit,Error handling and edge cases for Requests batched,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P045-005,P045,Performance,HIGH,Integration,Integration verification for Requests batched across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P045-006,P045,Performance,HIGH,Performance,Load/stress testing for Requests batched,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Requests batched not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P046-004,P046,Performance,HIGH,Unit,Error handling and edge cases for Member list cached,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P046-005,P046,Performance,HIGH,Integration,Integration verification for Member list cached across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P046-006,P046,Performance,HIGH,Performance,Load/stress testing for Member list cached,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Member list cached not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P047-004,P047,Performance,HIGH,Unit,Error handling and edge cases for Cache TTL appropriate,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P047-005,P047,Performance,HIGH,Integration,Integration verification for Cache TTL appropriate across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P047-006,P047,Performance,HIGH,Performance,Load/stress testing for Cache TTL appropriate,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Cache TTL appropriate not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P048-004,P048,Performance,HIGH,Unit,Error handling and edge cases for Algorithm optimized,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P048-005,P048,Performance,HIGH,Integration,Integration verification for Algorithm optimized across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P048-006,P048,Performance,HIGH,Performance,Load/stress testing for Algorithm optimized,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Algorithm optimized not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P049-004,P049,Performance,HIGH,Unit,Error handling and edge cases for Server-side detection,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P2,20
+TC-P049-005,P049,Performance,HIGH,Integration,Integration verification for Server-side detection across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P2,25
+TC-P049-006,P049,Performance,HIGH,Performance,Load/stress testing for Server-side detection,"Load testing tools available, high-traffic simulation possible","1. Simulate high load/concurrent requests
+2. Monitor resource usage
+3. Verify Server-side detection not affected by load
+4. Check performance degradation acceptable",Feature remains secure and functional under load,,Not Run,P2,30
+TC-P050-004,P050,Performance,MEDIUM,Unit,Error handling and edge cases for State objects optimized,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P3,20
+TC-P050-005,P050,Performance,MEDIUM,Integration,Integration verification for State objects optimized across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P3,25
+TC-P051-004,P051,Functionality,MEDIUM,Unit,Error handling and edge cases for TypeScript build strict,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P3,20
+TC-P051-005,P051,Functionality,MEDIUM,Integration,Integration verification for TypeScript build strict across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P3,25
+TC-P052-004,P052,Functionality,MEDIUM,Unit,Error handling and edge cases for ESLint enforced,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P3,20
+TC-P052-005,P052,Functionality,MEDIUM,Integration,Integration verification for ESLint enforced across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P3,25
+TC-P053-008,P053,Security,MEDIUM,Unit,Error handling and edge cases for CSRF tokens on forms,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P3,20
+TC-P053-009,P053,Security,MEDIUM,Integration,Integration verification for CSRF tokens on forms across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P3,25
+TC-P054-005,P054,Security,MEDIUM,Unit,Error handling and edge cases for innerHTML removed,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P3,20
+TC-P054-006,P054,Security,MEDIUM,Integration,Integration verification for innerHTML removed across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P3,25
+TC-P055-008,P055,Security,MEDIUM,Unit,Error handling and edge cases for HTML sanitized,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P3,20
+TC-P055-009,P055,Security,MEDIUM,Integration,Integration verification for HTML sanitized across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P3,25
+TC-P056-004,P056,Functionality,MEDIUM,Unit,Error handling and edge cases for Migrations tracked incrementally,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P3,20
+TC-P056-005,P056,Functionality,MEDIUM,Integration,Integration verification for Migrations tracked incrementally across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P3,25
+TC-P057-004,P057,Functionality,MEDIUM,Unit,Error handling and edge cases for Rollback possible,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P3,20
+TC-P057-005,P057,Functionality,MEDIUM,Integration,Integration verification for Rollback possible across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P3,25
+TC-P058-007,P058,Security,MEDIUM,Unit,Error handling and edge cases for Database encryption enabled,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P3,20
+TC-P058-008,P058,Security,MEDIUM,Integration,Integration verification for Database encryption enabled across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P3,25
+TC-P059-007,P059,Security,MEDIUM,Unit,Error handling and edge cases for RLS policies enabled,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P3,20
+TC-P059-008,P059,Security,MEDIUM,Integration,Integration verification for RLS policies enabled across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P3,25
+TC-P060-004,P060,Functionality,MEDIUM,Unit,Error handling and edge cases for Permanent delete option,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P3,20
+TC-P060-005,P060,Functionality,MEDIUM,Integration,Integration verification for Permanent delete option across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P3,25
+TC-P061-004,P061,Functionality,MEDIUM,Unit,Error handling and edge cases for Automated deployment,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P3,20
+TC-P061-005,P061,Functionality,MEDIUM,Integration,Integration verification for Automated deployment across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P3,25
+TC-P062-004,P062,Functionality,MEDIUM,Unit,Error handling and edge cases for Deploy scripts available,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P3,20
+TC-P062-005,P062,Functionality,MEDIUM,Integration,Integration verification for Deploy scripts available across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P3,25
+TC-P063-004,P063,Functionality,MEDIUM,Unit,Error handling and edge cases for Health endpoint available,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P3,20
+TC-P063-005,P063,Functionality,MEDIUM,Integration,Integration verification for Health endpoint available across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P3,25
+TC-P064-004,P064,Security,MEDIUM,Unit,Error handling and edge cases for Credentials removed from CI,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P3,20
+TC-P064-005,P064,Security,MEDIUM,Integration,Integration verification for Credentials removed from CI across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P3,25
+TC-P065-004,P065,Functionality,MEDIUM,Unit,Error handling and edge cases for Graceful shutdown implemented,"Error conditions available, invalid inputs possible","1. Test with null/undefined inputs
+2. Test with malformed data
+3. Test with boundary values
+4. Verify proper error handling",All error cases handled gracefully with proper messages,,Not Run,P3,20
+TC-P065-005,P065,Functionality,MEDIUM,Integration,Integration verification for Graceful shutdown implemented across modules,"Full system integrated, multiple modules running","1. Verify component works in full system
+2. Test with real database/external services
+3. Verify no side effects
+4. Check logs for errors",Feature works correctly in integrated environment with no errors,,Not Run,P3,25

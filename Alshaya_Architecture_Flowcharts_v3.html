@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al-Shaya Family Tree - Architecture Flowcharts Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #1A1F3A;
+            --cyan: #00D4FF;
+            --purple: #7B2CBF;
+            --bg: #0F1629;
+            --dark-navy: #0D0E1F;
+            --light-text: #E8E8FF;
+            --grid-line: #2A3055;
+            --critical: #FF4444;
+            --high: #FF8844;
+            --medium: #FFBB44;
+            --low: #44BB44;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            color: var(--light-text);
+            font-family: 'Segoe UI', 'SF Pro Display', -apple-system, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--navy) 0%, #1a2f5a 100%);
+            border-bottom: 2px solid var(--cyan);
+            padding: 20px 30px;
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.1);
+        }
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 12px;
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            color: #9999BB;
+            margin-bottom: 15px;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .stat-box {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid var(--cyan);
+            border-radius: 6px;
+            padding: 12px 15px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--cyan);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #7777AA;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .severity-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .severity-indicator {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 8px 10px;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .severity-indicator.critical {
+            background: rgba(255, 68, 68, 0.1);
+            border-color: var(--critical);
+            color: var(--critical);
+        }
+
+        .severity-indicator.high {
+            background: rgba(255, 136, 68, 0.1);
+            border-color: var(--high);
+            color: var(--high);
+        }
+
+        .severity-indicator.medium {
+            background: rgba(255, 187, 68, 0.1);
+            border-color: var(--medium);
+            color: var(--medium);
+        }
+
+        .severity-indicator.low {
+            background: rgba(68, 187, 68, 0.1);
+            border-color: var(--low);
+            color: var(--low);
+        }
+
+        .nav-tabs {
+            background: var(--navy);
+            border-bottom: 1px solid var(--grid-line);
+            padding: 0;
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            padding: 0 30px;
+        }
+
+        .tab {
+            background: none;
+            border: none;
+            color: #7777AA;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab:hover {
+            color: var(--cyan);
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .tab.active {
+            color: var(--cyan);
+            border-bottom-color: var(--cyan);
+            background: rgba(0, 212, 255, 0.08);
+        }
+
+        .main-content {
+            flex: 1;
+            overflow: auto;
+            background: var(--bg);
+        }
+
+        .diagram-container {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 30px;
+            overflow: auto;
+        }
+
+        .diagram-container.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .diagram-title {
+            font-size: 20px;
+            color: var(--cyan);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .diagram-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(180deg, var(--cyan), var(--purple));
+            border-radius: 2px;
+        }
+
+        .diagram-canvas {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.5) 0%, rgba(15, 22, 41, 0.8) 100%);
+            border: 1px solid var(--grid-line);
+            border-radius: 8px;
+            overflow: auto;
+            position: relative;
+            min-height: 500px;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+        }
+
+        /* Node styles */
+        .node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .node-rect {
+            fill: var(--navy);
+            stroke: var(--cyan);
+            stroke-width: 2;
+            transition: all 0.3s ease;
+        }
+
+        .node.critical .node-rect {
+            fill: rgba(255, 68, 68, 0.15);
+            stroke: var(--critical);
+        }
+
+        .node.high .node-rect {
+            fill: rgba(255, 136, 68, 0.15);
+            stroke: var(--high);
+        }
+
+        .node.medium .node-rect {
+            fill: rgba(255, 187, 68, 0.15);
+            stroke: var(--medium);
+        }
+
+        .node.low .node-rect {
+            fill: rgba(68, 187, 68, 0.15);
+            stroke: var(--low);
+        }
+
+        .node:hover .node-rect {
+            stroke-width: 3;
+            filter: drop-shadow(0 0 8px var(--cyan));
+        }
+
+        .node-text {
+            font-size: 12px;
+            fill: var(--light-text);
+            pointer-events: none;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+
+        .node-label {
+            font-size: 11px;
+            fill: #9999BB;
+            pointer-events: none;
+            text-anchor: middle;
+        }
+
+        /* Link styles */
+        .link {
+            stroke: var(--grid-line);
+            stroke-width: 1.5;
+            fill: none;
+            marker-end: url(#arrowhead);
+            transition: all 0.3s ease;
+        }
+
+        .link:hover {
+            stroke: var(--cyan);
+            stroke-width: 2.5;
+            filter: drop-shadow(0 0 4px var(--cyan));
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            background: rgba(26, 31, 58, 0.95);
+            border: 1px solid var(--cyan);
+            border-radius: 6px;
+            padding: 12px 15px;
+            font-size: 12px;
+            color: var(--light-text);
+            pointer-events: none;
+            z-index: 1000;
+            max-width: 300px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+
+        .tooltip.show {
+            display: block;
+        }
+
+        .tooltip-title {
+            color: var(--cyan);
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .tooltip-content {
+            line-height: 1.4;
+        }
+
+        /* Filter bar */
+        .filter-bar {
+            background: rgba(26, 31, 58, 0.5);
+            border: 1px solid var(--grid-line);
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: #7777AA;
+            font-weight: 500;
+        }
+
+        .filter-button {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s ease;
+        }
+
+        .filter-button:hover {
+            background: rgba(0, 212, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .filter-button.active {
+            background: var(--cyan);
+            color: var(--navy);
+            font-weight: bold;
+        }
+
+        /* Legend */
+        .legend {
+            background: rgba(26, 31, 58, 0.5);
+            border: 1px solid var(--grid-line);
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            border: 1px solid currentColor;
+        }
+
+        .legend-item.critical .legend-color {
+            background: rgba(255, 68, 68, 0.3);
+            border-color: var(--critical);
+        }
+
+        .legend-item.high .legend-color {
+            background: rgba(255, 136, 68, 0.3);
+            border-color: var(--high);
+        }
+
+        .legend-item.medium .legend-color {
+            background: rgba(255, 187, 68, 0.3);
+            border-color: var(--medium);
+        }
+
+        .legend-item.low .legend-color {
+            background: rgba(68, 187, 68, 0.3);
+            border-color: var(--low);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        header {
+            animation: slideIn 0.5s ease;
+        }
+
+        .diagram-container.active {
+            animation: fadeIn 0.4s ease;
+        }
+
+        .node {
+            animation: fadeIn 0.6s ease;
+        }
+
+        .link {
+            animation: fadeIn 0.8s ease;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--navy);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--grid-line);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--cyan);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            h1 {
+                font-size: 22px;
+            }
+
+            .nav-tabs {
+                padding: 0 15px;
+            }
+
+            .tab {
+                padding: 12px 15px;
+                font-size: 12px;
+            }
+
+            .diagram-container {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .severity-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tab {
+                padding: 10px 12px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>Al-Shaya Family Tree Application</h1>
+                <p class="header-subtitle">Interactive Architecture & Problem Analysis Dashboard</p>
+
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="stat-number">408</div>
+                        <div class="stat-label">Files Audited</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">135.7K</div>
+                        <div class="stat-label">Lines of Code</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">187</div>
+                        <div class="stat-label">Issues Found</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">MEDIUM-HIGH</div>
+                        <div class="stat-label">Risk Level</div>
+                    </div>
+                </div>
+
+                <div class="severity-grid">
+                    <div class="severity-indicator critical">
+                        <strong>18</strong> Critical
+                    </div>
+                    <div class="severity-indicator high">
+                        <strong>31</strong> High
+                    </div>
+                    <div class="severity-indicator medium">
+                        <strong>67</strong> Medium
+                    </div>
+                    <div class="severity-indicator low">
+                        <strong>71</strong> Low
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <nav class="nav-tabs" role="tablist" aria-label="Diagram Navigation">
+            <button class="tab active" data-tab="system-arch" role="tab">System Architecture</button>
+            <button class="tab" data-tab="auth-flow" role="tab">Authentication Flow</button>
+            <button class="tab" data-tab="data-model" role="tab">Data Model ERD</button>
+            <button class="tab" data-tab="api-routes" role="tab">API Route Map</button>
+            <button class="tab" data-tab="components" role="tab">Component Hierarchy</button>
+            <button class="tab" data-tab="admin-flow" role="tab">Admin Dashboard</button>
+            <button class="tab" data-tab="family-flow" role="tab">Family Tree Data Flow</button>
+            <button class="tab" data-tab="heatmap" role="tab">Problem Heatmap</button>
+            <button class="tab" data-tab="security" role="tab">Security Architecture</button>
+            <button class="tab" data-tab="deployment" role="tab">Deployment Architecture</button>
+        </nav>
+
+        <div class="main-content">
+            <!-- 1. System Architecture Overview -->
+            <div id="system-arch" class="diagram-container active">
+                <div class="diagram-title">System Architecture Overview</div>
+                <div class="filter-bar">
+                    <span class="filter-label">Filter by Layer:</span>
+                    <button class="filter-button active" data-filter="all">All</button>
+                    <button class="filter-button" data-filter="frontend">Frontend</button>
+                    <button class="filter-button" data-filter="backend">Backend</button>
+                    <button class="filter-button" data-filter="database">Database</button>
+                </div>
+                <div class="diagram-canvas" id="system-arch-canvas"></div>
+                <div class="legend">
+                    <div class="legend-item critical"><span class="legend-color"></span>Critical Issues</div>
+                    <div class="legend-item high"><span class="legend-color"></span>High Priority</div>
+                    <div class="legend-item medium"><span class="legend-color"></span>Medium Priority</div>
+                    <div class="legend-item low"><span class="legend-color"></span>Low Priority</div>
+                </div>
+            </div>
+
+            <!-- 2. Authentication Flow -->
+            <div id="auth-flow" class="diagram-container">
+                <div class="diagram-title">Authentication & Authorization Flow</div>
+                <div class="filter-bar">
+                    <span class="filter-label">Filter by Flow:</span>
+                    <button class="filter-button active" data-filter="all">All</button>
+                    <button class="filter-button" data-filter="login">Login</button>
+                    <button class="filter-button" data-filter="2fa">2FA</button>
+                    <button class="filter-button" data-filter="oauth">OAuth</button>
+                </div>
+                <div class="diagram-canvas" id="auth-flow-canvas"></div>
+                <div class="legend">
+                    <div class="legend-item critical"><span class="legend-color"></span>Critical Vulnerability</div>
+                    <div class="legend-item high"><span class="legend-color"></span>Authentication Issue</div>
+                    <div class="legend-item medium"><span class="legend-color"></span>Session Issue</div>
+                    <div class="legend-item low"><span class="legend-color"></span>Best Practice Gap</div>
+                </div>
+            </div>
+
+            <!-- 3. Data Model ERD -->
+            <div id="data-model" class="diagram-container">
+                <div class="diagram-title">Data Model - Entity Relationship Diagram</div>
+                <div class="filter-bar">
+                    <span class="filter-label">Filter by Entity Type:</span>
+                    <button class="filter-button active" data-filter="all">All</button>
+                    <button class="filter-button" data-filter="user">User</button>
+                    <button class="filter-button" data-filter="tree">Tree</button>
+                    <button class="filter-button" data-filter="auth">Auth</button>
+                </div>
+                <div class="diagram-canvas" id="data-model-canvas"></div>
+                <div class="legend">
+                    <div class="legend-item critical"><span class="legend-color"></span>Unencrypted Sensitive Data</div>
+                    <div class="legend-item high"><span class="legend-color"></span>Missing Validation</div>
+                    <div class="legend-item medium"><span class="legend-color"></span>Schema Issue</div>
+                    <div class="legend-item low"><span class="legend-color"></span>Optimization Need</div>
+                </div>
+            </div>
+
+            <!-- 4. API Route Map -->
+            <div id="api-routes" class="diagram-container">
+                <div class="diagram-title">API Route Map (60+ Endpoints)</div>
+                <div class="filter-bar">
+                    <span class="filter-label">Filter by Category:</span>
+                    <button class="filter-button active" data-filter="all">All</button>
+                    <button class="filter-button" data-filter="auth">Auth</button>
+                    <button class="filter-button" data-filter="member">Member</button>
+                    <button class="filter-button" data-filter="admin">Admin</button>
+                    <button class="filter-button" data-filter="public">Public</button>
+                </div>
+                <div class="diagram-canvas" id="api-routes-canvas"></div>
+                <div class="legend">
+                    <div class="legend-item critical"><span class="legend-color"></span>Validation Missing</div>
+                    <div class="legend-item high"><span class="legend-color"></span>Auth Issue</div>
+                    <div class="legend-item medium"><span class="legend-color"></span>Performance Issue</div>
+                    <div class="legend-item low"><span class="legend-color"></span>Documentation Gap</div>
+                </div>
+            </div>
+
+            <!-- 5. Component Hierarchy -->
+            <div id="components" class="diagram-container">
+                <div class="diagram-title">React Component Hierarchy (43 Components)</div>
+                <div class="filter-bar">
+                    <span class="filter-label">Filter by Type:</span>
+                    <button class="filter-button active" data-filter="all">All</button>
+                    <button class="filter-button" data-filter="layout">Layout</button>
+                    <button class="filter-button" data-filter="form">Form</button>
+                    <button class="filter-button" data-filter="display">Display</button>
+                </div>
+                <div class="diagram-canvas" id="components-canvas"></div>
+                <div class="legend">
+                    <div class="legend-item critical"><span class="legend-color"></span>XSS Vulnerability</div>
+                    <div class="legend-item high"><span class="legend-color"></span>Performance Issue</div>
+                    <div class="legend-item medium"><span class="legend-color"></span>Accessibility Gap</div>
+                    <div class="legend-item low"><span class="legend-color"></span>Code Quality</div>
+                </div>
+            </div>
+
+            <!-- 6. Admin Dashboard Flow -->
+            <div id="admin-flow" class="diagram-container">
+                <div class="diagram-title">Admin Dashboard Flow</div>
+                <div class="filter-bar">
+                    <span class="filter-label">Filter by Section:</span>
+                    <button class="filter-button active" data-filter="all">All</button>
+                    <button class="filter-button" data-filter="users">Users</button>
+                    <button class="filter-button" data-filter="content">Content</button>
+                    <button class="filter-button" data-filter="system">System</button>
+                </div>
+                <div class="diagram-canvas" id="admin-flow-canvas"></div>
+                <div class="legend">
+                    <div class="legend-item critical"><span class="legend-color"></span>Authorization Bypass</div>
+                    <div class="legend-item high"><span class="legend-color"></span>Admin Issue</div>
+                    <div class="legend-item medium"><span class="legend-color"></span>UX Issue</div>
+                    <div class="legend-item low"><span class="legend-color"></span>Enhancement</div>
+                </div>
+            </div>
+
+            <!-- 7. Family Tree Data Flow -->
+            <div id="family-flow" class="diagram-container">
+                <div class="diagram-title">Family Tree Data Flow Pipeline</div>
+                <div class="filter-bar">
+                    <span class="filter-label">Filter by Stage:</span>
+                    <button class="filter-button active" data-filter="all">All</button>
+                    <button class="filter-button" data-filter="input">Input</button>
+                    <button class="filter-button" data-filter="process">Processing</button>
+                    <button class="filter-button" data-filter="render">Rendering</button>
+                </div>
+                <div class="diagram-canvas" id="family-flow-canvas"></div>
+                <div class="legend">
+                    <div class="legend-item critical"><span class="legend-color"></span>Race Condition</div>
+                    <div class="legend-item high"><span class="legend-color"></span>Performance Gap</div>
+                    <div class="legend-item medium"><span class="legend-color"></span>Data Issue</div>
+                    <div class="legend-item low"><span class="legend-color"></span>Optimization</div>
+                </div>
+            </div>
+
+            <!-- 8. Problem Severity Heatmap -->
+            <div id="heatmap" class="diagram-container">
+                <div class="diagram-title">Problem Severity Heatmap Across Architecture</div>
+                <div class="filter-bar">
+                    <span class="filter-label">Filter by Module:</span>
+                    <button class="filter-button active" data-filter="all">All</button>
+                    <button class="filter-button" data-filter="auth">Auth</button>
+                    <button class="filter-button" data-filter="api">API</button>
+                    <button class="filter-button" data-filter="db">Database</button>
+                    <button class="filter-button" data-filter="ui">UI/Components</button>
+                </div>
+                <div class="diagram-canvas" id="heatmap-canvas"></div>
+                <div class="legend">
+                    <div class="legend-item critical"><span class="legend-color"></span>18 Critical Issues</div>
+                    <div class="legend-item high"><span class="legend-color"></span>31 High Priority</div>
+                    <div class="legend-item medium"><span class="legend-color"></span>67 Medium Priority</div>
+                    <div class="legend-item low"><span class="legend-color"></span>71 Low Priority</div>
+                </div>
+            </div>
+
+            <!-- 9. Security Architecture -->
+            <div id="security" class="diagram-container">
+                <div class="diagram-title">Security Architecture - Current vs Required</div>
+                <div class="filter-bar">
+                    <span class="filter-label">Filter by Area:</span>
+                    <button class="filter-button active" data-filter="all">All</button>
+                    <button class="filter-button" data-filter="auth">Authentication</button>
+                    <button class="filter-button" data-filter="encryption">Encryption</button>
+                    <button class="filter-button" data-filter="validation">Validation</button>
+                </div>
+                <div class="diagram-canvas" id="security-canvas"></div>
+                <div class="legend">
+                    <div class="legend-item critical"><span class="legend-color"></span>Missing Security</div>
+                    <div class="legend-item high"><span class="legend-color"></span>Weak Implementation</div>
+                    <div class="legend-item medium"><span class="legend-color"></span>Enhancement Needed</div>
+                    <div class="legend-item low"><span class="legend-color"></span>Best Practice</div>
+                </div>
+            </div>
+
+            <!-- 10. Deployment Architecture -->
+            <div id="deployment" class="diagram-container">
+                <div class="diagram-title">Deployment Architecture - Current vs Recommended</div>
+                <div class="filter-bar">
+                    <span class="filter-label">Filter by Component:</span>
+                    <button class="filter-button active" data-filter="all">All</button>
+                    <button class="filter-button" data-filter="compute">Compute</button>
+                    <button class="filter-button" data-filter="storage">Storage</button>
+                    <button class="filter-button" data-filter="network">Network</button>
+                </div>
+                <div class="diagram-canvas" id="deployment-canvas"></div>
+                <div class="legend">
+                    <div class="legend-item critical"><span class="legend-color"></span>High Risk</div>
+                    <div class="legend-item high"><span class="legend-color"></span>Scalability Gap</div>
+                    <div class="legend-item medium"><span class="legend-color"></span>Optimization Need</div>
+                    <div class="legend-item low"><span class="legend-color"></span>Current</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        // ==========================================
+        // UTILITY FUNCTIONS
+        // ==========================================
+
+        const COLORS = {
+            critical: '#FF4444',
+            high: '#FF8844',
+            medium: '#FFBB44',
+            low: '#44BB44',
+            cyan: '#00D4FF',
+            purple: '#7B2CBF',
+            navy: '#1A1F3A',
+            gridLine: '#2A3055'
+        };
+
+        class DiagramRenderer {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.svg = null;
+                this.nodes = [];
+                this.links = [];
+                this.tooltip = document.getElementById('tooltip');
+            }
+
+            createSVG() {
+                this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                this.svg.setAttribute('viewBox', '0 0 1400 700');
+                this.svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                this.canvas.innerHTML = '';
+                this.canvas.appendChild(this.svg);
+
+                // Add defs for markers
+                const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+                const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+                marker.setAttribute('id', 'arrowhead');
+                marker.setAttribute('markerWidth', '10');
+                marker.setAttribute('markerHeight', '10');
+                marker.setAttribute('refX', '9');
+                marker.setAttribute('refY', '3');
+                marker.setAttribute('orient', 'auto');
+                const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                polygon.setAttribute('points', '0 0, 10 3, 0 6');
+                polygon.setAttribute('fill', COLORS.gridLine);
+                marker.appendChild(polygon);
+                defs.appendChild(marker);
+                this.svg.appendChild(defs);
+            }
+
+            drawNode(x, y, width, height, label, category, severity = 'medium') {
+                const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                group.classList.add('node', severity);
+                group.setAttribute('data-category', category);
+
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', x - width / 2);
+                rect.setAttribute('y', y - height / 2);
+                rect.setAttribute('width', width);
+                rect.setAttribute('height', height);
+                rect.setAttribute('rx', '4');
+                rect.classList.add('node-rect');
+
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', x);
+                text.setAttribute('y', y);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('dominant-baseline', 'middle');
+                text.classList.add('node-text');
+                text.textContent = label;
+
+                group.appendChild(rect);
+                group.appendChild(text);
+
+                group.addEventListener('mouseenter', (e) => this.showTooltip(e, label, category, severity));
+                group.addEventListener('mouseleave', () => this.hideTooltip());
+
+                this.svg.appendChild(group);
+                return { x, y, width, height, element: group };
+            }
+
+            drawLink(x1, y1, x2, y2, label = '', style = 'solid') {
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', x1);
+                line.setAttribute('y1', y1);
+                line.setAttribute('x2', x2);
+                line.setAttribute('y2', y2);
+                line.classList.add('link');
+                this.svg.appendChild(line);
+
+                if (label) {
+                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    text.setAttribute('x', (x1 + x2) / 2);
+                    text.setAttribute('y', (y1 + y2) / 2 - 5);
+                    text.classList.add('node-label');
+                    text.textContent = label;
+                    this.svg.appendChild(text);
+                }
+            }
+
+            showTooltip(e, title, category, severity) {
+                const severityMap = {
+                    critical: 'Critical Security Vulnerability',
+                    high: 'High Priority Issue',
+                    medium: 'Medium Priority',
+                    low: 'Low Priority'
+                };
+
+                this.tooltip.innerHTML = `
+                    <div class="tooltip-title">${title}</div>
+                    <div class="tooltip-content">
+                        <strong>Category:</strong> ${category}<br>
+                        <strong>Severity:</strong> ${severityMap[severity] || severity}<br>
+                        <em>Click for details</em>
+                    </div>
+                `;
+                this.tooltip.classList.add('show');
+                const rect = e.target.parentElement.getBoundingClientRect();
+                this.tooltip.style.left = (rect.right + 10) + 'px';
+                this.tooltip.style.top = rect.top + 'px';
+            }
+
+            hideTooltip() {
+                this.tooltip.classList.remove('show');
+            }
+        }
+
+        // ==========================================
+        // DIAGRAM IMPLEMENTATIONS
+        // ==========================================
+
+        function renderSystemArchitecture() {
+            const renderer = new DiagramRenderer('system-arch-canvas');
+            renderer.createSVG();
+
+            // Frontend Layer
+            renderer.drawNode(100, 100, 140, 60, 'Next.js 14.2', 'frontend', 'low');
+            renderer.drawNode(280, 100, 140, 60, 'React App', 'frontend', 'medium');
+            renderer.drawNode(460, 100, 140, 60, 'D3.js Tree', 'frontend', 'high');
+            renderer.drawNode(640, 100, 140, 60, 'UI Components', 'frontend', 'high');
+
+            // Backend Layer
+            renderer.drawNode(100, 250, 140, 60, 'Next.js API', 'backend', 'medium');
+            renderer.drawNode(280, 250, 140, 60, 'Prisma ORM', 'backend', 'medium');
+            renderer.drawNode(460, 250, 140, 60, 'Auth Service', 'backend', 'critical');
+            renderer.drawNode(640, 250, 140, 60, 'Admin Routes', 'backend', 'high');
+
+            // Database & Services Layer
+            renderer.drawNode(100, 400, 140, 60, 'PostgreSQL', 'database', 'high');
+            renderer.drawNode(280, 400, 140, 60, 'Session Store', 'database', 'critical');
+            renderer.drawNode(460, 400, 140, 60, 'OAuth Provider', 'database', 'critical');
+            renderer.drawNode(640, 400, 140, 60, 'Email Service', 'database', 'medium');
+
+            // External Services
+            renderer.drawNode(820, 250, 140, 60, 'Google OAuth', 'database', 'low');
+            renderer.drawNode(820, 400, 140, 60, 'Email API', 'database', 'low');
+
+            // Connect layers with links
+            renderer.drawLink(100, 130, 100, 220);
+            renderer.drawLink(280, 130, 280, 220);
+            renderer.drawLink(460, 130, 460, 220);
+            renderer.drawLink(640, 130, 640, 220);
+
+            renderer.drawLink(100, 280, 100, 370, 'SQL');
+            renderer.drawLink(280, 280, 280, 370, 'Prisma');
+            renderer.drawLink(460, 280, 460, 370, 'Session');
+            renderer.drawLink(640, 280, 640, 370, 'Email');
+
+            renderer.drawLink(460, 250, 820, 250, 'OAuth');
+            renderer.drawLink(640, 280, 820, 400, 'SMTP');
+
+            // Add title labels
+            const titleY = 40;
+            addLabel('Frontend Layer', 350, titleY);
+            addLabel('Backend Layer', 350, 185);
+            addLabel('Data & Services', 350, 335);
+
+            function addLabel(text, x, y) {
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('x', x);
+                label.setAttribute('y', y);
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('fill', COLORS.cyan);
+                label.setAttribute('font-size', '13');
+                label.setAttribute('font-weight', 'bold');
+                renderer.svg.appendChild(label);
+                label.textContent = text;
+            }
+        }
+
+        function renderAuthFlow() {
+            const renderer = new DiagramRenderer('auth-flow-canvas');
+            renderer.createSVG();
+
+            // Login Flow
+            renderer.drawNode(100, 100, 120, 50, 'User Input', 'login', 'medium');
+            renderer.drawNode(280, 100, 120, 50, 'Hash Password', 'login', 'critical');
+            renderer.drawNode(460, 100, 120, 50, 'DB Query', 'login', 'high');
+            renderer.drawNode(640, 100, 120, 50, 'Session', 'login', 'critical');
+
+            // 2FA Flow
+            renderer.drawNode(100, 250, 120, 50, 'TOTP Input', '2fa', 'critical');
+            renderer.drawNode(280, 250, 120, 50, 'Verify Secret', '2fa', 'critical');
+            renderer.drawNode(460, 250, 120, 50, 'Backup Codes', '2fa', 'critical');
+            renderer.drawNode(640, 250, 120, 50, 'Session++', '2fa', 'high');
+
+            // OAuth Flow
+            renderer.drawNode(100, 400, 120, 50, 'OAuth Start', 'oauth', 'critical');
+            renderer.drawNode(280, 400, 120, 50, 'State Token', 'oauth', 'critical');
+            renderer.drawNode(460, 400, 120, 50, 'Provider', 'oauth', 'medium');
+            renderer.drawNode(640, 400, 120, 50, 'Callback', 'oauth', 'high');
+
+            // Links
+            renderer.drawLink(160, 100, 220, 100);
+            renderer.drawLink(340, 100, 400, 100);
+            renderer.drawLink(520, 100, 580, 100);
+
+            renderer.drawLink(160, 250, 220, 250);
+            renderer.drawLink(340, 250, 400, 250);
+            renderer.drawLink(520, 250, 580, 250);
+
+            renderer.drawLink(160, 400, 220, 400);
+            renderer.drawLink(340, 400, 400, 400);
+            renderer.drawLink(520, 400, 580, 400);
+
+            // Cross flow links
+            renderer.drawLink(640, 130, 640, 220);
+        }
+
+        function renderDataModel() {
+            const renderer = new DiagramRenderer('data-model-canvas');
+            renderer.createSVG();
+
+            // User entities
+            renderer.drawNode(100, 80, 130, 50, 'User (Auth)', 'user', 'critical');
+            renderer.drawNode(280, 80, 130, 50, 'Password', 'user', 'critical');
+            renderer.drawNode(460, 80, 130, 50, 'Session', 'user', 'critical');
+            renderer.drawNode(640, 80, 130, 50, 'TwoFactor', 'auth', 'critical');
+
+            // Tree entities
+            renderer.drawNode(100, 250, 130, 50, 'FamilyTree', 'tree', 'medium');
+            renderer.drawNode(280, 250, 130, 50, 'Member', 'tree', 'high');
+            renderer.drawNode(460, 250, 130, 50, 'Relationship', 'tree', 'medium');
+            renderer.drawNode(640, 250, 130, 50, 'Contact Info', 'tree', 'critical');
+
+            // Admin entities
+            renderer.drawNode(100, 420, 130, 50, 'Admin User', 'auth', 'high');
+            renderer.drawNode(280, 420, 130, 50, 'Audit Log', 'auth', 'low');
+            renderer.drawNode(460, 420, 130, 50, 'Change History', 'auth', 'critical');
+            renderer.drawNode(640, 420, 130, 50, 'Permission', 'auth', 'high');
+
+            // Relationships
+            renderer.drawLink(160, 80, 220, 80);
+            renderer.drawLink(340, 80, 400, 80);
+            renderer.drawLink(520, 80, 580, 80);
+
+            renderer.drawLink(100, 110, 100, 220);
+            renderer.drawLink(280, 110, 280, 220);
+            renderer.drawLink(460, 110, 460, 220);
+
+            renderer.drawLink(160, 250, 220, 250);
+            renderer.drawLink(340, 250, 400, 250);
+            renderer.drawLink(520, 250, 580, 250);
+
+            renderer.drawLink(100, 280, 100, 390);
+            renderer.drawLink(280, 280, 280, 390);
+            renderer.drawLink(460, 280, 460, 390);
+            renderer.drawLink(640, 280, 640, 390);
+        }
+
+        function renderAPIRoutes() {
+            const renderer = new DiagramRenderer('api-routes-canvas');
+            renderer.createSVG();
+
+            // Auth endpoints
+            renderer.drawNode(80, 80, 110, 45, 'POST /login', 'auth', 'critical');
+            renderer.drawNode(210, 80, 110, 45, 'POST /2fa', 'auth', 'critical');
+            renderer.drawNode(340, 80, 110, 45, 'GET /session', 'auth', 'critical');
+            renderer.drawNode(470, 80, 110, 45, 'POST /logout', 'auth', 'medium');
+
+            // Member endpoints
+            renderer.drawNode(80, 180, 110, 45, 'GET /members', 'member', 'high');
+            renderer.drawNode(210, 180, 110, 45, 'POST /members', 'member', 'high');
+            renderer.drawNode(340, 180, 110, 45, 'PUT /members/:id', 'member', 'high');
+            renderer.drawNode(470, 180, 110, 45, 'DELETE /members/:id', 'member', 'high');
+
+            // Admin endpoints
+            renderer.drawNode(80, 280, 110, 45, 'GET /admin/users', 'admin', 'critical');
+            renderer.drawNode(210, 280, 110, 45, 'POST /admin/invite', 'admin', 'high');
+            renderer.drawNode(340, 280, 110, 45, 'PUT /admin/perms', 'admin', 'high');
+            renderer.drawNode(470, 280, 110, 45, 'GET /admin/logs', 'admin', 'medium');
+
+            // Public endpoints
+            renderer.drawNode(80, 380, 110, 45, 'GET /family/:id', 'public', 'low');
+            renderer.drawNode(210, 380, 110, 45, 'POST /invite', 'public', 'medium');
+            renderer.drawNode(340, 380, 110, 45, 'GET /tree', 'public', 'low');
+            renderer.drawNode(470, 380, 110, 45, 'GET /export', 'public', 'medium');
+
+            // Category labels
+            addCategoryLabel('Authentication (6)', 250, 40);
+            addCategoryLabel('Members (8)', 250, 140);
+            addCategoryLabel('Admin (12)', 250, 240);
+            addCategoryLabel('Public (6)', 250, 340);
+
+            function addCategoryLabel(text, x, y) {
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('x', x);
+                label.setAttribute('y', y);
+                label.setAttribute('fill', COLORS.cyan);
+                label.setAttribute('font-size', '12');
+                label.setAttribute('font-weight', 'bold');
+                renderer.svg.appendChild(label);
+                label.textContent = text;
+            }
+        }
+
+        function renderComponentHierarchy() {
+            const renderer = new DiagramRenderer('components-canvas');
+            renderer.createSVG();
+
+            // Root App
+            renderer.drawNode(700, 50, 140, 50, 'App Shell', 'layout', 'low');
+
+            // Main Layouts
+            renderer.drawNode(350, 150, 130, 45, 'Layout', 'layout', 'medium');
+            renderer.drawNode(700, 150, 130, 45, 'AuthLayout', 'layout', 'medium');
+            renderer.drawNode(1050, 150, 130, 45, 'AdminLayout', 'layout', 'high');
+
+            // Page Components
+            renderer.drawNode(100, 270, 110, 40, 'Login', 'form', 'critical');
+            renderer.drawNode(250, 270, 110, 40, '2FA Setup', 'form', 'critical');
+            renderer.drawNode(400, 270, 110, 40, 'Dashboard', 'display', 'high');
+            renderer.drawNode(550, 270, 110, 40, 'Tree View', 'display', 'high');
+            renderer.drawNode(700, 270, 110, 40, 'Member Edit', 'form', 'medium');
+            renderer.drawNode(850, 270, 110, 40, 'Admin Panel', 'display', 'high');
+            renderer.drawNode(1000, 270, 110, 40, 'User Mgmt', 'form', 'high');
+
+            // Common Components
+            renderer.drawNode(100, 380, 100, 35, 'Header', 'layout', 'low');
+            renderer.drawNode(240, 380, 100, 35, 'Sidebar', 'layout', 'low');
+            renderer.drawNode(380, 380, 100, 35, 'Forms', 'form', 'high');
+            renderer.drawNode(520, 380, 100, 35, 'Trees', 'display', 'high');
+            renderer.drawNode(660, 380, 100, 35, 'Tables', 'display', 'medium');
+            renderer.drawNode(800, 380, 100, 35, 'Modals', 'display', 'low');
+            renderer.drawNode(940, 380, 100, 35, 'Buttons', 'display', 'low');
+
+            // Connect root to layouts
+            renderer.drawLink(600, 75, 350, 127);
+            renderer.drawLink(700, 75, 700, 127);
+            renderer.drawLink(800, 75, 1050, 127);
+
+            // Connect layouts to pages
+            renderer.drawLink(350, 195, 150, 250);
+            renderer.drawLink(350, 195, 300, 250);
+            renderer.drawLink(700, 195, 475, 250);
+            renderer.drawLink(700, 195, 625, 250);
+            renderer.drawLink(1050, 195, 875, 250);
+            renderer.drawLink(1050, 195, 1025, 250);
+        }
+
+        function renderAdminFlow() {
+            const renderer = new DiagramRenderer('admin-flow-canvas');
+            renderer.createSVG();
+
+            // Admin Dashboard Hub
+            renderer.drawNode(700, 80, 150, 50, 'Admin Dashboard', 'system', 'high');
+
+            // Admin Sections
+            renderer.drawNode(150, 220, 140, 50, 'User Management', 'users', 'high');
+            renderer.drawNode(350, 220, 140, 50, 'Permissions', 'users', 'critical');
+            renderer.drawNode(550, 220, 140, 50, 'Content Mgmt', 'content', 'medium');
+            renderer.drawNode(750, 220, 140, 50, 'Tree Settings', 'content', 'medium');
+            renderer.drawNode(950, 220, 140, 50, 'System Logs', 'system', 'low');
+            renderer.drawNode(1150, 220, 140, 50, 'Audit Trail', 'system', 'low');
+
+            // Sub-pages
+            renderer.drawNode(100, 380, 110, 40, 'Add User', 'users', 'high');
+            renderer.drawNode(250, 380, 110, 40, 'Edit Role', 'users', 'critical');
+            renderer.drawNode(400, 380, 110, 40, 'Batch Import', 'content', 'critical');
+            renderer.drawNode(550, 380, 110, 40, 'Export Data', 'content', 'high');
+            renderer.drawNode(700, 380, 110, 40, 'View Logs', 'system', 'low');
+            renderer.drawNode(850, 380, 110, 40, 'Backups', 'system', 'medium');
+
+            // Links
+            renderer.drawLink(700, 105, 220, 195);
+            renderer.drawLink(700, 105, 420, 195);
+            renderer.drawLink(700, 105, 620, 195);
+            renderer.drawLink(700, 105, 820, 195);
+            renderer.drawLink(700, 105, 1020, 195);
+            renderer.drawLink(700, 105, 1220, 195);
+
+            // Sub-links
+            renderer.drawLink(155, 245, 110, 360);
+            renderer.drawLink(350, 245, 285, 360);
+            renderer.drawLink(550, 245, 425, 360);
+            renderer.drawLink(750, 245, 620, 360);
+            renderer.drawLink(950, 245, 765, 360);
+            renderer.drawLink(1150, 245, 905, 360);
+        }
+
+        function renderFamilyTreeFlow() {
+            const renderer = new DiagramRenderer('family-flow-canvas');
+            renderer.createSVG();
+
+            // Input Stage
+            renderer.drawNode(100, 100, 130, 50, 'User Input', 'input', 'medium');
+            renderer.drawNode(100, 200, 130, 50, 'CSV Import', 'input', 'critical');
+            renderer.drawNode(100, 300, 130, 50, 'Direct Add', 'input', 'high');
+
+            // Processing Stage
+            renderer.drawNode(350, 150, 130, 50, 'Validate', 'process', 'high');
+            renderer.drawNode(350, 250, 130, 50, 'Transform', 'process', 'medium');
+            renderer.drawNode(350, 350, 130, 50, 'Store', 'process', 'critical');
+
+            // API Stage
+            renderer.drawNode(600, 150, 130, 50, 'Serialize', 'render', 'medium');
+            renderer.drawNode(600, 250, 130, 50, 'Cache', 'render', 'high');
+            renderer.drawNode(600, 350, 130, 50, 'API Response', 'render', 'low');
+
+            // Rendering Stage
+            renderer.drawNode(850, 100, 130, 50, 'D3 Parse', 'render', 'high');
+            renderer.drawNode(850, 200, 130, 50, 'Tree Layout', 'render', 'high');
+            renderer.drawNode(850, 300, 130, 50, 'Render SVG', 'render', 'medium');
+            renderer.drawNode(850, 400, 130, 50, 'Interact', 'render', 'low');
+
+            // Pipeline flow
+            renderer.drawLink(165, 100, 285, 150);
+            renderer.drawLink(165, 200, 285, 250);
+            renderer.drawLink(165, 300, 285, 350);
+
+            renderer.drawLink(415, 150, 535, 150);
+            renderer.drawLink(415, 250, 535, 250);
+            renderer.drawLink(415, 350, 535, 350);
+
+            renderer.drawLink(665, 150, 785, 125);
+            renderer.drawLink(665, 250, 785, 200);
+            renderer.drawLink(665, 350, 785, 300);
+
+            renderer.drawLink(915, 125, 915, 175);
+            renderer.drawLink(915, 225, 915, 275);
+            renderer.drawLink(915, 325, 915, 375);
+
+            // Stage labels
+            addStageLabel('Input', 100, 50);
+            addStageLabel('Processing', 350, 50);
+            addStageLabel('API Layer', 600, 50);
+            addStageLabel('Visualization', 850, 50);
+
+            function addStageLabel(text, x, y) {
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('x', x);
+                label.setAttribute('y', y);
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('fill', COLORS.cyan);
+                label.setAttribute('font-size', '12');
+                label.setAttribute('font-weight', 'bold');
+                renderer.svg.appendChild(label);
+                label.textContent = text;
+            }
+        }
+
+        function renderHeatmap() {
+            const renderer = new DiagramRenderer('heatmap-canvas');
+            renderer.createSVG();
+
+            // Module boxes with issue counts
+            const modules = [
+                { name: 'Auth Module', x: 150, severity: 'critical', count: 18, y: 100 },
+                { name: 'API Routes', x: 350, severity: 'high', count: 31, y: 100 },
+                { name: 'Database', x: 550, severity: 'critical', count: 24, y: 100 },
+                { name: 'Components', x: 750, severity: 'high', count: 19, y: 100 },
+                { name: 'Admin Pages', x: 950, severity: 'medium', count: 24, y: 100 },
+                { name: 'Validation', x: 150, severity: 'high', count: 26, y: 280 },
+                { name: 'Performance', x: 350, severity: 'high', count: 36, y: 280 },
+                { name: 'Security', x: 550, severity: 'critical', count: 18, y: 280 },
+                { name: 'Testing', x: 750, severity: 'medium', count: 12, y: 280 },
+                { name: 'Docs', x: 950, severity: 'low', count: 11, y: 280 }
+            ];
+
+            modules.forEach(m => {
+                renderer.drawNode(m.x, m.y, 140, 60, `${m.name}\n${m.count} issues`, m.name.toLowerCase().split(' ')[0], m.severity);
+            });
+
+            // Add intensity indicator
+            const legend = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            legend.setAttribute('x', 150);
+            legend.setAttribute('y', 450);
+            legend.setAttribute('fill', COLORS.cyan);
+            legend.setAttribute('font-size', '13');
+            legend.setAttribute('font-weight', 'bold');
+            legend.textContent = 'Issue Density: Critical (18) > High (31) > Medium (67) > Low (71)';
+            renderer.svg.appendChild(legend);
+        }
+
+        function renderSecurityArchitecture() {
+            const renderer = new DiagramRenderer('security-canvas');
+            renderer.createSVG();
+
+            // Current Security
+            renderer.drawNode(100, 100, 130, 50, 'Session (Plain)', 'auth', 'critical');
+            renderer.drawNode(100, 180, 130, 50, 'No Encryption', 'encryption', 'critical');
+            renderer.drawNode(100, 260, 130, 50, 'Weak Validation', 'validation', 'high');
+            renderer.drawNode(100, 340, 130, 50, 'No CSRF Token', 'auth', 'critical');
+
+            // Required Security
+            renderer.drawNode(350, 100, 130, 50, 'Encrypted Session', 'auth', 'medium');
+            renderer.drawNode(350, 180, 130, 50, 'At-Rest Encryption', 'encryption', 'medium');
+            renderer.drawNode(350, 260, 130, 50, 'Full Validation', 'validation', 'low');
+            renderer.drawNode(350, 340, 130, 50, 'CSRF Protection', 'auth', 'low');
+
+            // Current RBAC
+            renderer.drawNode(600, 100, 130, 50, 'Basic Roles', 'auth', 'high');
+            renderer.drawNode(600, 180, 130, 50, 'No Row RLS', 'auth', 'high');
+
+            // Required RBAC
+            renderer.drawNode(850, 100, 130, 50, 'Fine-Grained RBAC', 'auth', 'low');
+            renderer.drawNode(850, 180, 130, 50, 'PostgreSQL RLS', 'auth', 'low');
+
+            // Connection lines
+            for (let y of [100, 180, 260, 340]) {
+                renderer.drawLink(230, y, 220, y);
+                if (y <= 180) {
+                    renderer.drawLink(480, y, 520, y);
+                    renderer.drawLink(730, y, 770, y);
+                }
+            }
+
+            // Status labels
+            addStatusLabel('Current (Vulnerable)', 100, 50);
+            addStatusLabel('Target State', 350, 50);
+            addStatusLabel('Current RBAC', 600, 50);
+            addStatusLabel('Target RBAC', 850, 50);
+
+            function addStatusLabel(text, x, y) {
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('x', x);
+                label.setAttribute('y', y);
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('fill', COLORS.cyan);
+                label.setAttribute('font-size', '12');
+                label.setAttribute('font-weight', 'bold');
+                renderer.svg.appendChild(label);
+                label.textContent = text;
+            }
+        }
+
+        function renderDeploymentArchitecture() {
+            const renderer = new DiagramRenderer('deployment-canvas');
+            renderer.createSVG();
+
+            // Current Deployment
+            renderer.drawNode(100, 80, 130, 50, 'Vercel', 'compute', 'low');
+            renderer.drawNode(100, 170, 130, 50, 'PostgreSQL', 'database', 'high');
+            renderer.drawNode(100, 260, 130, 50, 'File Storage', 'storage', 'high');
+
+            // Recommended Deployment
+            renderer.drawNode(350, 80, 130, 50, 'Docker K8s', 'compute', 'medium');
+            renderer.drawNode(350, 170, 130, 50, 'RDS (HA)', 'database', 'medium');
+            renderer.drawNode(350, 260, 130, 50, 'S3 + CDN', 'storage', 'low');
+
+            // Additional Components
+            renderer.drawNode(600, 80, 130, 50, 'Load Balancer', 'network', 'medium');
+            renderer.drawNode(600, 170, 130, 50, 'Backup Server', 'storage', 'low');
+            renderer.drawNode(600, 260, 130, 50, 'Monitoring', 'network', 'low');
+
+            // High Availability
+            renderer.drawNode(850, 80, 130, 50, 'Multi-Region', 'network', 'low');
+            renderer.drawNode(850, 170, 130, 50, 'Failover DNS', 'network', 'low');
+            renderer.drawNode(850, 260, 130, 50, 'Disaster Plan', 'network', 'low');
+
+            // Connection flow
+            renderer.drawLink(230, 80, 220, 80);
+            renderer.drawLink(230, 170, 220, 170);
+            renderer.drawLink(230, 260, 220, 260);
+
+            renderer.drawLink(480, 80, 520, 80);
+            renderer.drawLink(480, 170, 520, 170);
+            renderer.drawLink(480, 260, 520, 260);
+
+            renderer.drawLink(730, 80, 770, 80);
+
+            // Labels
+            addDeployLabel('Current', 100, 35);
+            addDeployLabel('Recommended', 350, 35);
+            addDeployLabel('Supporting Infra', 600, 35);
+            addDeployLabel('HA/DR', 850, 35);
+
+            function addDeployLabel(text, x, y) {
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('x', x);
+                label.setAttribute('y', y);
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('fill', COLORS.cyan);
+                label.setAttribute('font-size', '12');
+                label.setAttribute('font-weight', 'bold');
+                renderer.svg.appendChild(label);
+                label.textContent = text;
+            }
+        }
+
+        // ==========================================
+        // TAB NAVIGATION
+        // ==========================================
+
+        const diagrams = {
+            'system-arch': renderSystemArchitecture,
+            'auth-flow': renderAuthFlow,
+            'data-model': renderDataModel,
+            'api-routes': renderAPIRoutes,
+            'components': renderComponentHierarchy,
+            'admin-flow': renderAdminFlow,
+            'family-flow': renderFamilyTreeFlow,
+            'heatmap': renderHeatmap,
+            'security': renderSecurityArchitecture,
+            'deployment': renderDeploymentArchitecture
+        };
+
+        let currentDiagram = 'system-arch';
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Update active tab
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Update active diagram
+                document.querySelectorAll('.diagram-container').forEach(d => {
+                    d.classList.remove('active');
+                });
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+                currentDiagram = tabId;
+
+                // Render the new diagram
+                setTimeout(() => {
+                    const renderer = diagrams[tabId];
+                    if (renderer) renderer();
+                }, 100);
+            });
+        });
+
+        // Filter functionality
+        document.querySelectorAll('.filter-button').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const parent = e.target.parentElement;
+                const buttons = parent.querySelectorAll('.filter-button');
+                buttons.forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+
+                const filter = e.target.getAttribute('data-filter');
+                const canvas = parent.nextElementSibling;
+                const nodes = canvas.querySelectorAll('.node');
+
+                nodes.forEach(node => {
+                    if (filter === 'all') {
+                        node.style.opacity = '1';
+                        node.style.pointerEvents = 'auto';
+                    } else {
+                        const category = node.getAttribute('data-category');
+                        if (category && category.includes(filter)) {
+                            node.style.opacity = '1';
+                            node.style.pointerEvents = 'auto';
+                        } else {
+                            node.style.opacity = '0.2';
+                            node.style.pointerEvents = 'none';
+                        }
+                    }
+                });
+            });
+        });
+
+        // Initialize first diagram on load
+        window.addEventListener('load', () => {
+            renderSystemArchitecture();
+        });
+    </script>
+</body>
+</html>

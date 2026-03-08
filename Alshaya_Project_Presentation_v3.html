@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Al-Shaya Family Tree Application - Complete Analysis v3.0">
+    <title>Al-Shaya Family Tree Application — Complete Analysis v3.0</title>
+
+    <!-- Google Fonts: Bodoni Moda (display) + DM Sans (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           Include entire viewport-base.css content
+           =========================================== */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+        }
+
+        :root {
+            --title-size: clamp(1.5rem, 5vw, 4rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --slide-padding: clamp(1rem, 4vw, 4rem);
+            --content-gap: clamp(0.5rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+        }
+
+        .card, .container, .content-box {
+            max-width: min(90vw, 1000px);
+            max-height: min(80vh, 700px);
+        }
+
+        .feature-list, .bullet-list {
+            gap: clamp(0.4rem, 1vh, 1rem);
+        }
+
+        .feature-list li, .bullet-list li {
+            font-size: var(--body-size);
+            line-height: 1.4;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        img, .image-container {
+            max-width: 100%;
+            max-height: min(50vh, 400px);
+            object-fit: contain;
+        }
+
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --h2-size: clamp(1rem, 3vw, 1.75rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.1rem, 4vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+
+            .nav-dots, .keyboard-hint, .decorative {
+                display: none;
+            }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --title-size: clamp(1.25rem, 7vw, 2.5rem);
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+
+        /* ===========================================
+           THEME: NOTEBOOK TABS (Preset #5)
+           =========================================== */
+        :root {
+            --bg-outer: #2d2d2d;
+            --bg-page: #f8f6f1;
+            --text-primary: #1a1a1a;
+            --text-secondary: #555555;
+            --tab-1: #98d4bb;     /* Mint */
+            --tab-2: #c7b8ea;     /* Lavender */
+            --tab-3: #f4b8c5;     /* Pink */
+            --tab-4: #a8d8ea;     /* Sky */
+            --tab-5: #ffe6a7;     /* Cream */
+            --font-display: 'Bodoni Moda', serif;
+            --font-body: 'DM Sans', sans-serif;
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-normal: 0.6s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-primary);
+            background: var(--bg-outer);
+        }
+
+        /* === SLIDE CONTAINER === */
+        .slide {
+            background: var(--bg-page);
+            position: relative;
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.1);
+        }
+
+        /* === BINDER HOLES (Left Edge) === */
+        .slide::before {
+            content: '';
+            position: absolute;
+            left: clamp(0.5rem, 2vw, 1.5rem);
+            top: 50%;
+            transform: translateY(-50%);
+            width: clamp(0.3rem, 0.8vw, 0.5rem);
+            height: clamp(3rem, 15vh, 6rem);
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0,
+                transparent calc(50% - clamp(0.2rem, 0.5vw, 0.3rem)),
+                var(--bg-outer) calc(50% - clamp(0.2rem, 0.5vw, 0.3rem)),
+                var(--bg-outer) calc(50% + clamp(0.2rem, 0.5vw, 0.3rem)),
+                transparent calc(50% + clamp(0.2rem, 0.5vw, 0.3rem))
+            );
+            background-size: 100% clamp(1.2rem, 4vh, 2rem);
+            pointer-events: none;
+        }
+
+        /* === TAB INDICATORS (Right Edge) === */
+        .slide::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: clamp(0.3rem, 1.5vw, 0.8rem);
+            background: var(--slide-tab-color, var(--tab-1));
+            opacity: 0;
+            animation: tabReveal var(--duration-normal) var(--ease-out-expo) forwards;
+            pointer-events: none;
+        }
+
+        @keyframes tabReveal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Assign tabs per slide */
+        .slide:nth-child(1)::after { --slide-tab-color: var(--tab-1); animation-delay: 0s; }
+        .slide:nth-child(2)::after { --slide-tab-color: var(--tab-2); animation-delay: 0.1s; }
+        .slide:nth-child(3)::after { --slide-tab-color: var(--tab-3); animation-delay: 0.2s; }
+        .slide:nth-child(4)::after { --slide-tab-color: var(--tab-4); animation-delay: 0.3s; }
+        .slide:nth-child(5)::after { --slide-tab-color: var(--tab-5); animation-delay: 0.4s; }
+        .slide:nth-child(6)::after { --slide-tab-color: var(--tab-1); animation-delay: 0.5s; }
+        .slide:nth-child(7)::after { --slide-tab-color: var(--tab-2); animation-delay: 0.6s; }
+        .slide:nth-child(8)::after { --slide-tab-color: var(--tab-3); animation-delay: 0.7s; }
+        .slide:nth-child(9)::after { --slide-tab-color: var(--tab-4); animation-delay: 0.8s; }
+        .slide:nth-child(10)::after { --slide-tab-color: var(--tab-5); animation-delay: 0.9s; }
+        .slide:nth-child(11)::after { --slide-tab-color: var(--tab-1); animation-delay: 1s; }
+        .slide:nth-child(12)::after { --slide-tab-color: var(--tab-2); animation-delay: 1.1s; }
+
+        /* === TYPOGRAPHY === */
+        h1 {
+            font-family: var(--font-display);
+            font-size: var(--title-size);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: var(--content-gap);
+            color: var(--text-primary);
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-size: var(--h2-size);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: var(--content-gap);
+            color: var(--text-primary);
+        }
+
+        h3 {
+            font-family: var(--font-display);
+            font-size: var(--h3-size);
+            font-weight: 400;
+            margin-bottom: var(--element-gap);
+            color: var(--text-primary);
+        }
+
+        p {
+            font-size: var(--body-size);
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: var(--element-gap);
+        }
+
+        strong {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        /* === LISTS === */
+        ul, ol {
+            list-style: none;
+            margin-left: clamp(1rem, 3vw, 2rem);
+            margin-bottom: var(--content-gap);
+        }
+
+        ul li::before {
+            content: '→ ';
+            color: var(--tab-1);
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        ol li {
+            counter-increment: list-counter;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        ol li::before {
+            content: counter(list-counter) '.';
+            color: var(--tab-1);
+            font-weight: 700;
+            min-width: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        li {
+            font-size: var(--body-size);
+            line-height: 1.5;
+            margin-bottom: 0.4rem;
+            color: var(--text-secondary);
+        }
+
+        /* === REVEALS & ANIMATIONS === */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal:nth-child(1) { transition-delay: 0.1s; }
+        .reveal:nth-child(2) { transition-delay: 0.2s; }
+        .reveal:nth-child(3) { transition-delay: 0.3s; }
+        .reveal:nth-child(4) { transition-delay: 0.4s; }
+        .reveal:nth-child(5) { transition-delay: 0.5s; }
+        .reveal:nth-child(6) { transition-delay: 0.6s; }
+
+        /* === TITLE SLIDE === */
+        .title-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, var(--bg-page) 0%, #f0ebe5 100%);
+        }
+
+        .title-slide h1 {
+            font-size: clamp(2rem, 6vw, 5rem);
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .title-slide .subtitle {
+            font-family: var(--font-display);
+            font-size: var(--h2-size);
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 2rem;
+        }
+
+        .title-slide .meta {
+            font-size: var(--body-size);
+            color: var(--text-secondary);
+            margin-top: 2rem;
+        }
+
+        /* === COUNTER ANIMATION === */
+        .counter {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 6vw, 5rem);
+            font-weight: 700;
+            color: var(--tab-1);
+            text-align: center;
+            margin: var(--content-gap) 0;
+            line-height: 1;
+        }
+
+        .counter-label {
+            font-size: var(--body-size);
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* === SEVERITY BREAKDOWN === */
+        .severity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: var(--content-gap);
+            margin: var(--content-gap) 0;
+        }
+
+        .severity-card {
+            padding: clamp(0.8rem, 2vw, 1.5rem);
+            border-radius: 8px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .severity-critical { border-top: 4px solid #e53e3e; }
+        .severity-high { border-top: 4px solid #f6ad55; }
+        .severity-medium { border-top: 4px solid #ecc94b; }
+        .severity-low { border-top: 4px solid #68d391; }
+
+        .severity-number {
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0.5rem 0;
+        }
+
+        .severity-label {
+            font-size: var(--small-size);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        /* === CONTENT SECTIONS === */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--content-gap);
+            align-items: start;
+        }
+
+        .highlight-box {
+            padding: clamp(1rem, 2vw, 1.5rem);
+            border-left: 4px solid var(--tab-1);
+            background: rgba(152, 212, 187, 0.1);
+            border-radius: 4px;
+            margin: var(--element-gap) 0;
+        }
+
+        .highlight-box h3 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* === PROGRESS BAR === */
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--tab-1), var(--tab-2), var(--tab-3), var(--tab-4), var(--tab-5));
+            z-index: 1000;
+            transition: width 0.3s ease;
+        }
+
+        /* === NAVIGATION DOTS === */
+        .nav-dots {
+            position: fixed;
+            bottom: clamp(1rem, 3vw, 2rem);
+            right: clamp(1rem, 3vw, 2rem);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 999;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-dot.active {
+            background: var(--tab-1);
+            transform: scale(1.3);
+            border-color: var(--tab-1);
+        }
+
+        .nav-dot:hover {
+            background: var(--tab-2);
+            transform: scale(1.2);
+        }
+
+        /* === KEYBOARD HINT === */
+        .keyboard-hint {
+            position: fixed;
+            bottom: clamp(1rem, 3vw, 2rem);
+            left: clamp(1rem, 3vw, 2rem);
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            opacity: 0.6;
+            pointer-events: none;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .keyboard-hint span {
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        /* === RESPONSIVE ADJUSTMENTS === */
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+
+            .keyboard-hint {
+                display: none;
+            }
+
+            .nav-dots {
+                gap: 0.4rem;
+            }
+
+            .nav-dot {
+                width: 6px;
+                height: 6px;
+            }
+        }
+
+        /* === UTILITY CLASSES === */
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .mt { margin-top: var(--content-gap); }
+        .mb { margin-bottom: var(--content-gap); }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <!-- === PROGRESS BAR === -->
+    <div class="progress-bar"></div>
+
+    <!-- === NAVIGATION DOTS === -->
+    <nav class="nav-dots" id="navDots"></nav>
+
+    <!-- === KEYBOARD HINT === -->
+    <div class="keyboard-hint">
+        <span>← →</span> <span>Space</span> <span>Scroll</span>
+    </div>
+
+    <!-- =====================================================
+         SLIDE 1: TITLE SLIDE
+         ===================================================== -->
+    <section class="slide title-slide">
+        <div class="slide-content">
+            <h1 class="reveal">Al-Shaya Family Tree Application</h1>
+            <p class="subtitle reveal">آل شايع — شجرة العائلة</p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-weight: 400; color: var(--text-secondary); font-style: italic;">Complete Analysis v3.0</h2>
+            <p class="meta reveal" style="font-size: var(--small-size);">408 files • 135,716 lines of code • March 2026</p>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 2: PROJECT OVERVIEW
+         ===================================================== -->
+    <section class="slide">
+        <div class="slide-content">
+            <h2 class="reveal">Project Overview</h2>
+            <ul class="reveal">
+                <li><strong>Framework:</strong> Next.js 14 with TypeScript</li>
+                <li><strong>Database:</strong> PostgreSQL + Prisma ORM</li>
+                <li><strong>Architecture:</strong> API routes + React components</li>
+                <li><strong>Scale:</strong> 408 files, 135,716 lines of code</li>
+                <li><strong>Models:</strong> 54 Prisma data models</li>
+                <li><strong>Routes:</strong> 65+ API endpoints</li>
+                <li><strong>Features:</strong> Role-based access control, Arabic/RTL support, comprehensive validation</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 3: ARCHITECTURE OVERVIEW
+         ===================================================== -->
+    <section class="slide">
+        <div class="slide-content">
+            <h2 class="reveal">Architecture Overview</h2>
+            <div class="two-column reveal">
+                <div>
+                    <h3>Frontend Stack</h3>
+                    <ul style="margin-left: 1rem;">
+                        <li>React 18 + Next.js 14</li>
+                        <li>TypeScript for type safety</li>
+                        <li>Responsive UI with RTL support</li>
+                        <li>SPA with client-side routing</li>
+                        <li>Form validation with Zod</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Backend Stack</h3>
+                    <ul style="margin-left: 1rem;">
+                        <li>Node.js API routes</li>
+                        <li>PostgreSQL database</li>
+                        <li>Prisma ORM with migrations</li>
+                        <li>JWT authentication</li>
+                        <li>Role-based authorization</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 4: AUDIT SCOPE
+         ===================================================== -->
+    <section class="slide">
+        <div class="slide-content">
+            <h2 class="reveal">Audit Scope & Methodology</h2>
+            <ul class="reveal">
+                <li><strong>Analysis Type:</strong> Exhaustive line-by-line code review</li>
+                <li><strong>Files Analyzed:</strong> All 408 source files including:</li>
+            </ul>
+            <div class="highlight-box reveal">
+                <ul style="margin-left: 1rem; margin-bottom: 0;">
+                    <li>Configuration files (env, package.json, Prisma schema)</li>
+                    <li>API routes and middleware</li>
+                    <li>React components and pages</li>
+                    <li>Admin dashboard and user pages</li>
+                    <li>Test files and CI/CD pipelines</li>
+                    <li>Utility functions and type definitions</li>
+                </ul>
+            </div>
+            <p class="reveal"><strong>Execution:</strong> 8 parallel batch audits with consolidated findings</p>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 5: PROBLEM SUMMARY
+         ===================================================== -->
+    <section class="slide">
+        <div class="slide-content">
+            <h2 class="reveal text-center">Problem Summary</h2>
+            <div class="reveal">
+                <p class="text-center" style="font-size: var(--h2-size); font-weight: 700; color: var(--text-primary); margin: 1rem 0;">
+                    <span id="totalCounter">0</span> Total Issues Identified
+                </p>
+            </div>
+            <div class="severity-grid reveal">
+                <div class="severity-card severity-critical">
+                    <div class="severity-number" id="criticalCounter">18</div>
+                    <div class="severity-label">Critical</div>
+                </div>
+                <div class="severity-card severity-high">
+                    <div class="severity-number" id="highCounter">31</div>
+                    <div class="severity-label">High</div>
+                </div>
+                <div class="severity-card severity-medium">
+                    <div class="severity-number" id="mediumCounter">67</div>
+                    <div class="severity-label">Medium</div>
+                </div>
+                <div class="severity-card severity-low">
+                    <div class="severity-number" id="lowCounter">71</div>
+                    <div class="severity-label">Low</div>
+                </div>
+            </div>
+            <p class="text-center reveal" style="margin-top: 2rem; color: #e53e3e; font-weight: 700;">
+                Risk Level: MEDIUM-HIGH
+            </p>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 6: CRITICAL SECURITY ISSUES
+         ===================================================== -->
+    <section class="slide">
+        <div class="slide-content">
+            <h2 class="reveal">Critical Security Issues (18)</h2>
+            <div class="highlight-box reveal">
+                <h3>Top Security Vulnerabilities</h3>
+                <ul style="margin-left: 1rem;">
+                    <li>Missing JWT token refresh mechanism</li>
+                    <li>Weak password hashing configuration</li>
+                    <li>SQL injection vulnerabilities in dynamic queries</li>
+                    <li>Missing input sanitization in RTL text fields</li>
+                    <li>Unencrypted sensitive data in transit</li>
+                    <li>Missing CORS security headers</li>
+                </ul>
+            </div>
+            <p class="reveal" style="margin-top: 1.5rem; color: #e53e3e; font-weight: 700;">
+                Requires immediate remediation before production deployment
+            </p>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 7: HIGH PRIORITY ISSUES
+         ===================================================== -->
+    <section class="slide">
+        <div class="slide-content">
+            <h2 class="reveal">High Priority Issues (31)</h2>
+            <ul class="reveal">
+                <li><strong>Performance:</strong> O(n²) algorithms in family tree traversal, inefficient queries</li>
+                <li><strong>Data Integrity:</strong> Missing constraints on milk kinship relationships</li>
+                <li><strong>API Design:</strong> Inconsistent error handling, missing pagination defaults</li>
+                <li><strong>Testing:</strong> Low test coverage (34%), missing edge case tests</li>
+                <li><strong>Documentation:</strong> Incomplete API docs, missing deployment guides</li>
+                <li><strong>Error Handling:</strong> Generic error messages, insufficient logging</li>
+                <li><strong>Validation:</strong> Missing cross-field validation, incomplete type checking</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 8: PERFORMANCE & SCALABILITY
+         ===================================================== -->
+    <section class="slide">
+        <div class="slide-content">
+            <h2 class="reveal">Performance & Scalability Issues</h2>
+            <div class="two-column reveal">
+                <div>
+                    <h3>Algorithm Concerns</h3>
+                    <ul style="margin-left: 1rem;">
+                        <li>O(n²) complexity in ancestor path finding</li>
+                        <li>Inefficient tree traversal logic</li>
+                        <li>Missing database indexes on frequently queried columns</li>
+                        <li>N+1 query problems in relationship lookups</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Scalability Limits</h3>
+                    <ul style="margin-left: 1rem;">
+                        <li>Tree rendering degrades with large families</li>
+                        <li>Missing pagination implementation</li>
+                        <li>No caching layer for family trees</li>
+                        <li>API rate limiting not implemented</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 9: DATA MODEL ANALYSIS
+         ===================================================== -->
+    <section class="slide">
+        <div class="slide-content">
+            <h2 class="reveal">Data Model Analysis</h2>
+            <ul class="reveal">
+                <li><strong>54 Prisma Models:</strong> Core family models, relationships, authentication, audit logs</li>
+                <li><strong>Key Relationships:</strong> FamilyMember hierarchies, parent-child links, marriages</li>
+                <li><strong>Complex Features:</strong> Milk kinship tracking, multiple marriage chains, generation depth</li>
+                <li><strong>Missing Constraints:</strong> No unique constraints on family lineage paths</li>
+                <li><strong>Incomplete Features:</strong> Milk kinship validation incomplete, date range constraints missing</li>
+            </ul>
+            <div class="highlight-box reveal">
+                <h3>Islamic Genealogy Complexity</h3>
+                <p>The model correctly represents Islamic kinship but lacks validation for milk kinship rules and complex marriage scenarios that are allowed in Islamic law.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 10: REMEDIATION ROADMAP
+         ===================================================== -->
+    <section class="slide">
+        <div class="slide-content">
+            <h2 class="reveal">Remediation Roadmap</h2>
+            <div class="highlight-box reveal">
+                <h3>Phase 1: Critical Security (Weeks 1-2)</h3>
+                <ul style="margin-left: 1rem; margin-bottom: 1rem;">
+                    <li>Implement JWT refresh tokens</li>
+                    <li>Add input sanitization</li>
+                    <li>Enable CORS security headers</li>
+                    <li>Encrypt sensitive data at rest</li>
+                </ul>
+            </div>
+            <div class="highlight-box reveal">
+                <h3>Phase 2: Performance & Data (Weeks 3-5)</h3>
+                <ul style="margin-left: 1rem; margin-bottom: 1rem;">
+                    <li>Refactor O(n²) algorithms</li>
+                    <li>Add database indexes and caching</li>
+                    <li>Implement pagination</li>
+                    <li>Add milk kinship validation</li>
+                </ul>
+            </div>
+            <div class="highlight-box reveal">
+                <h3>Phase 3: Testing & Documentation (Weeks 6-8)</h3>
+                <ul style="margin-left: 1rem;">
+                    <li>Increase test coverage to 80%+</li>
+                    <li>Complete API documentation</li>
+                    <li>Add deployment guides</li>
+                    <li>Performance testing and optimization</li>
+                </ul>
+            </div>
+            <p class="reveal" style="margin-top: 1.5rem; font-weight: 700;">
+                <strong>Estimated Effort:</strong> 230+ hours across the team
+            </p>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 11: DELIVERABLES OVERVIEW
+         ===================================================== -->
+    <section class="slide">
+        <div class="slide-content">
+            <h2 class="reveal">Comprehensive Deliverables</h2>
+            <ul class="reveal">
+                <li><strong>This Presentation:</strong> v3.0 executive summary with findings breakdown</li>
+                <li><strong>Complete Analysis Report:</strong> 187-issue detailed audit with code examples</li>
+                <li><strong>Product Requirements Document:</strong> Feature definitions and specifications</li>
+                <li><strong>User Flow Diagrams:</strong> End-to-end user journeys and interactions</li>
+                <li><strong>Information Architecture:</strong> Complete site structure and navigation</li>
+                <li><strong>Wireframes & Mockups:</strong> Low and high-fidelity UI designs</li>
+                <li><strong>Design System:</strong> Components, styles, and design patterns</li>
+                <li><strong>Technical Architecture:</strong> System design and integration points</li>
+                <li><strong>Test Coverage Plan:</strong> Unit, integration, and E2E test strategy</li>
+                <li><strong>Test Cases:</strong> Comprehensive test scenarios and edge cases</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 12: CLOSING & NEXT STEPS
+         ===================================================== -->
+    <section class="slide">
+        <div class="slide-content">
+            <h2 class="reveal text-center">Next Steps</h2>
+            <div class="highlight-box reveal">
+                <h3>Recommended Actions</h3>
+                <ul style="margin-left: 1rem;">
+                    <li><strong>Immediate:</strong> Address 18 critical security issues before any deployment</li>
+                    <li><strong>Short-term:</strong> Implement Phase 1 remediation (2 weeks)</li>
+                    <li><strong>Medium-term:</strong> Complete Phase 2 performance optimization (3 weeks)</li>
+                    <li><strong>Long-term:</strong> Achieve Phase 3 testing and documentation targets (2 weeks)</li>
+                </ul>
+            </div>
+            <p class="reveal text-center" style="margin-top: 2rem; font-size: var(--h2-size); font-weight: 700; color: var(--text-primary);">
+                Al-Shaya has a strong foundation.<br>With targeted remediation, it will be production-ready.
+            </p>
+            <p class="reveal text-center" style="margin-top: 1.5rem; font-size: var(--body-size); color: var(--text-secondary);">
+                Questions? Review the complete analysis report or technical architecture documentation.
+            </p>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         JAVASCRIPT: SLIDE PRESENTATION CONTROLLER
+         ===================================================== -->
+    <script>
+        class SlidePresentation {
+            constructor() {
+                this.slides = document.querySelectorAll('.slide');
+                this.currentSlide = 0;
+                this.totalSlides = this.slides.length;
+
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.animateCounters();
+
+                // Show first slide as visible
+                this.slides[0].classList.add('visible');
+            }
+
+            setupIntersectionObserver() {
+                const options = {
+                    threshold: 0.5,
+                    rootMargin: '0px 0px -100px 0px'
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            // Update current slide
+                            const slideIndex = Array.from(this.slides).indexOf(entry.target);
+                            if (slideIndex !== -1) {
+                                this.currentSlide = slideIndex;
+                                this.updateProgress();
+                                this.updateNavDots();
+                            }
+                        }
+                    });
+                }, options);
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowRight' || e.key === ' ') {
+                        e.preventDefault();
+                        this.nextSlide();
+                    } else if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        this.prevSlide();
+                    } else if (e.key === 'PageDown') {
+                        e.preventDefault();
+                        this.nextSlide();
+                    } else if (e.key === 'PageUp') {
+                        e.preventDefault();
+                        this.prevSlide();
+                    }
+                });
+            }
+
+            setupTouchNav() {
+                let touchStartX = 0;
+                let touchEndX = 0;
+
+                document.addEventListener('touchstart', (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                });
+
+                document.addEventListener('touchend', (e) => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    this.handleSwipe(touchStartX, touchEndX);
+                });
+
+                // Mouse wheel support
+                document.addEventListener('wheel', (e) => {
+                    if (e.deltaY > 0) {
+                        this.nextSlide();
+                    } else if (e.deltaY < 0) {
+                        this.prevSlide();
+                    }
+                }, { passive: true });
+            }
+
+            handleSwipe(startX, endX) {
+                const threshold = 50;
+                if (startX - endX > threshold) {
+                    this.nextSlide();
+                } else if (endX - startX > threshold) {
+                    this.prevSlide();
+                }
+            }
+
+            nextSlide() {
+                if (this.currentSlide < this.totalSlides - 1) {
+                    this.currentSlide++;
+                    this.scrollToSlide();
+                }
+            }
+
+            prevSlide() {
+                if (this.currentSlide > 0) {
+                    this.currentSlide--;
+                    this.scrollToSlide();
+                }
+            }
+
+            scrollToSlide() {
+                this.slides[this.currentSlide].scrollIntoView({ behavior: 'smooth' });
+            }
+
+            updateProgress() {
+                const progress = ((this.currentSlide + 1) / this.totalSlides) * 100;
+                const progressBar = document.querySelector('.progress-bar');
+                progressBar.style.width = progress + '%';
+            }
+
+            setupProgressBar() {
+                this.updateProgress();
+            }
+
+            setupNavDots() {
+                const navDots = document.getElementById('navDots');
+                for (let i = 0; i < this.totalSlides; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'nav-dot';
+                    if (i === 0) dot.classList.add('active');
+                    dot.addEventListener('click', () => {
+                        this.currentSlide = i;
+                        this.scrollToSlide();
+                    });
+                    navDots.appendChild(dot);
+                }
+            }
+
+            updateNavDots() {
+                const dots = document.querySelectorAll('.nav-dot');
+                dots.forEach((dot, index) => {
+                    if (index === this.currentSlide) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }
+
+            animateCounters() {
+                setTimeout(() => {
+                    this.animateCounter('totalCounter', 0, 187, 1500);
+                    this.animateCounter('criticalCounter', 0, 18, 1200);
+                    this.animateCounter('highCounter', 0, 31, 1300);
+                    this.animateCounter('mediumCounter', 0, 67, 1400);
+                    this.animateCounter('lowCounter', 0, 71, 1500);
+                }, 500);
+            }
+
+            animateCounter(elementId, start, end, duration) {
+                const element = document.getElementById(elementId);
+                if (!element) return;
+
+                const range = end - start;
+                const increment = range / (duration / 16);
+                let current = start;
+
+                const counter = setInterval(() => {
+                    current += increment;
+                    if (current >= end) {
+                        element.textContent = end;
+                        clearInterval(counter);
+                    } else {
+                        element.textContent = Math.floor(current);
+                    }
+                }, 16);
+            }
+        }
+
+        // Initialize presentation
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
+    </script>
+</body>
+</html>

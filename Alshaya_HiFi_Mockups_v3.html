@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al-Shaya Family Tree - Hi-Fidelity Mockups v3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #1A1F3A;
+            --cyan: #00D4FF;
+            --purple: #7B2CBF;
+            --bg: #0F1629;
+            --text: #E0E0E0;
+            --text-muted: #909090;
+            --border: #2A3F5F;
+            --hover: #1E2A4A;
+            --success: #00E676;
+            --warning: #FFA726;
+            --error: #FF5252;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--navy) 0%, #2A3F5F 100%);
+            padding: 2rem;
+            border-bottom: 2px solid var(--cyan);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.15);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: var(--cyan);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .mockups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .mockup-card {
+            background-color: var(--navy);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .mockup-card:hover {
+            border-color: var(--cyan);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .mockup-header {
+            background-color: var(--hover);
+            padding: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .mockup-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--cyan);
+        }
+
+        .mockup-preview {
+            aspect-ratio: 16 / 10;
+            background-color: #1A1F3A;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mockup-btn {
+            background-color: var(--cyan);
+            color: var(--navy);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            align-self: flex-start;
+            margin-top: auto;
+        }
+
+        .mockup-btn:hover {
+            background-color: var(--purple);
+            color: white;
+        }
+
+        .mockup-input {
+            background-color: var(--hover);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        .mockup-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .mockup-input:focus {
+            outline: none;
+            border-color: var(--cyan);
+            background-color: rgba(0, 212, 255, 0.05);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(123, 44, 191, 0.1) 100%);
+            border: 1px solid var(--cyan);
+            border-radius: 6px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            color: var(--cyan);
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 0.25rem;
+        }
+
+        .member-item {
+            background-color: var(--hover);
+            border-left: 3px solid var(--cyan);
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin: 0.5rem 0;
+        }
+
+        .table-row {
+            display: flex;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+            gap: 1rem;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-row span:first-child {
+            flex: 1;
+            color: var(--cyan);
+            font-weight: 600;
+        }
+
+        .badge {
+            background-color: var(--success);
+            color: var(--navy);
+            padding: 0.25rem 0.75rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge.pending {
+            background-color: var(--warning);
+            color: var(--navy);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #2A3F5F 0%, #1E2A4A 100%);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        .journal-item {
+            background-color: var(--hover);
+            border-left: 3px solid var(--purple);
+            padding: 0.75rem;
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+        }
+
+        .journal-title {
+            color: var(--cyan);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .journal-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .checkbox {
+            width: 1rem;
+            height: 1rem;
+            cursor: pointer;
+        }
+
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 1.5rem 0;
+        }
+
+        .mockup-description {
+            padding: 1rem;
+            background-color: var(--hover);
+            border-top: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .stats-overview {
+            background-color: var(--bg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--cyan);
+            margin: 2rem 0 1.5rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--purple);
+        }
+
+        .section-description {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .nav-bar {
+            background-color: var(--navy);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            gap: 1rem;
+        }
+
+        .nav-item {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-item:hover {
+            color: var(--cyan);
+        }
+
+        .nav-item.active {
+            color: var(--cyan);
+            border-bottom: 2px solid var(--cyan);
+            padding-bottom: 0.3rem;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(15, 22, 41, 0.95);
+            z-index: 1000;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--navy);
+            border: 1px solid var(--cyan);
+            border-radius: 8px;
+            padding: 2rem;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
+        }
+
+        .modal-close {
+            float: right;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--cyan);
+        }
+
+        @media (max-width: 768px) {
+            .mockups-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .label-text {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Al-Shaya Family Tree - Hi-Fidelity Mockups v3</h1>
+        <p>12+ Key Screens | Full Color | Realistic Data | Arabic Support</p>
+    </div>
+
+    <div class="container">
+        <div class="section-title">Key User Interface Screens</div>
+        <p class="section-description">High-fidelity mockups showing the complete visual design of critical user interface screens.</p>
+
+        <div class="mockups-grid" id="mockupsContainer"></div>
+    </div>
+
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        const mockups = [
+            {
+                id: 'login',
+                title: 'Login Screen',
+                preview: `
+                    <div style="display: flex; flex-direction: column; gap: 1rem; height: 100%;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; color: var(--cyan); font-weight: 700; margin-bottom: 0.5rem;">🌳 Al-Shaya</div>
+                            <div style="color: var(--text-muted); font-size: 0.9rem;">Family Tree Connect</div>
+                        </div>
+                        <div class="section-divider"></div>
+                        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 1rem; justify-content: center;">
+                            <div>
+                                <span class="label-text">Email Address</span>
+                                <input type="email" class="mockup-input" placeholder="you@example.com" value="user@alshaya.family">
+                            </div>
+                            <div>
+                                <span class="label-text">Password</span>
+                                <input type="password" class="mockup-input" placeholder="Enter your password" value="••••••••">
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
+                                <label style="display: flex; gap: 0.5rem; color: var(--text-muted); cursor: pointer;">
+                                    <input type="checkbox" class="checkbox" checked>
+                                    <span>Remember me</span>
+                                </label>
+                                <a href="#" style="color: var(--cyan); text-decoration: none;">Forgot?</a>
+                            </div>
+                        </div>
+                        <button class="mockup-btn" style="align-self: stretch; background-color: var(--cyan); color: var(--navy); font-weight: 700; padding: 1rem;">Sign In</button>
+                        <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+                            Don't have an account? <a href="#" style="color: var(--cyan); text-decoration: none;">Sign up</a>
+                        </div>
+                    </div>
+                `,
+                description: 'Clean login interface with email/password fields, remember me option, and signup link. RTL-ready for Arabic language support.'
+            },
+            {
+                id: 'dashboard',
+                title: 'Dashboard Home',
+                preview: `
+                    <div style="display: flex; flex-direction: column; gap: 1rem; height: 100%;">
+                        <div class="nav-bar">
+                            <span style="color: var(--cyan); font-weight: 600;">Welcome, Fatima</span>
+                            <div style="display: flex; gap: 1rem;">
+                                <span class="nav-item" style="cursor: pointer;">📊 Dashboard</span>
+                                <span class="nav-item" style="cursor: pointer;">👥 Members</span>
+                                <span class="nav-item" style="cursor: pointer;">⚙️ Settings</span>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; flex-grow: 0;">
+                            <div class="stat-card">
+                                <div class="stat-value">847</div>
+                                <div class="stat-label">Family Members</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">12</div>
+                                <div class="stat-label">Branches</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">156</div>
+                                <div class="stat-label">Journal Entries</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">89</div>
+                                <div class="stat-label">Photos</div>
+                            </div>
+                        </div>
+                        <div style="flex-grow: 1; overflow-y: auto;">
+                            <div style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.75rem;">Recent Activity</div>
+                            <div class="member-item">✓ Amina added grandfather Ahmed to family tree</div>
+                            <div class="member-item">✓ New journal entry: "Our Family Stories"</div>
+                            <div class="member-item">✓ 5 photos uploaded to gallery</div>
+                            <div class="member-item">✓ Branch link approved: Al-Shaya Cairo</div>
+                        </div>
+                    </div>
+                `,
+                description: 'Main dashboard showing family statistics, recent activity, and quick navigation. Displays key metrics and latest updates.'
+            },
+            {
+                id: 'tree-view',
+                title: 'Family Tree Visualization',
+                preview: `
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; height: 100%;">
+                        <div class="nav-bar">
+                            <span style="color: var(--cyan); font-weight: 600;">🌳 Family Tree</span>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" class="mockup-input" placeholder="Search members..." style="max-width: 150px; padding: 0.5rem;">
+                                <button class="mockup-btn" style="margin: 0; padding: 0.5rem 1rem;">🔍</button>
+                            </div>
+                        </div>
+                        <div style="flex-grow: 1; background: linear-gradient(135deg, #2A3F5F 0%, #1E2A4A 100%); border: 1px dashed var(--border); border-radius: 4px; display: flex; align-items: center; justify-content: center; position: relative;">
+                            <div style="text-align: center; color: var(--text-muted);">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📊</div>
+                                <div style="font-size: 0.9rem;">Interactive D3.js Tree</div>
+                                <div style="font-size: 0.75rem; margin-top: 0.25rem;">Zoom • Pan • Click Nodes</div>
+                            </div>
+                            <div style="position: absolute; right: 1rem; top: 1rem; display: flex; flex-direction: column; gap: 0.25rem;">
+                                <button style="background: var(--purple); color: white; border: none; padding: 0.5rem; border-radius: 3px; font-size: 0.8rem;">🔍+</button>
+                                <button style="background: var(--purple); color: white; border: none; padding: 0.5rem; border-radius: 3px; font-size: 0.8rem;">🔍-</button>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1rem; padding: 0.75rem; background-color: var(--hover); border-radius: 4px; font-size: 0.8rem;">
+                            <span style="display: flex; align-items: center; gap: 0.25rem;"><span style="width: 0.5rem; height: 0.5rem; background: var(--cyan); border-radius: 50%;"></span>Male</span>
+                            <span style="display: flex; align-items: center; gap: 0.25rem;"><span style="width: 0.5rem; height: 0.5rem; background: var(--purple); border-radius: 50%;"></span>Female</span>
+                        </div>
+                    </div>
+                `,
+                description: 'Interactive family tree visualization using D3.js. Supports zooming, panning, and node selection. Shows family relationships graphically.'
+            },
+            {
+                id: 'member-profile',
+                title: 'Member Profile Card',
+                preview: `
+                    <div style="display: flex; flex-direction: column; gap: 1rem; height: 100%;">
+                        <div class="nav-bar">
+                            <span style="color: var(--cyan); font-weight: 600;">👤 Profile</span>
+                            <button class="mockup-btn" style="margin: 0; padding: 0.5rem 1rem; align-self: flex-end;">Edit</button>
+                        </div>
+                        <div style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(123, 44, 191, 0.1) 100%); padding: 1rem; border-radius: 6px; text-align: center;">
+                            <div style="width: 60px; height: 60px; background-color: var(--hover); border: 2px solid var(--cyan); border-radius: 50%; margin: 0 auto 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 2rem;">👩</div>
+                            <div style="color: var(--cyan); font-weight: 700; font-size: 1.1rem;">Fatima Al-Shaya</div>
+                            <div style="color: var(--text-muted); font-size: 0.85rem;">b. 1975 | Cairo, Egypt</div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                            <div class="stat-card" style="background: none; border: 1px solid var(--border);">
+                                <div style="color: var(--cyan); font-weight: 600;">Spouse</div>
+                                <div style="color: var(--text); font-size: 0.9rem;">Ahmed Al-Shaya</div>
+                            </div>
+                            <div class="stat-card" style="background: none; border: 1px solid var(--border);">
+                                <div style="color: var(--cyan); font-weight: 600;">Children</div>
+                                <div style="color: var(--text); font-size: 0.9rem;">5</div>
+                            </div>
+                        </div>
+                        <div style="flex-grow: 1; color: var(--text-muted); font-size: 0.85rem;">
+                            <div style="color: var(--text); font-weight: 600; margin-bottom: 0.5rem;">Family Roles</div>
+                            <div style="padding: 0.5rem; background-color: var(--hover); border-radius: 4px; margin-bottom: 0.5rem;">Family Manager • Cairo Branch</div>
+                            <div style="color: var(--text); font-weight: 600; margin: 0.5rem 0;">Last Updated</div>
+                            <div>3 days ago</div>
+                        </div>
+                    </div>
+                `,
+                description: 'Member profile showing personal information, relationships, and family roles. Displays photo, vital dates, and connections.'
+            },
+            {
+                id: 'admin-pending',
+                title: 'Admin: Pending Approvals',
+                preview: `
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem; height: 100%;">
+                        <div class="nav-bar">
+                            <span style="color: var(--cyan); font-weight: 600;">⏳ Pending Approvals</span>
+                            <span style="color: var(--warning); font-weight: 600;">7 waiting</span>
+                        </div>
+                        <div style="flex-grow: 1; overflow-y: auto;">
+                            <div class="table-row">
+                                <input type="checkbox" class="checkbox" style="flex: 0; width: 1rem;">
+                                <span>Add Member: Layla Ahmed</span>
+                                <span class="badge pending">1d ago</span>
+                            </div>
+                            <div class="table-row">
+                                <input type="checkbox" class="checkbox" style="flex: 0; width: 1rem;">
+                                <span>Edit: Ahmed Mohamed</span>
+                                <span class="badge pending">2d ago</span>
+                            </div>
+                            <div class="table-row">
+                                <input type="checkbox" class="checkbox" style="flex: 0; width: 1rem;">
+                                <span>Branch Link Request</span>
+                                <span class="badge pending">3d ago</span>
+                            </div>
+                            <div class="table-row">
+                                <input type="checkbox" class="checkbox" style="flex: 0; width: 1rem;">
+                                <span>Journal Upload</span>
+                                <span class="badge pending">5d ago</span>
+                            </div>
+                            <div class="table-row">
+                                <input type="checkbox" class="checkbox" style="flex: 0; width: 1rem;">
+                                <span>Photo Gallery Addition</span>
+                                <span class="badge pending">6d ago</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                            <button class="mockup-btn" style="flex: 1; background-color: var(--success); color: var(--navy);">✓ Approve</button>
+                            <button class="mockup-btn" style="flex: 1; background-color: var(--error); color: white;">✗ Reject</button>
+                        </div>
+                    </div>
+                `,
+                description: 'Admin interface for reviewing and approving pending user submissions. Shows request queue with bulk action options.'
+            },
+            {
+                id: 'search-results',
+                title: 'Search Results (Arabic)',
+                preview: `
+                    <div style="display: flex; flex-direction: column; gap: 1rem; height: 100%; direction: rtl;">
+                        <div class="nav-bar" style="direction: rtl;">
+                            <div style="display: flex; gap: 0.5rem; flex-direction: row-reverse;">
+                                <button class="mockup-btn" style="margin: 0; padding: 0.5rem 1rem;">🔍</button>
+                                <input type="text" class="mockup-input" placeholder="البحث عن أعضاء..." style="max-width: 200px; padding: 0.5rem;" value="الشايع">
+                            </div>
+                            <span style="color: var(--cyan); font-weight: 600;">نتائج البحث</span>
+                        </div>
+                        <div style="color: var(--text-muted); font-size: 0.85rem;">تم العثور على 12 نتيجة</div>
+                        <div style="flex-grow: 1; overflow-y: auto; direction: rtl;">
+                            <div class="member-item" style="direction: rtl;">
+                                <div style="color: var(--cyan); font-weight: 600;">أحمد الشايع</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">1945 - 2010 | القاهرة</div>
+                            </div>
+                            <div class="member-item" style="direction: rtl;">
+                                <div style="color: var(--cyan); font-weight: 600;">فاطمة الشايع</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">ب. 1975 | القاهرة</div>
+                            </div>
+                            <div class="member-item" style="direction: rtl;">
+                                <div style="color: var(--cyan); font-weight: 600;">محمد الشايع</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">ب. 1948 | جدة</div>
+                            </div>
+                            <div class="member-item" style="direction: rtl;">
+                                <div style="color: var(--cyan); font-weight: 600;">علياء الشايع</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">ب. 1980 | الرياض</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                            <button style="background: var(--hover); border: 1px solid var(--border); color: var(--text); padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">← السابق</button>
+                            <button style="background: var(--cyan); border: none; color: var(--navy); padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: 600;">التالي →</button>
+                        </div>
+                    </div>
+                `,
+                description: 'Search results displaying members matching Arabic query. Demonstrates RTL text alignment and pagination controls.'
+            },
+            {
+                id: 'journal-view',
+                title: 'Journal Entry View',
+                preview: `
+                    <div style="display: flex; flex-direction: column; gap: 1rem; height: 100%;">
+                        <div class="nav-bar">
+                            <span style="color: var(--cyan); font-weight: 600;">📔 Journal</span>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="mockup-btn" style="margin: 0; padding: 0.5rem 1rem;">✎ Edit</button>
+                                <button class="mockup-btn" style="margin: 0; padding: 0.5rem 1rem;">📤 Share</button>
+                            </div>
+                        </div>
+                        <div style="flex-grow: 1; overflow-y: auto;">
+                            <h2 style="color: var(--cyan); font-size: 1.3rem; margin-bottom: 0.5rem;">Our Family History & Heritage</h2>
+                            <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1rem;">
+                                By Fatima Al-Shaya • Jan 15, 2026 • Family History
+                            </div>
+                            <div class="section-divider"></div>
+                            <p style="color: var(--text); margin-bottom: 0.75rem;">The Al-Shaya family has a rich heritage spanning over 200 years. Our ancestors played significant roles in the development of Cairo and Jeddah, establishing businesses and contributing to their communities.</p>
+                            <p style="color: var(--text); margin-bottom: 0.75rem;">The main branches include the Cairo branch, Jeddah branch, and Riyadh branch, each with its own distinct characteristics but bound by strong family ties and values.</p>
+                            <div class="section-divider"></div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Tags</div>
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                                <span style="background: rgba(0, 212, 255, 0.2); border: 1px solid var(--cyan); color: var(--cyan); padding: 0.25rem 0.75rem; border-radius: 3px; font-size: 0.75rem;">Family History</span>
+                                <span style="background: rgba(0, 212, 255, 0.2); border: 1px solid var(--cyan); color: var(--cyan); padding: 0.25rem 0.75rem; border-radius: 3px; font-size: 0.75rem;">Heritage</span>
+                                <span style="background: rgba(0, 212, 255, 0.2); border: 1px solid var(--cyan); color: var(--cyan); padding: 0.25rem 0.75rem; border-radius: 3px; font-size: 0.75rem;">Archives</span>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                description: 'Journal entry display with title, content, author info, date, category, and tags. Full text rendering with share functionality.'
+            },
+            {
+                id: 'gallery-grid',
+                title: 'Gallery View',
+                preview: `
+                    <div style="display: flex; flex-direction: column; gap: 1rem; height: 100%;">
+                        <div class="nav-bar">
+                            <span style="color: var(--cyan); font-weight: 600;">🖼️ Photo Gallery</span>
+                            <button class="mockup-btn" style="margin: 0; padding: 0.5rem 1rem;">+ Upload</button>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; flex-grow: 1;">
+                            <div style="aspect-ratio: 1; background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(123, 44, 191, 0.2) 100%); border: 1px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color 0.3s;">📷</div>
+                            <div style="aspect-ratio: 1; background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(123, 44, 191, 0.2) 100%); border: 1px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color 0.3s;">📷</div>
+                            <div style="aspect-ratio: 1; background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(123, 44, 191, 0.2) 100%); border: 1px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color 0.3s;">📷</div>
+                            <div style="aspect-ratio: 1; background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(123, 44, 191, 0.2) 100%); border: 1px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color 0.3s;">📷</div>
+                            <div style="aspect-ratio: 1; background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(123, 44, 191, 0.2) 100%); border: 1px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color 0.3s;">📷</div>
+                            <div style="aspect-ratio: 1; background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(123, 44, 191, 0.2) 100%); border: 1px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color 0.3s;">📷</div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; justify-content: center; padding-top: 0.75rem; border-top: 1px solid var(--border);">
+                            <button style="background: var(--hover); border: 1px solid var(--border); color: var(--text); padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">← Back</button>
+                            <button style="background: var(--cyan); border: none; color: var(--navy); padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: 600;">Next →</button>
+                        </div>
+                    </div>
+                `,
+                description: 'Photo gallery grid layout with masonry design. Supports image upload, browsing, and lightbox viewing of family photos.'
+            },
+            {
+                id: 'settings',
+                title: 'Settings Page',
+                preview: `
+                    <div style="display: flex; flex-direction: column; gap: 1rem; height: 100%;">
+                        <div class="nav-bar">
+                            <span style="color: var(--cyan); font-weight: 600;">⚙️ Settings</span>
+                        </div>
+                        <div style="display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 1rem;">
+                            <span class="nav-item active" style="border-bottom: 2px solid var(--cyan); flex: 0;">Account</span>
+                            <span class="nav-item" style="flex: 0;">Privacy</span>
+                            <span class="nav-item" style="flex: 0;">Security</span>
+                        </div>
+                        <div style="flex-grow: 1; overflow-y: auto;">
+                            <div style="margin-bottom: 1.5rem;">
+                                <div class="label-text">Full Name</div>
+                                <input type="text" class="mockup-input" value="Fatima Al-Shaya">
+                            </div>
+                            <div style="margin-bottom: 1.5rem;">
+                                <div class="label-text">Email Address</div>
+                                <input type="email" class="mockup-input" value="fatima@alshaya.family">
+                            </div>
+                            <div style="margin-bottom: 1.5rem;">
+                                <div class="label-text">Phone Number</div>
+                                <input type="tel" class="mockup-input" placeholder="+966 50 XXX XXXX">
+                            </div>
+                            <div style="margin-bottom: 1.5rem;">
+                                <div class="label-text">Language</div>
+                                <select class="mockup-input" style="cursor: pointer;">
+                                    <option>English</option>
+                                    <option selected>العربية (Arabic)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                            <button class="mockup-btn" style="flex: 1; background-color: var(--success); color: var(--navy);">✓ Save</button>
+                            <button class="mockup-btn" style="flex: 1; background-color: var(--hover); color: var(--text);">✕ Cancel</button>
+                        </div>
+                    </div>
+                `,
+                description: 'User settings page with account, privacy, and security tabs. Editable fields for name, email, phone, and language preference.'
+            },
+            {
+                id: 'broadcast',
+                title: 'Broadcast Composer',
+                preview: `
+                    <div style="display: flex; flex-direction: column; gap: 1rem; height: 100%;">
+                        <div class="nav-bar">
+                            <span style="color: var(--cyan); font-weight: 600;">📢 New Broadcast</span>
+                        </div>
+                        <div style="flex-grow: 1; overflow-y: auto;">
+                            <div style="margin-bottom: 1rem;">
+                                <div class="label-text">Subject</div>
+                                <input type="text" class="mockup-input" placeholder="Message subject" value="Family Gathering This Weekend">
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <div class="label-text">Message Content</div>
+                                <textarea class="mockup-input" style="height: 100px; resize: none; font-family: inherit;">Dear Family,
+
+We are pleased to announce our annual family gathering this weekend. Please mark your calendars...</textarea>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <div class="label-text">Send To</div>
+                                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                    <label style="display: flex; gap: 0.5rem; color: var(--text); font-size: 0.9rem; cursor: pointer;">
+                                        <input type="radio" name="audience" checked>
+                                        <span>All Members</span>
+                                    </label>
+                                    <label style="display: flex; gap: 0.5rem; color: var(--text); font-size: 0.9rem; cursor: pointer;">
+                                        <input type="radio" name="audience">
+                                        <span>Cairo Branch</span>
+                                    </label>
+                                    <label style="display: flex; gap: 0.5rem; color: var(--text); font-size: 0.9rem; cursor: pointer;">
+                                        <input type="radio" name="audience">
+                                        <span>Custom List</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <div class="label-text">Schedule (Optional)</div>
+                                <input type="datetime-local" class="mockup-input">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                            <button class="mockup-btn" style="flex: 1; background-color: var(--warning); color: var(--navy);">👁️ Preview</button>
+                            <button class="mockup-btn" style="flex: 1; background-color: var(--cyan); color: var(--navy); font-weight: 700;">📤 Send</button>
+                        </div>
+                    </div>
+                `,
+                description: 'Broadcast message composer allowing family managers to send announcements to specific groups or entire family.'
+            },
+            {
+                id: 'data-quality',
+                title: 'Data Quality Repair',
+                preview: `
+                    <div style="display: flex; flex-direction: column; gap: 1rem; height: 100%;">
+                        <div class="nav-bar">
+                            <span style="color: var(--cyan); font-weight: 600;">🔧 Data Quality Repair</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; flex-grow: 0;">
+                            <div class="stat-card">
+                                <div class="stat-value" style="color: var(--success);">98%</div>
+                                <div class="stat-label">Data Quality</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" style="color: var(--warning);">12</div>
+                                <div class="stat-label">Issues Found</div>
+                            </div>
+                        </div>
+                        <div style="flex-grow: 1; overflow-y: auto;">
+                            <div style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.75rem;">Issues to Fix</div>
+                            <div class="table-row">
+                                <input type="checkbox" class="checkbox" checked style="flex: 0; width: 1rem;">
+                                <span>Missing birth dates (3)</span>
+                                <span class="badge" style="background-color: var(--warning); color: var(--navy);">Low</span>
+                            </div>
+                            <div class="table-row">
+                                <input type="checkbox" class="checkbox" checked style="flex: 0; width: 1rem;">
+                                <span>Duplicate phone numbers (5)</span>
+                                <span class="badge" style="background-color: var(--warning); color: var(--navy);">Low</span>
+                            </div>
+                            <div class="table-row">
+                                <input type="checkbox" class="checkbox" checked style="flex: 0; width: 1rem;">
+                                <span>Incomplete profiles (4)</span>
+                                <span class="badge" style="background-color: var(--warning); color: var(--navy);">Low</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                            <button class="mockup-btn" style="flex: 1; background-color: var(--success); color: var(--navy);">✓ Repair Selected</button>
+                            <button class="mockup-btn" style="flex: 1; background-color: var(--hover); color: var(--text);">Generate Report</button>
+                        </div>
+                    </div>
+                `,
+                description: 'Data quality dashboard showing identified data issues with repair options. Admin tool for maintaining data integrity.'
+            },
+            {
+                id: 'quick-add',
+                title: 'Quick Add Member',
+                preview: `
+                    <div style="display: flex; flex-direction: column; gap: 1rem; height: 100%;">
+                        <div class="nav-bar">
+                            <span style="color: var(--cyan); font-weight: 600;">➕ Quick Add Member</span>
+                        </div>
+                        <div style="flex-grow: 1; overflow-y: auto;">
+                            <div style="margin-bottom: 1rem;">
+                                <div class="label-text">Full Name (Arabic)</div>
+                                <input type="text" class="mockup-input" placeholder="الاسم الكامل">
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <div class="label-text">Relationship to You</div>
+                                <select class="mockup-input" style="cursor: pointer;">
+                                    <option>Father</option>
+                                    <option>Mother</option>
+                                    <option>Brother</option>
+                                    <option>Sister</option>
+                                    <option>Son</option>
+                                    <option>Daughter</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <div class="label-text">Birth Year</div>
+                                <input type="number" class="mockup-input" placeholder="1980">
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <div class="label-text">Gender</div>
+                                <div style="display: flex; gap: 1rem;">
+                                    <label style="display: flex; gap: 0.5rem; color: var(--text); cursor: pointer;">
+                                        <input type="radio" name="gender" checked>
+                                        <span>Male</span>
+                                    </label>
+                                    <label style="display: flex; gap: 0.5rem; color: var(--text); cursor: pointer;">
+                                        <input type="radio" name="gender">
+                                        <span>Female</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <label style="display: flex; gap: 0.5rem; color: var(--text); font-size: 0.9rem; cursor: pointer;">
+                                <input type="checkbox" checked>
+                                <span>Add another member after</span>
+                            </label>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                            <button class="mockup-btn" style="flex: 1; background-color: var(--hover); color: var(--text);">✕ Cancel</button>
+                            <button class="mockup-btn" style="flex: 1; background-color: var(--cyan); color: var(--navy); font-weight: 700;">➕ Add Member</button>
+                        </div>
+                    </div>
+                `,
+                description: 'Fast entry form for adding new family members with minimal required fields. Supports Arabic names and quick bulk addition.'
+            }
+        ];
+
+        // Render mockups
+        const container = document.getElementById('mockupsContainer');
+        mockups.forEach(mockup => {
+            const card = document.createElement('div');
+            card.className = 'mockup-card';
+            card.innerHTML = `
+                <div class="mockup-header">
+                    <div class="mockup-title">${mockup.title}</div>
+                </div>
+                <div class="mockup-preview">
+                    ${mockup.preview}
+                </div>
+                <div class="mockup-description">${mockup.description}</div>
+            `;
+            card.addEventListener('click', () => openModal(mockup.id, mockup.title, mockup.preview, mockup.description));
+            container.appendChild(card);
+        });
+
+        function openModal(id, title, preview, description) {
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <h2 style="color: var(--cyan); font-size: 1.5rem; margin-bottom: 1rem;">${title}</h2>
+                <div style="background-color: var(--hover); border: 1px solid var(--border); border-radius: 8px; padding: 2rem; min-height: 400px; margin-bottom: 1.5rem;">
+                    ${preview}
+                </div>
+                <div style="color: var(--text); font-size: 1rem; line-height: 1.8;">
+                    <p>${description}</p>
+                </div>
+            `;
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        document.getElementById('detailModal').addEventListener('click', (e) => {
+            if (e.target.id === 'detailModal') closeModal();
+        });
+    </script>
+</body>
+</html>

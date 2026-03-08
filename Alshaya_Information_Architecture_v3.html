@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al-Shaya Family Tree - Information Architecture v3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #1A1F3A;
+            --cyan: #00D4FF;
+            --purple: #7B2CBF;
+            --bg: #0F1629;
+            --text: #E0E0E0;
+            --text-muted: #909090;
+            --border: #2A3F5F;
+            --hover: #1E2A4A;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--navy) 0%, #2A3F5F 100%);
+            padding: 2rem;
+            border-bottom: 2px solid var(--cyan);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.15);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: var(--cyan);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .tab-navigation {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-button {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            position: relative;
+            bottom: -2px;
+        }
+
+        .tab-button:hover {
+            color: var(--cyan);
+        }
+
+        .tab-button.active {
+            color: var(--cyan);
+            border-bottom-color: var(--cyan);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--cyan);
+            margin: 2rem 0 1.5rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--purple);
+        }
+
+        .section-description {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .sitemap-tree {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background-color: var(--navy);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+
+        .tree-node {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            color: var(--text);
+        }
+
+        .tree-node.root {
+            color: var(--cyan);
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .tree-node.level-1 {
+            padding-left: 2rem;
+            color: var(--cyan);
+            font-weight: 600;
+        }
+
+        .tree-node.level-2 {
+            padding-left: 4rem;
+            color: var(--text);
+        }
+
+        .tree-node.level-3 {
+            padding-left: 6rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .tree-node.protected::before {
+            content: '🔒 ';
+            margin-right: 0.5rem;
+        }
+
+        .tree-node.public::before {
+            content: '🌐 ';
+            margin-right: 0.5rem;
+        }
+
+        .access-matrix {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background-color: var(--navy);
+            border: 1px solid var(--border);
+        }
+
+        .access-matrix th {
+            background-color: var(--hover);
+            padding: 1rem;
+            text-align: left;
+            border: 1px solid var(--border);
+            color: var(--cyan);
+            font-weight: 600;
+        }
+
+        .access-matrix td {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .access-matrix tr:hover {
+            background-color: var(--hover);
+        }
+
+        .access-badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .access-allowed {
+            background-color: rgba(0, 212, 255, 0.2);
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+        }
+
+        .access-denied {
+            background-color: rgba(200, 50, 50, 0.2);
+            border: 1px solid #C83232;
+            color: #FF6B6B;
+        }
+
+        .access-conditional {
+            background-color: rgba(123, 44, 191, 0.2);
+            border: 1px solid var(--purple);
+            color: var(--purple);
+        }
+
+        .navigation-card {
+            background-color: var(--navy);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .navigation-card:hover {
+            border-color: var(--cyan);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.15);
+        }
+
+        .nav-card-title {
+            color: var(--cyan);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-card-content {
+            color: var(--text);
+            line-height: 1.8;
+        }
+
+        .nav-card-item {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .nav-card-item::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--purple);
+        }
+
+        .content-taxonomy {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .taxonomy-card {
+            background-color: var(--navy);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .taxonomy-card:hover {
+            border-color: var(--cyan);
+            transform: translateY(-2px);
+        }
+
+        .taxonomy-title {
+            color: var(--cyan);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .taxonomy-items {
+            list-style: none;
+        }
+
+        .taxonomy-items li {
+            padding: 0.5rem 0;
+            color: var(--text);
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .taxonomy-items li::before {
+            content: '◆';
+            position: absolute;
+            left: 0;
+            color: var(--purple);
+        }
+
+        .dataflow-diagram {
+            background-color: var(--navy);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .dataflow-box {
+            display: inline-block;
+            background-color: var(--hover);
+            border: 2px solid var(--cyan);
+            border-radius: 6px;
+            padding: 1rem 1.5rem;
+            margin: 1rem;
+            color: var(--text);
+            font-weight: 600;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .dataflow-arrow {
+            display: inline-block;
+            margin: 0 0.5rem;
+            color: var(--purple);
+            font-weight: bold;
+            vertical-align: middle;
+        }
+
+        .url-structure {
+            background-color: var(--navy);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .url-example {
+            background-color: var(--hover);
+            padding: 0.75rem 1rem;
+            margin: 0.75rem 0;
+            border-left: 3px solid var(--cyan);
+            border-radius: 4px;
+            color: var(--cyan);
+            word-break: break-all;
+        }
+
+        .stats-bar {
+            background-color: var(--hover);
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            color: var(--cyan);
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .breadcrumb-example {
+            background-color: var(--hover);
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb-example span {
+            color: var(--purple);
+            margin: 0 0.5rem;
+        }
+
+        .search-arch-box {
+            background-color: var(--navy);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .search-arch-title {
+            color: var(--cyan);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .search-arch-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .search-feature {
+            background-color: var(--hover);
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--purple);
+        }
+
+        .feature-name {
+            color: var(--cyan);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .tab-navigation {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .tab-button {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .access-matrix {
+                font-size: 0.85rem;
+            }
+
+            .access-matrix th,
+            .access-matrix td {
+                padding: 0.5rem;
+            }
+
+            .content-taxonomy {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Al-Shaya Family Tree - Information Architecture v3</h1>
+        <p>Complete Site Map | Navigation Structure | Role-Based Access Control</p>
+    </div>
+
+    <div class="container">
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-value">87</div>
+                <div class="stat-label">Total Pages</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">7</div>
+                <div class="stat-label">User Roles</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">100%</div>
+                <div class="stat-label">Documented</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">RTL</div>
+                <div class="stat-label">Compatible</div>
+            </div>
+        </div>
+
+        <div class="tab-navigation">
+            <button class="tab-button active" onclick="switchTab('sitemap')">Sitemap</button>
+            <button class="tab-button" onclick="switchTab('navigation')">Navigation</button>
+            <button class="tab-button" onclick="switchTab('taxonomy')">Content Taxonomy</button>
+            <button class="tab-button" onclick="switchTab('urls')">URL Structure</button>
+            <button class="tab-button" onclick="switchTab('access')">Access Control</button>
+            <button class="tab-button" onclick="switchTab('dataflow')">Data Flow</button>
+            <button class="tab-button" onclick="switchTab('search')">Search Architecture</button>
+        </div>
+
+        <!-- SITEMAP TAB -->
+        <div id="sitemap" class="tab-content active">
+            <h2 class="section-title">Complete Site Map</h2>
+            <p class="section-description">Hierarchical organization of all pages, sections, and features within the application. Indicates whether pages are public (🌐) or protected (🔒).</p>
+
+            <div class="sitemap-tree">
+                <div class="tree-node root">📱 Al-Shaya Family Tree Application</div>
+
+                <div class="tree-node level-1 public">🌐 Public Pages</div>
+                <div class="tree-node level-2">Landing Page</div>
+                <div class="tree-node level-2">About / Features</div>
+                <div class="tree-node level-2">Pricing & Plans</div>
+                <div class="tree-node level-2">Contact Us</div>
+
+                <div class="tree-node level-1 protected">🔒 Authentication</div>
+                <div class="tree-node level-2">Login</div>
+                <div class="tree-node level-2">Register</div>
+                <div class="tree-node level-2">Forgot Password</div>
+                <div class="tree-node level-2">Email Verification</div>
+                <div class="tree-node level-2">2FA Setup</div>
+
+                <div class="tree-node level-1 protected">🔒 User Dashboard</div>
+                <div class="tree-node level-2">Dashboard Home</div>
+                <div class="tree-node level-3">Family Statistics Widget</div>
+                <div class="tree-node level-3">Recent Activity Feed</div>
+                <div class="tree-node level-3">Quick Actions Panel</div>
+                <div class="tree-node level-2">Settings</div>
+                <div class="tree-node level-3">Account Settings</div>
+                <div class="tree-node level-3">Privacy & Data</div>
+                <div class="tree-node level-3">Notifications</div>
+
+                <div class="tree-node level-1 protected">🔒 Family Tree</div>
+                <div class="tree-node level-2">Tree Visualization</div>
+                <div class="tree-node level-3">Interactive Tree View</div>
+                <div class="tree-node level-3">Tree Navigation Controls</div>
+                <div class="tree-node level-3">Search Overlay</div>
+                <div class="tree-node level-2">Tree Editing</div>
+                <div class="tree-node level-3">Node Editor</div>
+                <div class="tree-node level-3">Relationship Manager</div>
+                <div class="tree-node level-3">Batch Editor</div>
+
+                <div class="tree-node level-1 protected">🔒 Member Management</div>
+                <div class="tree-node level-2">Member Profiles</div>
+                <div class="tree-node level-3">Public Profile View</div>
+                <div class="tree-node level-3">Contact Information</div>
+                <div class="tree-node level-3">Family Connections</div>
+                <div class="tree-node level-2">Member Editing</div>
+                <div class="tree-node level-3">Edit Profile</div>
+                <div class="tree-node level-3">Add Member</div>
+                <div class="tree-node level-3">Quick Add</div>
+                <div class="tree-node level-2">Member Search</div>
+                <div class="tree-node level-3">Advanced Search</div>
+                <div class="tree-node level-3">Filter Results</div>
+
+                <div class="tree-node level-1 protected">🔒 Content Library</div>
+                <div class="tree-node level-2">Journals</div>
+                <div class="tree-node level-3">Journal List</div>
+                <div class="tree-node level-3">Journal View</div>
+                <div class="tree-node level-3">Create Entry</div>
+                <div class="tree-node level-3">Edit Entry</div>
+                <div class="tree-node level-2">Gallery</div>
+                <div class="tree-node level-3">Gallery View</div>
+                <div class="tree-node level-3">Photo Upload</div>
+                <div class="tree-node level-3">Album Management</div>
+                <div class="tree-node level-2">Media Management</div>
+
+                <div class="tree-node level-1 protected">🔒 Community Features</div>
+                <div class="tree-node level-2">Broadcasts</div>
+                <div class="tree-node level-3">Broadcast List</div>
+                <div class="tree-node level-3">Broadcast Details</div>
+                <div class="tree-node level-2">Branch Linking</div>
+                <div class="tree-node level-3">Link Request</div>
+                <div class="tree-node level-3">Pending Requests</div>
+                <div class="tree-node level-2">Family Groups</div>
+
+                <div class="tree-node level-1 protected">🔒 Admin Panel</div>
+                <div class="tree-node level-2">Dashboard</div>
+                <div class="tree-node level-3">System Overview</div>
+                <div class="tree-node level-3">Quick Stats</div>
+                <div class="tree-node level-2">Moderation</div>
+                <div class="tree-node level-3">Pending Approvals</div>
+                <div class="tree-node level-3">Content Review</div>
+                <div class="tree-node level-3">User Violations</div>
+                <div class="tree-node level-2">User Management</div>
+                <div class="tree-node level-3">User List</div>
+                <div class="tree-node level-3">User Details</div>
+                <div class="tree-node level-3">Access Control</div>
+                <div class="tree-node level-3">Role Assignment</div>
+                <div class="tree-node level-2">System Tools</div>
+                <div class="tree-node level-3">Data Quality</div>
+                <div class="tree-node level-3">Duplicate Scanner</div>
+                <div class="tree-node level-3">Database Tools</div>
+                <div class="tree-node level-3">Backup & Recovery</div>
+                <div class="tree-node level-2">Configuration</div>
+                <div class="tree-node level-3">System Settings</div>
+                <div class="tree-node level-3">Feature Flags</div>
+                <div class="tree-node level-3">Services</div>
+                <div class="tree-node level-2">Analytics</div>
+                <div class="tree-node level-3">Reports</div>
+                <div class="tree-node level-3">Audit Logs</div>
+                <div class="tree-node level-3">Performance Metrics</div>
+            </div>
+        </div>
+
+        <!-- NAVIGATION TAB -->
+        <div id="navigation" class="tab-content">
+            <h2 class="section-title">Navigation Structure</h2>
+            <p class="section-description">How users navigate through the application via sidebars, breadcrumbs, tabs, and menus.</p>
+
+            <div class="navigation-card">
+                <div class="nav-card-title">Main Navigation (Sidebar)</div>
+                <div class="nav-card-content">
+                    <div class="nav-card-item">Home / Dashboard - Always visible when logged in</div>
+                    <div class="nav-card-item">Family Tree - Direct access to visualization and editing</div>
+                    <div class="nav-card-item">Members - Browse, search, and manage family members</div>
+                    <div class="nav-card-item">Content - Journals, galleries, and media library</div>
+                    <div class="nav-card-item">Community - Broadcasts, branch linking, groups</div>
+                    <div class="nav-card-item">Admin (Conditional) - Only shown to administrators</div>
+                    <div class="nav-card-item">Settings - User preferences and account management</div>
+                </div>
+            </div>
+
+            <div class="navigation-card">
+                <div class="nav-card-title">Breadcrumb Navigation</div>
+                <div class="nav-card-content">
+                    <div class="breadcrumb-example">
+                        Home <span>›</span> Family Tree <span>›</span> Member Name <span>›</span> Edit
+                    </div>
+                    <div class="breadcrumb-example">
+                        Admin <span>›</span> User Management <span>›</span> User Details <span>›</span> Access Control
+                    </div>
+                    <p style="margin-top: 1rem; color: var(--text-muted);">Breadcrumbs appear on detail pages and nested admin pages. Support RTL text direction with proper alignment.</p>
+                </div>
+            </div>
+
+            <div class="navigation-card">
+                <div class="nav-card-title">Tab Navigation</div>
+                <div class="nav-card-content">
+                    <div class="nav-card-item">Member Profile - Overview, Contact, Relations, History tabs</div>
+                    <div class="nav-card-item">Settings - Account, Privacy, Notifications, Security tabs</div>
+                    <div class="nav-card-item">Admin Dashboard - Moderation, Users, Tools, Configuration tabs</div>
+                    <div class="nav-card-item">Content Library - Journals, Gallery, Media, Archive tabs</div>
+                </div>
+            </div>
+
+            <div class="navigation-card">
+                <div class="nav-card-title">Secondary Actions</div>
+                <div class="nav-card-content">
+                    <div class="nav-card-item">Context Menus - Right-click actions on tree nodes and items</div>
+                    <div class="nav-card-item">Action Bars - Bulk actions in lists and tables</div>
+                    <div class="nav-card-item">Dropdown Menus - Role-based filters and options</div>
+                    <div class="nav-card-item">Quick Links - Fast access to frequently used features</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAXONOMY TAB -->
+        <div id="taxonomy" class="tab-content">
+            <h2 class="section-title">Content Taxonomy</h2>
+            <p class="section-description">Categorization and organization of content types, data structures, and relationships.</p>
+
+            <div class="content-taxonomy">
+                <div class="taxonomy-card">
+                    <div class="taxonomy-title">Member Data</div>
+                    <ul class="taxonomy-items">
+                        <li>Personal Information</li>
+                        <li>Vital Events (Birth, Death)</li>
+                        <li>Contact Details</li>
+                        <li>Relationships</li>
+                        <li>Media & Photos</li>
+                        <li>Change History</li>
+                    </ul>
+                </div>
+
+                <div class="taxonomy-card">
+                    <div class="taxonomy-title">Relationship Types</div>
+                    <ul class="taxonomy-items">
+                        <li>Parent-Child</li>
+                        <li>Spouse</li>
+                        <li>Sibling</li>
+                        <li>Extended Family</li>
+                        <li>Lineage Groups</li>
+                        <li>Branch Connections</li>
+                    </ul>
+                </div>
+
+                <div class="taxonomy-card">
+                    <div class="taxonomy-title">Journal Content</div>
+                    <ul class="taxonomy-items">
+                        <li>Family Stories</li>
+                        <li>Genealogy Research</li>
+                        <li>Family Events</li>
+                        <li>Historical Records</li>
+                        <li>Personal Narratives</li>
+                        <li>Commentary</li>
+                    </ul>
+                </div>
+
+                <div class="taxonomy-card">
+                    <div class="taxonomy-title">Media Types</div>
+                    <ul class="taxonomy-items">
+                        <li>Family Photos</li>
+                        <li>Historical Documents</li>
+                        <li>Videos</li>
+                        <li>Audio Recordings</li>
+                        <li>Artifacts</li>
+                        <li>Certificates</li>
+                    </ul>
+                </div>
+
+                <div class="taxonomy-card">
+                    <div class="taxonomy-title">User Types & Roles</div>
+                    <ul class="taxonomy-items">
+                        <li>Guest (Anonymous)</li>
+                        <li>Member (Registered)</li>
+                        <li>Contributor</li>
+                        <li>Family Manager</li>
+                        <li>Moderator</li>
+                        <li>Administrator</li>
+                        <li>Super Admin</li>
+                    </ul>
+                </div>
+
+                <div class="taxonomy-card">
+                    <div class="taxonomy-title">Access Levels</div>
+                    <ul class="taxonomy-items">
+                        <li>Public</li>
+                        <li>Family Only</li>
+                        <li>Branch Only</li>
+                        <li>Private</li>
+                        <li>Custom Sharing</li>
+                        <li>Admin Only</li>
+                    </ul>
+                </div>
+
+                <div class="taxonomy-card">
+                    <div class="taxonomy-title">Broadcast Types</div>
+                    <ul class="taxonomy-items">
+                        <li>Family Updates</li>
+                        <li>Events Notification</li>
+                        <li>Important Announcements</li>
+                        <li>Research Requests</li>
+                        <li>System Alerts</li>
+                        <li>Feature Updates</li>
+                    </ul>
+                </div>
+
+                <div class="taxonomy-card">
+                    <div class="taxonomy-title">Action Categories</div>
+                    <ul class="taxonomy-items">
+                        <li>Create (New Members, Posts)</li>
+                        <li>Read (View, Download)</li>
+                        <li>Update (Edit, Modify)</li>
+                        <li>Delete (Remove, Archive)</li>
+                        <li>Share (Distribute, Notify)</li>
+                        <li>Manage (Admin Actions)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- URL STRUCTURE TAB -->
+        <div id="urls" class="tab-content">
+            <h2 class="section-title">URL Structure & Routing</h2>
+            <p class="section-description">RESTful URL patterns and routing architecture for all application endpoints.</p>
+
+            <div class="url-structure">
+                <div style="color: var(--cyan); font-weight: 600; margin-bottom: 1rem;">Authentication Routes</div>
+                <div class="url-example">/auth/login - User login form</div>
+                <div class="url-example">/auth/register - User registration</div>
+                <div class="url-example">/auth/forgot-password - Password recovery</div>
+                <div class="url-example">/auth/verify-email - Email verification</div>
+                <div class="url-example">/auth/2fa/setup - Two-factor setup</div>
+                <div class="url-example">/auth/logout - User logout</div>
+
+                <div style="color: var(--cyan); font-weight: 600; margin: 1.5rem 0 1rem 0;">User Dashboard</div>
+                <div class="url-example">/dashboard - Main dashboard home</div>
+                <div class="url-example">/dashboard/overview - Dashboard overview</div>
+                <div class="url-example">/settings - User settings</div>
+                <div class="url-example">/settings/account - Account settings</div>
+                <div class="url-example">/settings/privacy - Privacy settings</div>
+                <div class="url-example">/settings/security - Security settings</div>
+
+                <div style="color: var(--cyan); font-weight: 600; margin: 1.5rem 0 1rem 0;">Family Tree</div>
+                <div class="url-example">/tree - Tree visualization</div>
+                <div class="url-example">/tree/view/:treeId - Specific tree view</div>
+                <div class="url-example">/tree/edit - Tree editor</div>
+                <div class="url-example">/tree/node/:nodeId - Node details</div>
+                <div class="url-example">/tree/search - Tree search</div>
+
+                <div style="color: var(--cyan); font-weight: 600; margin: 1.5rem 0 1rem 0;">Members</div>
+                <div class="url-example">/members - Members list</div>
+                <div class="url-example">/members/:memberId - Member profile</div>
+                <div class="url-example">/members/:memberId/edit - Edit member</div>
+                <div class="url-example">/members/add - Add new member</div>
+                <div class="url-example">/members/search - Search members (with query params)</div>
+
+                <div style="color: var(--cyan); font-weight: 600; margin: 1.5rem 0 1rem 0;">Content</div>
+                <div class="url-example">/journals - Journal list</div>
+                <div class="url-example">/journals/:journalId - Journal entry</div>
+                <div class="url-example">/journals/create - Create journal</div>
+                <div class="url-example">/gallery - Photo gallery</div>
+                <div class="url-example">/gallery/album/:albumId - Specific album</div>
+                <div class="url-example">/broadcasts - Broadcast list</div>
+
+                <div style="color: var(--cyan); font-weight: 600; margin: 1.5rem 0 1rem 0;">Admin Routes</div>
+                <div class="url-example">/admin - Admin dashboard</div>
+                <div class="url-example">/admin/pending - Pending approvals</div>
+                <div class="url-example">/admin/users - User management</div>
+                <div class="url-example">/admin/users/:userId - User details</div>
+                <div class="url-example">/admin/tools - Admin tools</div>
+                <div class="url-example">/admin/settings - System settings</div>
+                <div class="url-example">/admin/reports - Analytics & reports</div>
+                <div class="url-example">/admin/audit-logs - Audit trail</div>
+
+                <div style="color: var(--cyan); font-weight: 600; margin: 1.5rem 0 1rem 0;">API Routes</div>
+                <div class="url-example">/api/v1/members - Members API endpoint</div>
+                <div class="url-example">/api/v1/members/:id - Specific member</div>
+                <div class="url-example">/api/v1/auth/login - Authentication API</div>
+                <div class="url-example">/api/v1/search - Search API</div>
+                <div class="url-example">/api/v1/admin/users - Admin API</div>
+            </div>
+        </div>
+
+        <!-- ACCESS CONTROL TAB -->
+        <div id="access" class="tab-content">
+            <h2 class="section-title">Role-Based Access Control (RBAC)</h2>
+            <p class="section-description">Who can access which pages and features based on user role and permissions.</p>
+
+            <table class="access-matrix">
+                <thead>
+                    <tr>
+                        <th>Page / Feature</th>
+                        <th>Guest</th>
+                        <th>Member</th>
+                        <th>Contributor</th>
+                        <th>Family Mgr</th>
+                        <th>Moderator</th>
+                        <th>Admin</th>
+                        <th>Super Admin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Landing Page</td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                    </tr>
+                    <tr>
+                        <td>Dashboard</td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                    </tr>
+                    <tr>
+                        <td>Family Tree View</td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                        <td><span class="access-badge access-allowed">RW</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                        <td><span class="access-badge access-allowed">RW</span></td>
+                        <td><span class="access-badge access-allowed">RW</span></td>
+                    </tr>
+                    <tr>
+                        <td>Tree Editing</td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-conditional">Self Only</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-conditional">Approve</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                    </tr>
+                    <tr>
+                        <td>Member Profiles</td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                        <td><span class="access-badge access-allowed">RW</span></td>
+                        <td><span class="access-badge access-allowed">Read</span></td>
+                        <td><span class="access-badge access-allowed">RW</span></td>
+                        <td><span class="access-badge access-allowed">RW</span></td>
+                    </tr>
+                    <tr>
+                        <td>Add/Edit Members</td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-conditional">Pending</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-conditional">Approve</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                    </tr>
+                    <tr>
+                        <td>Create Journal</td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                    </tr>
+                    <tr>
+                        <td>Gallery Upload</td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                    </tr>
+                    <tr>
+                        <td>Send Broadcasts</td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-conditional">Approve</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                    </tr>
+                    <tr>
+                        <td>Admin Panel</td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-allowed">Limited</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                    </tr>
+                    <tr>
+                        <td>User Management</td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                    </tr>
+                    <tr>
+                        <td>System Settings</td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-conditional">View</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                    </tr>
+                    <tr>
+                        <td>Database Tools</td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-denied">Denied</span></td>
+                        <td><span class="access-badge access-allowed">Write</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p style="color: var(--text-muted); margin-top: 1.5rem; font-size: 0.9rem;">
+                Legend: <span class="access-badge access-allowed">Read</span> = Can view |
+                <span class="access-badge access-allowed">Write</span> = Can create/edit/delete |
+                <span class="access-badge access-allowed">RW</span> = Read + Write |
+                <span class="access-badge access-conditional">Conditional</span> = Depends on circumstances |
+                <span class="access-badge access-denied">Denied</span> = No access
+            </p>
+        </div>
+
+        <!-- DATAFLOW TAB -->
+        <div id="dataflow" class="tab-content">
+            <h2 class="section-title">Data Flow Between Pages</h2>
+            <p class="section-description">How data flows between different pages and sections of the application.</p>
+
+            <div class="navigation-card">
+                <div class="nav-card-title">Member Profile Data Flow</div>
+                <div class="nav-card-content">
+                    <div class="dataflow-diagram">
+                        <div class="dataflow-box">Members List</div>
+                        <div class="dataflow-arrow">→</div>
+                        <div class="dataflow-box">Member ID</div>
+                        <div class="dataflow-arrow">→</div>
+                        <div class="dataflow-box">Profile View</div>
+                        <div class="dataflow-arrow">→</div>
+                        <div class="dataflow-box">Edit Form</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navigation-card">
+                <div class="nav-card-title">Tree Interaction Data Flow</div>
+                <div class="nav-card-content">
+                    <div class="dataflow-diagram">
+                        <div class="dataflow-box">Tree View</div>
+                        <div class="dataflow-arrow">→</div>
+                        <div class="dataflow-box">Node Click</div>
+                        <div class="dataflow-arrow">→</div>
+                        <div class="dataflow-box">Node Details</div>
+                        <div class="dataflow-arrow">→</div>
+                        <div class="dataflow-box">Tree Editor</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navigation-card">
+                <div class="nav-card-title">Content Creation Flow</div>
+                <div class="nav-card-content">
+                    <div class="dataflow-diagram">
+                        <div class="dataflow-box">Dashboard</div>
+                        <div class="dataflow-arrow">→</div>
+                        <div class="dataflow-box">Create Button</div>
+                        <div class="dataflow-arrow">→</div>
+                        <div class="dataflow-box">Form Editor</div>
+                        <div class="dataflow-arrow">→</div>
+                        <div class="dataflow-box">Preview</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navigation-card">
+                <div class="nav-card-title">Search Data Flow</div>
+                <div class="nav-card-content">
+                    <div class="dataflow-diagram">
+                        <div class="dataflow-box">Search Input</div>
+                        <div class="dataflow-arrow">→</div>
+                        <div class="dataflow-box">Query Processing</div>
+                        <div class="dataflow-arrow">→</div>
+                        <div class="dataflow-box">Results Page</div>
+                        <div class="dataflow-arrow">→</div>
+                        <div class="dataflow-box">Item Details</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navigation-card">
+                <div class="nav-card-title">Admin Workflow</div>
+                <div class="nav-card-content">
+                    <div class="dataflow-diagram">
+                        <div class="dataflow-box">Pending Queue</div>
+                        <div class="dataflow-arrow">→</div>
+                        <div class="dataflow-box">Review Item</div>
+                        <div class="dataflow-arrow">→</div>
+                        <div class="dataflow-box">Approve/Reject</div>
+                        <div class="dataflow-arrow">→</div>
+                        <div class="dataflow-box">Notify User</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEARCH ARCHITECTURE TAB -->
+        <div id="search" class="tab-content">
+            <h2 class="section-title">Search Architecture</h2>
+            <p class="section-description">How search functionality is organized and accessible throughout the application.</p>
+
+            <div class="search-arch-box">
+                <div class="search-arch-title">Search Types & Locations</div>
+                <div class="search-arch-content">
+                    <div class="search-feature">
+                        <div class="feature-name">Global Search</div>
+                        <div class="feature-desc">Header search box available on all pages. Searches members, journals, and galleries.</div>
+                    </div>
+                    <div class="search-feature">
+                        <div class="feature-name">Members Search</div>
+                        <div class="feature-desc">/members/search - Advanced search with filters by name, relation, date, location.</div>
+                    </div>
+                    <div class="search-feature">
+                        <div class="feature-name">Tree Search</div>
+                        <div class="feature-desc">Interactive search overlay in tree visualization. Highlights found nodes.</div>
+                    </div>
+                    <div class="search-feature">
+                        <div class="feature-name">Content Search</div>
+                        <div class="feature-desc">Search within journals, gallery, and broadcasts with tags and categories.</div>
+                    </div>
+                    <div class="search-feature">
+                        <div class="feature-name">Admin Search</div>
+                        <div class="feature-desc">Search users, access requests, audit logs with multiple filters.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-arch-box">
+                <div class="search-arch-title">Search Features & Capabilities</div>
+                <div class="search-arch-content">
+                    <div class="search-feature">
+                        <div class="feature-name">Arabic Text Support</div>
+                        <div class="feature-desc">Full support for Arabic search queries with proper RTL text handling.</div>
+                    </div>
+                    <div class="search-feature">
+                        <div class="feature-name">Fuzzy Matching</div>
+                        <div class="feature-desc">Handles typos and variations in names and search terms.</div>
+                    </div>
+                    <div class="search-feature">
+                        <div class="feature-name">Faceted Filters</div>
+                        <div class="feature-desc">Category, date range, status, and role-based filters on search results.</div>
+                    </div>
+                    <div class="search-feature">
+                        <div class="feature-name">Search History</div>
+                        <div class="feature-desc">User's recent searches available in dropdown for quick re-access.</div>
+                    </div>
+                    <div class="search-feature">
+                        <div class="feature-name">Saved Searches</div>
+                        <div class="feature-desc">Users can save frequent searches for quick access later.</div>
+                    </div>
+                    <div class="search-feature">
+                        <div class="feature-name">Pagination</div>
+                        <div class="feature-desc">Search results paginated with configurable items per page (10, 25, 50, 100).</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-arch-box">
+                <div class="search-arch-title">Search Query Syntax</div>
+                <div class="url-example" style="margin-bottom: 0.75rem;">name:"Ahmed Mohamed" - Exact name match</div>
+                <div class="url-example" style="margin-bottom: 0.75rem;">relation:father - Search by relationship</div>
+                <div class="url-example" style="margin-bottom: 0.75rem;">from:1980 to:1990 - Date range search</div>
+                <div class="url-example" style="margin-bottom: 0.75rem;">location:"Cairo" - Location search</div>
+                <div class="url-example" style="margin-bottom: 0.75rem;">verified:true - Filter by verification status</div>
+                <div class="url-example">tag:"family event" - Search by tags</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

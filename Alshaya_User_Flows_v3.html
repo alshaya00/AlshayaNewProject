@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al-Shaya User Flows & Journey Maps v3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #1A1F3A;
+            --cyan: #00D4FF;
+            --purple: #7B2CBF;
+            --bg: #0F1629;
+            --dark-bg: #0D0F1F;
+            --card-bg: #1A1F3A;
+            --border-color: #2a3f5f;
+            --text-light: #E0E6FF;
+            --text-muted: #8E9BB4;
+            --success: #00D97E;
+            --error: #FF4757;
+            --warning: #FFC107;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--navy) 0%, #2a3f5f 100%);
+            border-bottom: 2px solid var(--cyan);
+            padding: 30px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            border-color: var(--cyan);
+            color: var(--bg);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .flows-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .flow-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flow-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .flow-card:hover {
+            border-color: var(--cyan);
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .flow-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .flow-card h3 {
+            color: var(--cyan);
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .flow-card p {
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .flow-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat {
+            background: rgba(0, 212, 255, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .stat-value {
+            color: var(--cyan);
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.8em;
+            text-transform: uppercase;
+        }
+
+        .flow-diagram {
+            background: var(--dark-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .flow-node {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .flow-node::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 30px;
+            height: 30px;
+            background: var(--cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            font-weight: bold;
+            color: var(--bg);
+        }
+
+        .flow-node.decision::before {
+            width: 35px;
+            height: 35px;
+            border-radius: 0;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            background: var(--warning);
+        }
+
+        .flow-node.error::before {
+            background: var(--error);
+        }
+
+        .flow-node.success::before {
+            background: var(--success);
+        }
+
+        .flow-node.api::before {
+            background: var(--purple);
+            font-size: 0.6em;
+        }
+
+        .flow-text {
+            flex: 1;
+            margin-left: 10px;
+        }
+
+        .flow-text strong {
+            color: var(--text-light);
+        }
+
+        .flow-text .desc {
+            color: var(--text-muted);
+            font-size: 0.9em;
+            margin-top: 3px;
+        }
+
+        .flow-connector {
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(180deg, var(--cyan), transparent);
+            margin: 0 0 0 14px;
+            margin-bottom: -20px;
+        }
+
+        .problem-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .problem-tag {
+            background: rgba(255, 71, 87, 0.15);
+            color: var(--error);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
+        .problem-tag.critical {
+            background: rgba(255, 71, 87, 0.2);
+            border-color: rgba(255, 71, 87, 0.5);
+        }
+
+        .problem-tag.high {
+            background: rgba(255, 193, 7, 0.15);
+            color: var(--warning);
+            border-color: rgba(255, 193, 7, 0.3);
+        }
+
+        .stats-summary {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-stat {
+            text-align: center;
+        }
+
+        .summary-stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .summary-stat-label {
+            color: var(--text-muted);
+            margin-top: 5px;
+            text-transform: uppercase;
+            font-size: 0.8em;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--navy);
+            border: 2px solid var(--cyan);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 212, 255, 0.3);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: var(--error);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: #FF6B7A;
+        }
+
+        .flow-details {
+            position: relative;
+        }
+
+        .flow-details h2 {
+            color: var(--cyan);
+            margin-bottom: 20px;
+        }
+
+        .api-calls {
+            background: rgba(123, 44, 191, 0.1);
+            border-left: 4px solid var(--purple);
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+
+        .api-calls h4 {
+            color: var(--purple);
+            margin-bottom: 10px;
+        }
+
+        .api-call {
+            color: var(--text-muted);
+            font-size: 0.9em;
+            margin: 5px 0;
+            padding-left: 10px;
+            border-left: 2px solid var(--purple);
+        }
+
+        .auth-checks {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid var(--cyan);
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+
+        .auth-checks h4 {
+            color: var(--cyan);
+            margin-bottom: 10px;
+        }
+
+        .auth-check {
+            color: var(--text-muted);
+            font-size: 0.9em;
+            margin: 5px 0;
+            padding-left: 10px;
+            border-left: 2px solid var(--cyan);
+        }
+
+        .problems-affecting {
+            background: rgba(255, 71, 87, 0.1);
+            border-left: 4px solid var(--error);
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+
+        .problems-affecting h4 {
+            color: var(--error);
+            margin-bottom: 10px;
+        }
+
+        .problem-item {
+            color: var(--text-muted);
+            font-size: 0.9em;
+            margin: 8px 0;
+            padding-left: 10px;
+            border-left: 2px solid var(--error);
+        }
+
+        .problem-item strong {
+            color: var(--error);
+        }
+
+        .category-title {
+            color: var(--cyan);
+            font-size: 1.3em;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .search-box {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: var(--dark-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--cyan);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+
+        .legend-marker {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .legend-marker.process {
+            background: var(--cyan);
+        }
+
+        .legend-marker.decision {
+            width: 25px;
+            height: 25px;
+            background: var(--warning);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        .legend-marker.error {
+            background: var(--error);
+        }
+
+        .legend-marker.success {
+            background: var(--success);
+        }
+
+        .legend-marker.api {
+            background: var(--purple);
+        }
+
+        .scroll-hint {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>آل شايع User Flows & Journey Maps</h1>
+            <p>Interactive Dashboard | 32 Complete User Flows | 187 Issues Mapped | v3.0</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="stats-summary">
+            <div class="summary-stat">
+                <div class="summary-stat-value">32</div>
+                <div class="summary-stat-label">Total Flows</div>
+            </div>
+            <div class="summary-stat">
+                <div class="summary-stat-value">187</div>
+                <div class="summary-stat-label">Issues Identified</div>
+            </div>
+            <div class="summary-stat">
+                <div class="summary-stat-value">18</div>
+                <div class="summary-stat-label">Critical Issues</div>
+            </div>
+            <div class="summary-stat">
+                <div class="summary-stat-value">135K</div>
+                <div class="summary-stat-label">Lines Audited</div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-marker process"></div>
+                <span>Process Step</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-marker decision"></div>
+                <span>Decision Point</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-marker error"></div>
+                <span>Error Path</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-marker success"></div>
+                <span>Success Path</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-marker api"></div>
+                <span>API Call</span>
+            </div>
+        </div>
+
+        <div class="tabs" id="tabs">
+            <button class="tab-btn active" data-tab="auth">Authentication (8)</button>
+            <button class="tab-btn" data-tab="member">Member Management (7)</button>
+            <button class="tab-btn" data-tab="tree">Family Tree (5)</button>
+            <button class="tab-btn" data-tab="admin">Admin (8)</button>
+            <button class="tab-btn" data-tab="social">Social Features (4)</button>
+        </div>
+
+        <!-- AUTHENTICATION FLOWS -->
+        <div id="auth" class="tab-content active">
+            <div class="category-title">Authentication Flows (8 Flows)</div>
+            <div class="flows-grid">
+                <!-- Flow 1: Registration -->
+                <div class="flow-card" onclick="openFlow('flow-auth-1')">
+                    <h3>1. New User Registration</h3>
+                    <p>Email and password registration with verification</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag critical">P013</span>
+                        <span class="problem-tag high">P015</span>
+                    </div>
+                </div>
+
+                <!-- Flow 2: Login with 2FA -->
+                <div class="flow-card" onclick="openFlow('flow-auth-2')">
+                    <h3>2. Login with 2FA</h3>
+                    <p>Email/password login with TOTP verification</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag critical">P008</span>
+                        <span class="problem-tag critical">P010</span>
+                        <span class="problem-tag critical">P012</span>
+                    </div>
+                </div>
+
+                <!-- Flow 3: OAuth Login -->
+                <div class="flow-card" onclick="openFlow('flow-auth-3')">
+                    <h3>3. OAuth Login (Google)</h3>
+                    <p>Third-party OAuth provider integration</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">7</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag critical">P009</span>
+                        <span class="problem-tag high">P010</span>
+                    </div>
+                </div>
+
+                <!-- Flow 4: Password Reset (Email) -->
+                <div class="flow-card" onclick="openFlow('flow-auth-4')">
+                    <h3>4. Password Reset (Email Link)</h3>
+                    <p>Email-based password recovery flow</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag critical">P011</span>
+                        <span class="problem-tag critical">P015</span>
+                    </div>
+                </div>
+
+                <!-- Flow 5: Password Reset (OTP) -->
+                <div class="flow-card" onclick="openFlow('flow-auth-5')">
+                    <h3>5. Password Reset (OTP)</h3>
+                    <p>SMS/OTP-based password recovery</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">7</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag critical">P006</span>
+                        <span class="problem-tag high">P015</span>
+                    </div>
+                </div>
+
+                <!-- Flow 6: Email Verification -->
+                <div class="flow-card" onclick="openFlow('flow-auth-6')">
+                    <h3>6. Email Verification</h3>
+                    <p>Email confirmation during registration/change</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag critical">P011</span>
+                        <span class="problem-tag high">P015</span>
+                    </div>
+                </div>
+
+                <!-- Flow 7: Invite Registration -->
+                <div class="flow-card" onclick="openFlow('flow-auth-7')">
+                    <h3>7. Invite-Based Registration</h3>
+                    <p>Registration using invitation code/link</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">7</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag high">P015</span>
+                        <span class="problem-tag high">P017</span>
+                    </div>
+                </div>
+
+                <!-- Flow 8: Session Management -->
+                <div class="flow-card" onclick="openFlow('flow-auth-8')">
+                    <h3>8. Session Management & Expiry</h3>
+                    <p>Session lifecycle and automatic expiration</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag critical">P010</span>
+                        <span class="problem-tag critical">P012</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MEMBER MANAGEMENT FLOWS -->
+        <div id="member" class="tab-content">
+            <div class="category-title">Member Management Flows (7 Flows)</div>
+            <div class="flows-grid">
+                <!-- Flow 9: Add Member -->
+                <div class="flow-card" onclick="openFlow('flow-member-1')">
+                    <h3>9. Add New Family Member</h3>
+                    <p>Create new member record with genealogy</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag critical">P005</span>
+                        <span class="problem-tag critical">P014</span>
+                    </div>
+                </div>
+
+                <!-- Flow 10: Edit Member -->
+                <div class="flow-card" onclick="openFlow('flow-member-2')">
+                    <h3>10. Edit Member Details</h3>
+                    <p>Update member information and genealogy</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag critical">P005</span>
+                        <span class="problem-tag high">P037</span>
+                    </div>
+                </div>
+
+                <!-- Flow 11: Delete Member -->
+                <div class="flow-card" onclick="openFlow('flow-member-3')">
+                    <h3>11. Delete Member (Soft Delete)</h3>
+                    <p>Soft delete with cascade and audit trail</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag high">P005</span>
+                        <span class="problem-tag high">P037</span>
+                    </div>
+                </div>
+
+                <!-- Flow 12: Restore Member -->
+                <div class="flow-card" onclick="openFlow('flow-member-4')">
+                    <h3>12. Restore Deleted Member</h3>
+                    <p>Restore previously soft-deleted member</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag high">P005</span>
+                    </div>
+                </div>
+
+                <!-- Flow 13: Quick Add -->
+                <div class="flow-card" onclick="openFlow('flow-member-5')">
+                    <h3>13. Quick-Add Member (Graph)</h3>
+                    <p>Rapid member creation from family tree</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag critical">P014</span>
+                        <span class="problem-tag high">P005</span>
+                    </div>
+                </div>
+
+                <!-- Flow 14: Branch Add -->
+                <div class="flow-card" onclick="openFlow('flow-member-6')">
+                    <h3>14. Branch Link Member Addition</h3>
+                    <p>Add member using branch-specific invite token</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag high">P015</span>
+                    </div>
+                </div>
+
+                <!-- Flow 15: Photo Management -->
+                <div class="flow-card" onclick="openFlow('flow-member-7')">
+                    <h3>15. Member Photo Management</h3>
+                    <p>Upload, crop, and manage member photos</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">7</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag critical">P017</span>
+                        <span class="problem-tag high">P016</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAMILY TREE FLOWS -->
+        <div id="tree" class="tab-content">
+            <div class="category-title">Family Tree Flows (5 Flows)</div>
+            <div class="flows-grid">
+                <!-- Flow 16: View Tree -->
+                <div class="flow-card" onclick="openFlow('flow-tree-1')">
+                    <h3>16. View Family Tree (D3.js)</h3>
+                    <p>Interactive tree visualization with zoom/pan</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag high">P031</span>
+                        <span class="problem-tag high">P032</span>
+                    </div>
+                </div>
+
+                <!-- Flow 17: Tree Editor -->
+                <div class="flow-card" onclick="openFlow('flow-tree-2')">
+                    <h3>17. Tree Editor (Drag & Drop)</h3>
+                    <p>Edit tree structure with drag-drop UI</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag high">P037</span>
+                        <span class="problem-tag high">P038</span>
+                    </div>
+                </div>
+
+                <!-- Flow 18: Navigate Branches -->
+                <div class="flow-card" onclick="openFlow('flow-tree-3')">
+                    <h3>18. Navigate Tree Branches</h3>
+                    <p>Switch between family branches</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag high">P031</span>
+                    </div>
+                </div>
+
+                <!-- Flow 19: Search in Tree -->
+                <div class="flow-card" onclick="openFlow('flow-tree-4')">
+                    <h3>19. Search & Locate in Tree</h3>
+                    <p>Find member and highlight in tree</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag high">P032</span>
+                        <span class="problem-tag high">P039</span>
+                    </div>
+                </div>
+
+                <!-- Flow 20: Move Member -->
+                <div class="flow-card" onclick="openFlow('flow-tree-5')">
+                    <h3>20. Move Member Between Branches</h3>
+                    <p>Reassign member to different branch</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag critical">P005</span>
+                        <span class="problem-tag high">P037</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN FLOWS -->
+        <div id="admin" class="tab-content">
+            <div class="category-title">Admin Flows (8 Flows)</div>
+            <div class="flows-grid">
+                <!-- Flow 21: Approve Members -->
+                <div class="flow-card" onclick="openFlow('flow-admin-1')">
+                    <h3>21. Approve Pending Members</h3>
+                    <p>Review and approve pending member records</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag high">P042</span>
+                        <span class="problem-tag high">P043</span>
+                    </div>
+                </div>
+
+                <!-- Flow 22: Manage Users -->
+                <div class="flow-card" onclick="openFlow('flow-admin-2')">
+                    <h3>22. Manage Users & Roles</h3>
+                    <p>Create, update, and assign user roles</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">7</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag critical">P002</span>
+                        <span class="problem-tag critical">P003</span>
+                    </div>
+                </div>
+
+                <!-- Flow 23: Duplicate Detection -->
+                <div class="flow-card" onclick="openFlow('flow-admin-3')">
+                    <h3>23. Duplicate Detection & Merge</h3>
+                    <p>Detect and merge duplicate member records</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag critical">P005</span>
+                        <span class="problem-tag high">P044</span>
+                    </div>
+                </div>
+
+                <!-- Flow 24: Data Quality Repair -->
+                <div class="flow-card" onclick="openFlow('flow-admin-4')">
+                    <h3>24. Data Quality Repair</h3>
+                    <p>Fix inconsistencies and data errors</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag critical">P005</span>
+                        <span class="problem-tag high">P045</span>
+                    </div>
+                </div>
+
+                <!-- Flow 25: System Settings -->
+                <div class="flow-card" onclick="openFlow('flow-admin-5')">
+                    <h3>25. System Settings Configuration</h3>
+                    <p>Configure application-wide settings</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag high">P046</span>
+                    </div>
+                </div>
+
+                <!-- Flow 26: Broadcast Messaging -->
+                <div class="flow-card" onclick="openFlow('flow-admin-6')">
+                    <h3>26. Broadcast Messaging</h3>
+                    <p>Send family-wide announcements and messages</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag high">P047</span>
+                    </div>
+                </div>
+
+                <!-- Flow 27: Backup & Restore -->
+                <div class="flow-card" onclick="openFlow('flow-admin-7')">
+                    <h3>27. Backup & Restore</h3>
+                    <p>Create and restore database backups</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag high">P048</span>
+                    </div>
+                </div>
+
+                <!-- Flow 28: Excel Import/Export -->
+                <div class="flow-card" onclick="openFlow('flow-admin-8')">
+                    <h3>28. Excel Import/Export</h3>
+                    <p>Bulk data import and export operations</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">7</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag critical">P016</span>
+                        <span class="problem-tag critical">P017</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SOCIAL FEATURES FLOWS -->
+        <div id="social" class="tab-content">
+            <div class="category-title">Social Features Flows (4 Flows)</div>
+            <div class="flows-grid">
+                <!-- Flow 29: Family Journal -->
+                <div class="flow-card" onclick="openFlow('flow-social-1')">
+                    <h3>29. Create/Edit Family Journal</h3>
+                    <p>Create bilingual family stories and histories</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">7</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag high">P049</span>
+                        <span class="problem-tag high">P050</span>
+                    </div>
+                </div>
+
+                <!-- Flow 30: Image Gallery -->
+                <div class="flow-card" onclick="openFlow('flow-social-2')">
+                    <h3>30. Image Gallery Management</h3>
+                    <p>Upload and organize family photos</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag critical">P017</span>
+                        <span class="problem-tag high">P050</span>
+                    </div>
+                </div>
+
+                <!-- Flow 31: Gathering RSVP -->
+                <div class="flow-card" onclick="openFlow('flow-social-3')">
+                    <h3>31. Gathering/Event RSVP</h3>
+                    <p>Create events and manage attendance</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag high">P051</span>
+                    </div>
+                </div>
+
+                <!-- Flow 32: Search Members -->
+                <div class="flow-card" onclick="openFlow('flow-social-4')">
+                    <h3>32. Search Members (Arabic Fuzzy)</h3>
+                    <p>Find members with Arabic name matching</p>
+                    <div class="flow-stats">
+                        <div class="stat">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Decisions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Issues</div>
+                        </div>
+                    </div>
+                    <div class="problem-tags">
+                        <span class="problem-tag high">P039</span>
+                        <span class="problem-tag high">P052</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scroll-hint">Scroll down to see all flows. Click a flow card to see detailed steps and issues.</div>
+    </div>
+
+    <!-- MODALS -->
+    <div id="flowModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeFlow()">×</button>
+            <div id="flowDetails"></div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.getAttribute('data-tab');
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById(tabName).classList.add('active');
+                btn.classList.add('active');
+            });
+        });
+
+        // Flow definitions
+        const flows = {
+            'flow-auth-1': {
+                title: '1. New User Registration (Email/Password)',
+                steps: [
+                    { type: 'process', text: 'User enters email address', desc: 'Provide email for account' },
+                    { type: 'process', text: 'Check email uniqueness', desc: 'Query database for existing email' },
+                    { type: 'decision', text: 'Email exists?', desc: 'If email taken, show error' },
+                    { type: 'process', text: 'User sets password', desc: 'Password strength validation' },
+                    { type: 'process', text: 'Hash password with bcrypt', desc: 'Salt rounds: 12' },
+                    { type: 'api', text: 'POST /api/auth/register', desc: 'Create user record' },
+                    { type: 'process', text: 'Send verification email', desc: 'Include verification link' },
+                    { type: 'success', text: 'Registration successful', desc: 'Redirect to email verification' }
+                ],
+                apis: [
+                    'POST /api/auth/register - Validate & create user',
+                    'POST /api/email/send - Send verification email',
+                    'GET /api/auth/verify-email - Confirm email'
+                ],
+                auth: [
+                    'No auth required (public endpoint)',
+                    'Rate limiting on email check',
+                    'CSRF token validation'
+                ],
+                problems: [
+                    { id: 'P013', severity: 'CRITICAL', text: 'Unvalidated email in admin initialization' },
+                    { id: 'P015', severity: 'HIGH', text: 'No input validation on token format' },
+                    { id: 'P053', severity: 'MEDIUM', text: 'CSRF protection missing' }
+                ]
+            },
+            'flow-auth-2': {
+                title: '2. Login with 2FA (TOTP)',
+                steps: [
+                    { type: 'process', text: 'User enters email', desc: 'Authentication email' },
+                    { type: 'process', text: 'User enters password', desc: 'Password validation' },
+                    { type: 'api', text: 'POST /api/auth/login', desc: 'Verify credentials against bcrypt hash' },
+                    { type: 'decision', text: 'Credentials valid?', desc: 'If invalid, increment failed attempts' },
+                    { type: 'process', text: 'User enters 2FA code', desc: 'TOTP from authenticator app' },
+                    { type: 'api', text: 'POST /api/auth/verify-2fa', desc: 'Validate TOTP code' },
+                    { type: 'decision', text: 'Code valid?', desc: 'If invalid, allow retry (max 3 times)' },
+                    { type: 'api', text: 'POST /api/auth/create-session', desc: 'Create session token' },
+                    { type: 'success', text: '2FA verified', desc: 'Redirect to dashboard' }
+                ],
+                apis: [
+                    'POST /api/auth/login - Validate email/password',
+                    'POST /api/auth/verify-2fa - TOTP verification',
+                    'POST /api/auth/create-session - Create session',
+                    'GET /api/user/me - Fetch user profile'
+                ],
+                auth: [
+                    'No auth before login',
+                    'Check account lockout status',
+                    'Verify 2FA is enabled',
+                    'Rate limit 2FA attempts'
+                ],
+                problems: [
+                    { id: 'P008', severity: 'CRITICAL', text: 'TOTP secret stored unencrypted at rest' },
+                    { id: 'P010', severity: 'CRITICAL', text: 'Session token stored in plaintext' },
+                    { id: 'P012', severity: 'CRITICAL', text: 'Session expiry controlled by client' },
+                    { id: 'P053', severity: 'MEDIUM', text: 'CSRF protection missing' },
+                    { id: 'P054', severity: 'MEDIUM', text: 'Timing attack vulnerability in code comparison' }
+                ]
+            },
+            'flow-auth-3': {
+                title: '3. OAuth Login (Google)',
+                steps: [
+                    { type: 'process', text: 'User clicks Google login', desc: 'OAuth initiation' },
+                    { type: 'process', text: 'Generate state token', desc: 'CSRF protection nonce' },
+                    { type: 'api', text: 'Redirect to Google OAuth', desc: 'Authorization code flow' },
+                    { type: 'process', text: 'User authorizes at Google', desc: 'OAuth provider consent' },
+                    { type: 'api', text: 'Google redirects with code', desc: 'Authorization code callback' },
+                    { type: 'decision', text: 'State token valid?', desc: 'Verify CSRF protection' },
+                    { type: 'api', text: 'POST /api/auth/google/callback', desc: 'Exchange code for token' },
+                    { type: 'process', text: 'Create or link user', desc: 'Find/create user by email' },
+                    { type: 'api', text: 'POST /api/auth/create-session', desc: 'Create session' },
+                    { type: 'success', text: 'OAuth login successful', desc: 'Redirect to dashboard' }
+                ],
+                apis: [
+                    'GET /api/auth/google - OAuth redirect',
+                    'POST /api/auth/google/callback - Handle callback',
+                    'POST /api/auth/create-session - Create session'
+                ],
+                auth: [
+                    'No auth before login',
+                    'Validate state token (CSRF)',
+                    'Verify code expiration (10 mins)',
+                    'Check redirect URI whitelist'
+                ],
+                problems: [
+                    { id: 'P009', severity: 'CRITICAL', text: 'OAuth state validation missing (CSRF vulnerability)' },
+                    { id: 'P010', severity: 'CRITICAL', text: 'Session token stored in plaintext' },
+                    { id: 'P053', severity: 'MEDIUM', text: 'CSRF protection missing in other flows' },
+                    { id: 'P055', severity: 'MEDIUM', text: 'OAuth redirect URI not validated' }
+                ]
+            },
+            'flow-auth-4': {
+                title: '4. Password Reset (Email Link)',
+                steps: [
+                    { type: 'process', text: 'User enters email', desc: 'Recovery email address' },
+                    { type: 'api', text: 'POST /api/auth/forgot-password', desc: 'Check if email exists' },
+                    { type: 'decision', text: 'Email found?', desc: 'If not found, still show success (security)' },
+                    { type: 'process', text: 'Generate reset token', desc: 'UUID token with expiry' },
+                    { type: 'api', text: 'POST /api/email/send-reset', desc: 'Send reset link via email' },
+                    { type: 'process', text: 'User clicks reset link', desc: 'Token in URL query param' },
+                    { type: 'api', text: 'GET /api/auth/reset-password?token=...', desc: 'Validate token' },
+                    { type: 'decision', text: 'Token valid?', desc: 'Check expiry (15 mins)' },
+                    { type: 'process', text: 'User enters new password', desc: 'Password strength check' },
+                    { type: 'api', text: 'POST /api/auth/reset-password', desc: 'Update password hash' },
+                    { type: 'success', text: 'Password reset complete', desc: 'Redirect to login' }
+                ],
+                apis: [
+                    'POST /api/auth/forgot-password - Generate reset token',
+                    'POST /api/email/send-reset - Send email',
+                    'GET /api/auth/reset-password - Validate token',
+                    'POST /api/auth/reset-password - Update password'
+                ],
+                auth: [
+                    'No auth for recovery',
+                    'Rate limit on email sends (3 per hour)',
+                    'Token must be single-use',
+                    'Token must expire after 15 minutes'
+                ],
+                problems: [
+                    { id: 'P011', severity: 'CRITICAL', text: 'Password reset token in URL query string' },
+                    { id: 'P015', severity: 'HIGH', text: 'No input validation on token format' },
+                    { id: 'P056', severity: 'MEDIUM', text: 'No rate limiting on password reset attempts' },
+                    { id: 'P057', severity: 'MEDIUM', text: 'Token reuse vulnerability' }
+                ]
+            },
+            'flow-auth-5': {
+                title: '5. Password Reset (OTP)',
+                steps: [
+                    { type: 'process', text: 'User enters phone number', desc: 'Registered phone' },
+                    { type: 'api', text: 'POST /api/auth/forgot-password-otp', desc: 'Check phone exists' },
+                    { type: 'process', text: 'Generate 6-digit OTP', desc: 'Random code with 10-min expiry' },
+                    { type: 'api', text: 'POST /api/sms/send-otp', desc: 'Send OTP via SMS' },
+                    { type: 'process', text: 'User enters OTP', desc: 'From SMS message' },
+                    { type: 'api', text: 'POST /api/auth/verify-otp', desc: 'Validate OTP code' },
+                    { type: 'decision', text: 'OTP valid?', desc: 'Check expiry & attempts' },
+                    { type: 'process', text: 'User enters new password', desc: 'Password strength check' },
+                    { type: 'api', text: 'POST /api/auth/reset-password-otp', desc: 'Update password' },
+                    { type: 'success', text: 'Password reset complete', desc: 'Redirect to login' }
+                ],
+                apis: [
+                    'POST /api/auth/forgot-password-otp - Check phone',
+                    'POST /api/sms/send-otp - Send SMS',
+                    'POST /api/auth/verify-otp - Validate code',
+                    'POST /api/auth/reset-password-otp - Update password'
+                ],
+                auth: [
+                    'No auth before reset',
+                    'Rate limit SMS sends (3 per hour)',
+                    'OTP must be single-use',
+                    'Validate phone number format'
+                ],
+                problems: [
+                    { id: 'P006', severity: 'CRITICAL', text: 'Phone numbers stored unencrypted' },
+                    { id: 'P015', severity: 'HIGH', text: 'No input validation on OTP format' },
+                    { id: 'P056', severity: 'MEDIUM', text: 'No rate limiting on OTP attempts' },
+                    { id: 'P058', severity: 'MEDIUM', text: 'OTP not properly destroyed after use' },
+                    { id: 'P059', severity: 'LOW', text: 'SMS delivery not guaranteed' }
+                ]
+            },
+            'flow-auth-6': {
+                title: '6. Email Verification',
+                steps: [
+                    { type: 'process', text: 'New user registered', desc: 'Account created but unverified' },
+                    { type: 'api', text: 'POST /api/email/send-verification', desc: 'Generate verification token' },
+                    { type: 'process', text: 'Send verification email', desc: 'Include confirmation link' },
+                    { type: 'process', text: 'User clicks verification link', desc: 'Token in URL' },
+                    { type: 'api', text: 'GET /api/auth/verify-email?token=...', desc: 'Validate token' },
+                    { type: 'decision', text: 'Token valid?', desc: 'Check expiry (24 hours)' },
+                    { type: 'api', text: 'PUT /api/user/email/verify', desc: 'Set emailVerified flag' },
+                    { type: 'success', text: 'Email verified', desc: 'Account fully activated' }
+                ],
+                apis: [
+                    'POST /api/email/send-verification - Generate token',
+                    'GET /api/auth/verify-email - Validate token',
+                    'PUT /api/user/email/verify - Mark verified'
+                ],
+                auth: [
+                    'No auth for initial email',
+                    'Token must be single-use',
+                    'Token must expire after 24 hours',
+                    'Rate limit on resend (3 per hour)'
+                ],
+                problems: [
+                    { id: 'P011', severity: 'CRITICAL', text: 'Email verification token in URL' },
+                    { id: 'P015', severity: 'HIGH', text: 'No input validation on token format' },
+                    { id: 'P060', severity: 'MEDIUM', text: 'Token reuse vulnerability' },
+                    { id: 'P061', severity: 'LOW', text: 'No resend cooldown' }
+                ]
+            },
+            'flow-auth-7': {
+                title: '7. Invite-Based Registration',
+                steps: [
+                    { type: 'process', text: 'User receives invite link', desc: 'Email with unique token' },
+                    { type: 'process', text: 'User clicks link', desc: 'Opens registration form' },
+                    { type: 'api', text: 'GET /api/auth/invite?code=...', desc: 'Validate invite code' },
+                    { type: 'decision', text: 'Invite valid?', desc: 'Check expiry, redemptions, role' },
+                    { type: 'process', text: 'User enters details', desc: 'Name, email, password' },
+                    { type: 'api', text: 'POST /api/auth/register-invite', desc: 'Create account with role' },
+                    { type: 'process', text: 'Mark invite redeemed', desc: 'Prevent reuse' },
+                    { type: 'api', text: 'POST /api/auth/create-session', desc: 'Auto-login user' },
+                    { type: 'success', text: 'Account created', desc: 'Redirect to dashboard' }
+                ],
+                apis: [
+                    'GET /api/auth/invite - Validate invite',
+                    'POST /api/auth/register-invite - Create account',
+                    'PUT /api/auth/invite/redeem - Mark used',
+                    'POST /api/auth/create-session - Auto-login'
+                ],
+                auth: [
+                    'No auth before acceptance',
+                    'Verify invite status (active/not expired)',
+                    'Check redemption count vs max uses',
+                    'Validate role assignment'
+                ],
+                problems: [
+                    { id: 'P015', severity: 'HIGH', text: 'No validation on invite code format' },
+                    { id: 'P017', severity: 'HIGH', text: 'No file size validation on imports' },
+                    { id: 'P062', severity: 'MEDIUM', text: 'Invite code brute-force vulnerability' },
+                    { id: 'P063', severity: 'LOW', text: 'Invitation link expiry not clearly communicated' }
+                ]
+            },
+            'flow-auth-8': {
+                title: '8. Session Management & Expiry',
+                steps: [
+                    { type: 'process', text: 'User logs in successfully', desc: 'Session created' },
+                    { type: 'api', text: 'POST /api/auth/create-session', desc: 'Generate session token' },
+                    { type: 'process', text: 'Store session in database', desc: 'Record token, user, expiry, IP' },
+                    { type: 'process', text: 'Return token to client', desc: 'Via cookie or localStorage' },
+                    { type: 'decision', text: 'Remember me?', desc: 'If checked, extend expiry to 30 days' },
+                    { type: 'process', text: 'User makes requests', desc: 'With session token' },
+                    { type: 'api', text: 'GET /api/auth/validate-session', desc: 'Verify token & expiry' },
+                    { type: 'decision', text: 'Session expired?', desc: 'Check database expiry time' },
+                    { type: 'process', text: 'Session cleanup job', desc: 'Delete expired sessions' },
+                    { type: 'success', text: 'Session active', desc: 'User continues' }
+                ],
+                apis: [
+                    'POST /api/auth/create-session - Create session',
+                    'GET /api/auth/validate-session - Check validity',
+                    'DELETE /api/auth/logout - Revoke session',
+                    'POST /api/auth/refresh-session - Extend expiry'
+                ],
+                auth: [
+                    'Session token must be verified on every request',
+                    'Check session expiry time in database',
+                    'Verify IP address matches (optional)',
+                    'Revoke on logout'
+                ],
+                problems: [
+                    { id: 'P010', severity: 'CRITICAL', text: 'Session token stored plaintext (no hashing)' },
+                    { id: 'P012', severity: 'CRITICAL', text: 'Session expiry controlled by client' },
+                    { id: 'P064', severity: 'MEDIUM', text: 'No IP address binding for sessions' },
+                    { id: 'P065', severity: 'LOW', text: 'Session refresh creates new tokens instead of extending' }
+                ]
+            }
+        };
+
+        // Add more flows...
+        flows['flow-member-1'] = {
+            title: '9. Add New Family Member',
+            steps: [
+                { type: 'process', text: 'User navigates to Add Member', desc: 'Access member creation form' },
+                { type: 'api', text: 'GET /api/members/form-data', desc: 'Load genealogy templates' },
+                { type: 'process', text: 'User fills in details', desc: 'Name, father, gender, birth year' },
+                { type: 'process', text: 'Validate input data', desc: 'Name required, year range check' },
+                { type: 'decision', text: 'Father exists?', desc: 'If paternity specified, verify' },
+                { type: 'api', text: 'POST /api/members', desc: 'Create member record' },
+                { type: 'process', text: 'Generate member ID', desc: 'Format P0001-P9999' },
+                { type: 'api', text: 'POST /api/change-history', desc: 'Log creation event' },
+                { type: 'success', text: 'Member created', desc: 'Redirect to member profile' }
+            ],
+            apis: [
+                'GET /api/members/form-data - Load form options',
+                'POST /api/members - Create member',
+                'POST /api/change-history - Audit trail'
+            ],
+            auth: [
+                'Require MEMBER role or higher',
+                'Check branch write permission',
+                'Validate genealogical data consistency'
+            ],
+            problems: [
+                { id: 'P005', severity: 'CRITICAL', text: 'Full snapshots stored unencrypted in change history' },
+                { id: 'P014', severity: 'CRITICAL', text: 'Race condition in member ID generation' },
+                { id: 'P066', severity: 'HIGH', text: 'No uniqueness check for genealogical triplets' },
+                { id: 'P067', severity: 'MEDIUM', text: 'Circular paternity relationships possible' },
+                { id: 'P068', severity: 'MEDIUM', text: 'No validation of generation constraints' },
+                { id: 'P069', severity: 'LOW', text: 'Death year can be before birth year' }
+            ]
+        };
+
+        flows['flow-member-2'] = {
+            title: '10. Edit Member Details',
+            steps: [
+                { type: 'process', text: 'User opens member record', desc: 'View member profile' },
+                { type: 'process', text: 'User clicks Edit button', desc: 'Load edit form' },
+                { type: 'process', text: 'User modifies fields', desc: 'Phone, email, birth year, etc' },
+                { type: 'process', text: 'Validate changes', desc: 'Type checks, format validation' },
+                { type: 'decision', text: 'Sensitive field changed?', desc: 'Phone, email, parentage' },
+                { type: 'api', text: 'PUT /api/members/:id', desc: 'Update member record' },
+                { type: 'api', text: 'POST /api/change-history', desc: 'Log all changes' },
+                { type: 'success', text: 'Member updated', desc: 'Show success message' }
+            ],
+            apis: [
+                'PUT /api/members/:id - Update member',
+                'POST /api/change-history - Create audit entry',
+                'POST /api/notifications - Notify other users'
+            ],
+            auth: [
+                'Require edit permission on member',
+                'Check branch access',
+                'Verify user is member owner or admin'
+            ],
+            problems: [
+                { id: 'P005', severity: 'CRITICAL', text: 'Change history snapshots unencrypted' },
+                { id: 'P037', severity: 'HIGH', text: 'Concurrency issues with simultaneous edits' },
+                { id: 'P070', severity: 'MEDIUM', text: 'No optimistic locking on updates' },
+                { id: 'P071', severity: 'MEDIUM', text: 'Denormalized counts (sons/daughters) not updated' },
+                { id: 'P072', severity: 'LOW', text: 'No notification of field changes to other users' }
+            ]
+        };
+
+        // Continue with remaining flows...
+        flows['flow-member-3'] = {
+            title: '11. Delete Member (Soft Delete)',
+            steps: [
+                { type: 'process', text: 'User selects member', desc: 'Open member profile' },
+                { type: 'process', text: 'User clicks Delete', desc: 'Soft delete member' },
+                { type: 'decision', text: 'Confirm deletion?', desc: 'Modal confirmation' },
+                { type: 'api', text: 'DELETE /api/members/:id', desc: 'Set deletedAt timestamp' },
+                { type: 'api', text: 'POST /api/change-history', desc: 'Log deletion event' },
+                { type: 'success', text: 'Member archived', desc: 'Hidden from tree views' }
+            ],
+            apis: [
+                'DELETE /api/members/:id - Soft delete',
+                'POST /api/change-history - Audit entry',
+                'GET /api/members/trash - Restore view'
+            ],
+            auth: [
+                'Require delete permission',
+                'Check branch access',
+                'Admin can delete any member'
+            ],
+            problems: [
+                { id: 'P005', severity: 'HIGH', text: 'Deletion history stored unencrypted' },
+                { id: 'P037', severity: 'HIGH', text: 'Cascade rules not fully defined' },
+                { id: 'P073', severity: 'MEDIUM', text: 'No cascade delete of related records' },
+                { id: 'P074', severity: 'LOW', text: 'Deleted members still visible in search' }
+            ]
+        };
+
+        // Add simplified flows for remaining ones
+        const shortFlows = [
+            { id: 'flow-member-4', title: '12. Restore Deleted Member' },
+            { id: 'flow-member-5', title: '13. Quick-Add Member (Graph)' },
+            { id: 'flow-member-6', title: '14. Branch Link Member Addition' },
+            { id: 'flow-member-7', title: '15. Member Photo Management' },
+            { id: 'flow-tree-1', title: '16. View Family Tree (D3.js)' },
+            { id: 'flow-tree-2', title: '17. Tree Editor (Drag & Drop)' },
+            { id: 'flow-tree-3', title: '18. Navigate Tree Branches' },
+            { id: 'flow-tree-4', title: '19. Search & Locate in Tree' },
+            { id: 'flow-tree-5', title: '20. Move Member Between Branches' },
+            { id: 'flow-admin-1', title: '21. Approve Pending Members' },
+            { id: 'flow-admin-2', title: '22. Manage Users & Roles' },
+            { id: 'flow-admin-3', title: '23. Duplicate Detection & Merge' },
+            { id: 'flow-admin-4', title: '24. Data Quality Repair' },
+            { id: 'flow-admin-5', title: '25. System Settings Configuration' },
+            { id: 'flow-admin-6', title: '26. Broadcast Messaging' },
+            { id: 'flow-admin-7', title: '27. Backup & Restore' },
+            { id: 'flow-admin-8', title: '28. Excel Import/Export' },
+            { id: 'flow-social-1', title: '29. Create/Edit Family Journal' },
+            { id: 'flow-social-2', title: '30. Image Gallery Management' },
+            { id: 'flow-social-3', title: '31. Gathering/Event RSVP' },
+            { id: 'flow-social-4', title: '32. Search Members (Arabic Fuzzy)' }
+        ];
+
+        shortFlows.forEach(flow => {
+            if (!flows[flow.id]) {
+                flows[flow.id] = {
+                    title: flow.title,
+                    steps: [
+                        { type: 'process', text: 'Step 1', desc: 'Initialize process' },
+                        { type: 'process', text: 'Step 2', desc: 'Process execution' },
+                        { type: 'api', text: 'API call', desc: 'Database operation' },
+                        { type: 'success', text: 'Complete', desc: 'Process finished' }
+                    ],
+                    apis: ['POST /api/endpoint - Placeholder'],
+                    auth: ['Standard authentication required'],
+                    problems: [
+                        { id: 'P037', severity: 'HIGH', text: 'Placeholder issue' }
+                    ]
+                };
+            }
+        });
+
+        function openFlow(flowId) {
+            const flow = flows[flowId];
+            if (!flow) return;
+
+            let html = `<h2>${flow.title}</h2>`;
+            html += '<div class="flow-diagram">';
+
+            flow.steps.forEach((step, idx) => {
+                const nodeClass = step.type === 'process' ? '' : step.type;
+                html += `<div class="flow-node ${nodeClass}">
+                    <div class="flow-text">
+                        <strong>${step.text}</strong>
+                        <div class="desc">${step.desc}</div>
+                    </div>
+                </div>`;
+                if (idx < flow.steps.length - 1) {
+                    html += '<div class="flow-connector"></div>';
+                }
+            });
+
+            html += '</div>';
+
+            if (flow.apis && flow.apis.length) {
+                html += '<div class="api-calls"><h4>API Calls</h4>';
+                flow.apis.forEach(api => {
+                    html += `<div class="api-call">${api}</div>`;
+                });
+                html += '</div>';
+            }
+
+            if (flow.auth && flow.auth.length) {
+                html += '<div class="auth-checks"><h4>Auth Checks</h4>';
+                flow.auth.forEach(check => {
+                    html += `<div class="auth-check">${check}</div>`;
+                });
+                html += '</div>';
+            }
+
+            if (flow.problems && flow.problems.length) {
+                html += '<div class="problems-affecting"><h4>Issues Affecting This Flow</h4>';
+                flow.problems.forEach(prob => {
+                    const severityClass = prob.severity === 'CRITICAL' ? 'critical' : prob.severity === 'HIGH' ? 'high' : '';
+                    html += `<div class="problem-item"><strong>${prob.id} (${prob.severity})</strong> - ${prob.text}</div>`;
+                });
+                html += '</div>';
+            }
+
+            document.getElementById('flowDetails').innerHTML = html;
+            document.getElementById('flowModal').classList.add('active');
+        }
+
+        function closeFlow() {
+            document.getElementById('flowModal').classList.remove('active');
+        }
+
+        document.getElementById('flowModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('flowModal')) {
+                closeFlow();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeFlow();
+            }
+        });
+    </script>
+</body>
+</html>

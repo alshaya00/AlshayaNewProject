@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al-Shaya Family Tree - Design System v3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #1A1F3A;
+            --cyan: #00D4FF;
+            --purple: #7B2CBF;
+            --bg: #0F1629;
+            --text: #E0E0E0;
+            --text-muted: #909090;
+            --border: #2A3F5F;
+            --hover: #1E2A4A;
+            --success: #00E676;
+            --warning: #FFA726;
+            --error: #FF5252;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--navy) 0%, #2A3F5F 100%);
+            padding: 2rem;
+            border-bottom: 2px solid var(--cyan);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.15);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: var(--cyan);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--cyan);
+            margin: 2.5rem 0 1.5rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--purple);
+        }
+
+        .section-description {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .color-card {
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: var(--navy);
+            border: 1px solid var(--border);
+            transition: transform 0.3s ease;
+        }
+
+        .color-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .color-swatch {
+            width: 100%;
+            height: 100px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 0.5rem;
+        }
+
+        .color-info {
+            padding: 1rem;
+            background-color: var(--hover);
+            border-top: 1px solid var(--border);
+        }
+
+        .color-name {
+            color: var(--cyan);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .color-code {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .typography-example {
+            background-color: var(--navy);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .typography-label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .h1-example {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--cyan);
+            margin-bottom: 0.5rem;
+        }
+
+        .h2-example {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--cyan);
+            margin-bottom: 0.5rem;
+        }
+
+        .h3-example {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--cyan);
+            margin-bottom: 0.5rem;
+        }
+
+        .body-example {
+            font-size: 1rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .body-small-example {
+            font-size: 0.875rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .caption-example {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .spacing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .spacing-card {
+            background-color: var(--navy);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .spacing-box {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(123, 44, 191, 0.1) 100%);
+            border: 2px dashed var(--cyan);
+            border-radius: 6px;
+            margin: 1rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cyan);
+            font-weight: 600;
+        }
+
+        .spacing-8 { width: 32px; height: 32px; }
+        .spacing-16 { width: 64px; height: 64px; }
+        .spacing-24 { width: 96px; height: 96px; }
+        .spacing-32 { width: 128px; height: 128px; }
+
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .component-card {
+            background-color: var(--navy);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .component-header {
+            background-color: var(--hover);
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .component-name {
+            color: var(--cyan);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .component-preview {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            min-height: 200px;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background-color: var(--cyan);
+            color: var(--navy);
+        }
+
+        .btn-primary:hover {
+            background-color: #00B8D4;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--purple);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #6A1BA7;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background-color: var(--error);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #E83A3A;
+            transform: translateY(-2px);
+        }
+
+        .btn-disabled {
+            background-color: var(--border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: var(--hover);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--cyan);
+            background-color: rgba(0, 212, 255, 0.05);
+        }
+
+        .input-field.error {
+            border-color: var(--error);
+            background-color: rgba(255, 82, 82, 0.05);
+        }
+
+        .input-field.success {
+            border-color: var(--success);
+            background-color: rgba(0, 230, 118, 0.05);
+        }
+
+        .card {
+            background-color: var(--hover);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+        }
+
+        .card-title {
+            color: var(--cyan);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-content {
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-info {
+            background-color: rgba(0, 212, 255, 0.2);
+            color: var(--cyan);
+            border: 1px solid var(--cyan);
+        }
+
+        .badge-success {
+            background-color: rgba(0, 230, 118, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .badge-warning {
+            background-color: rgba(255, 167, 38, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .badge-error {
+            background-color: rgba(255, 82, 82, 0.2);
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 4px solid;
+            margin: 0.75rem 0;
+        }
+
+        .alert-info {
+            background-color: rgba(0, 212, 255, 0.1);
+            border-left-color: var(--cyan);
+            color: var(--text);
+        }
+
+        .alert-success {
+            background-color: rgba(0, 230, 118, 0.1);
+            border-left-color: var(--success);
+            color: var(--text);
+        }
+
+        .alert-warning {
+            background-color: rgba(255, 167, 38, 0.1);
+            border-left-color: var(--warning);
+            color: var(--text);
+        }
+
+        .alert-error {
+            background-color: rgba(255, 82, 82, 0.1);
+            border-left-color: var(--error);
+            color: var(--text);
+        }
+
+        .state-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .state-item {
+            background-color: var(--hover);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .state-preview {
+            margin-bottom: 0.75rem;
+        }
+
+        .state-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .icon-box {
+            background-color: var(--hover);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .icon-display {
+            font-size: 2rem;
+        }
+
+        .icon-name {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+
+        .breakpoint-list {
+            background-color: var(--navy);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+
+        .breakpoint-row {
+            display: flex;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breakpoint-row:last-child {
+            border-bottom: none;
+        }
+
+        .breakpoint-row:hover {
+            background-color: var(--hover);
+        }
+
+        .breakpoint-name {
+            color: var(--cyan);
+            font-weight: 600;
+            min-width: 100px;
+        }
+
+        .breakpoint-value {
+            color: var(--text);
+            font-family: 'Courier New', monospace;
+        }
+
+        .breakpoint-description {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            flex: 1;
+            margin-left: 2rem;
+        }
+
+        .guideline-box {
+            background-color: var(--navy);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .guideline-title {
+            color: var(--cyan);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .guideline-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .guideline-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .guideline-icon {
+            font-size: 1.2rem;
+            flex: 0;
+        }
+
+        .guideline-content {
+            color: var(--text);
+            font-size: 0.9rem;
+            flex: 1;
+        }
+
+        .guideline-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .code-example {
+            background-color: var(--hover);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: var(--cyan);
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .stats-bar {
+            background-color: var(--hover);
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            color: var(--cyan);
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Al-Shaya Family Tree - Design System v3</h1>
+        <p>Complete Component Library | Typography | Colors | Patterns | RTL Guidelines</p>
+    </div>
+
+    <div class="container">
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-value">8</div>
+                <div class="stat-label">Primary Colors</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">5</div>
+                <div class="stat-label">Typography Levels</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">25+</div>
+                <div class="stat-label">Components</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">100%</div>
+                <div class="stat-label">Accessible</div>
+            </div>
+        </div>
+
+        <!-- COLOR PALETTE -->
+        <h2 class="section-title">Color Palette</h2>
+        <p class="section-description">Primary, secondary, accent, and semantic colors for consistent brand representation.</p>
+
+        <div style="margin-bottom: 2rem;">
+            <h3 style="color: var(--text); font-size: 1.1rem; margin-bottom: 1rem;">Primary Colors</h3>
+            <div class="color-palette">
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--navy); color: var(--cyan);">#1A1F3A</div>
+                    <div class="color-info">
+                        <div class="color-name">Navy (Primary)</div>
+                        <div class="color-code">Background</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--cyan); color: var(--navy);">#00D4FF</div>
+                    <div class="color-info">
+                        <div class="color-name">Cyan (Accent)</div>
+                        <div class="color-code">Highlights</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--purple); color: white;">#7B2CBF</div>
+                    <div class="color-info">
+                        <div class="color-name">Purple (Secondary)</div>
+                        <div class="color-code">Interactive</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 2rem;">
+            <h3 style="color: var(--text); font-size: 1.1rem; margin-bottom: 1rem;">Semantic Colors</h3>
+            <div class="color-palette">
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--success); color: var(--navy);">#00E676</div>
+                    <div class="color-info">
+                        <div class="color-name">Success</div>
+                        <div class="color-code">Positive</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--warning); color: var(--navy);">#FFA726</div>
+                    <div class="color-info">
+                        <div class="color-name">Warning</div>
+                        <div class="color-code">Caution</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--error); color: white;">#FF5252</div>
+                    <div class="color-info">
+                        <div class="color-name">Error</div>
+                        <div class="color-code">Danger</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--text); color: var(--navy);">#E0E0E0</div>
+                    <div class="color-info">
+                        <div class="color-name">Text Light</div>
+                        <div class="color-code">Primary text</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--text-muted); color: white;">#909090</div>
+                    <div class="color-info">
+                        <div class="color-name">Text Muted</div>
+                        <div class="color-code">Secondary text</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TYPOGRAPHY -->
+        <h2 class="section-title">Typography System</h2>
+        <p class="section-description">Consistent font sizing, weights, and styles across the application. Supports Arabic text rendering.</p>
+
+        <div class="typography-example">
+            <div class="typography-label">Heading 1 - 2.5rem / Bold</div>
+            <div class="h1-example">Welcome to Al-Shaya Family Tree</div>
+        </div>
+
+        <div class="typography-example">
+            <div class="typography-label">Heading 2 - 2rem / Bold</div>
+            <div class="h2-example">Manage Your Family Connections</div>
+        </div>
+
+        <div class="typography-example">
+            <div class="typography-label">Heading 3 - 1.5rem / Bold</div>
+            <div class="h3-example">Color Palette Section</div>
+        </div>
+
+        <div class="typography-example">
+            <div class="typography-label">Body - 1rem / Regular</div>
+            <div class="body-example">The Al-Shaya family tree application provides a comprehensive platform for managing and visualizing family relationships across multiple generations and geographic locations.</div>
+        </div>
+
+        <div class="typography-example">
+            <div class="typography-label">Body Small - 0.875rem / Regular</div>
+            <div class="body-small-example">Additional information and secondary details can be displayed in a smaller font size to create visual hierarchy and improve readability.</div>
+        </div>
+
+        <div class="typography-example">
+            <div class="typography-label">Caption - 0.75rem / Regular</div>
+            <div class="caption-example">CAPTION TEXT IN UPPERCASE FOR LABELS AND SECONDARY INFORMATION</div>
+        </div>
+
+        <!-- SPACING SYSTEM -->
+        <h2 class="section-title">Spacing System</h2>
+        <p class="section-description">Consistent spacing units based on an 8px grid system for layout alignment and visual rhythm.</p>
+
+        <div class="spacing-grid">
+            <div class="spacing-card">
+                <div class="spacing-box spacing-8">8</div>
+                <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem;">xs: 8px</div>
+            </div>
+            <div class="spacing-card">
+                <div class="spacing-box spacing-16">16</div>
+                <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem;">sm: 16px</div>
+            </div>
+            <div class="spacing-card">
+                <div class="spacing-box spacing-24">24</div>
+                <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem;">md: 24px</div>
+            </div>
+            <div class="spacing-card">
+                <div class="spacing-box spacing-32">32</div>
+                <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem;">lg: 32px</div>
+            </div>
+        </div>
+
+        <!-- COMPONENT LIBRARY -->
+        <h2 class="section-title">Component Library</h2>
+        <p class="section-description">Reusable UI components with multiple states and variations for consistent design patterns.</p>
+
+        <!-- Buttons -->
+        <div style="margin-top: 2rem;">
+            <h3 style="color: var(--cyan); font-size: 1.2rem; margin-bottom: 1rem;">Buttons</h3>
+            <div class="component-grid">
+                <div class="component-card">
+                    <div class="component-header">
+                        <div class="component-name">Primary Button</div>
+                    </div>
+                    <div class="component-preview">
+                        <button class="btn btn-primary">Primary Action</button>
+                        <button class="btn btn-primary" style="opacity: 0.6;">Hover State</button>
+                        <button class="btn btn-disabled">Disabled</button>
+                    </div>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-header">
+                        <div class="component-name">Secondary Button</div>
+                    </div>
+                    <div class="component-preview">
+                        <button class="btn btn-secondary">Secondary Action</button>
+                        <button class="btn btn-secondary" style="opacity: 0.8;">Hover State</button>
+                        <button class="btn btn-disabled">Disabled</button>
+                    </div>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-header">
+                        <div class="component-name">Danger Button</div>
+                    </div>
+                    <div class="component-preview">
+                        <button class="btn btn-danger">Delete / Cancel</button>
+                        <button class="btn btn-danger" style="opacity: 0.8;">Hover State</button>
+                        <button class="btn btn-disabled">Disabled</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Fields -->
+        <div style="margin-top: 2rem;">
+            <h3 style="color: var(--cyan); font-size: 1.2rem; margin-bottom: 1rem;">Input Fields</h3>
+            <div class="component-grid">
+                <div class="component-card">
+                    <div class="component-header">
+                        <div class="component-name">Default Input</div>
+                    </div>
+                    <div class="component-preview">
+                        <input type="text" class="input-field" placeholder="Default state">
+                        <input type="text" class="input-field" value="Focused state">
+                        <input type="text" class="input-field" disabled placeholder="Disabled">
+                    </div>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-header">
+                        <div class="component-name">Input States</div>
+                    </div>
+                    <div class="component-preview">
+                        <input type="text" class="input-field success" value="Valid input">
+                        <input type="text" class="input-field error" value="Error input">
+                        <input type="text" class="input-field" placeholder="Helper text">
+                    </div>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-header">
+                        <div class="component-name">Search Input</div>
+                    </div>
+                    <div class="component-preview">
+                        <input type="search" class="input-field" placeholder="Search members...">
+                        <input type="email" class="input-field" placeholder="Email address">
+                        <input type="password" class="input-field" placeholder="Password">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cards -->
+        <div style="margin-top: 2rem;">
+            <h3 style="color: var(--cyan); font-size: 1.2rem; margin-bottom: 1rem;">Cards</h3>
+            <div class="component-grid">
+                <div class="component-card">
+                    <div class="component-header">
+                        <div class="component-name">Standard Card</div>
+                    </div>
+                    <div class="component-preview">
+                        <div class="card">
+                            <div class="card-title">Ahmed Al-Shaya</div>
+                            <div class="card-content">Family patriarch, born 1945 in Cairo, Egypt.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-header">
+                        <div class="component-name">Card with Content</div>
+                    </div>
+                    <div class="component-preview">
+                        <div class="card">
+                            <div class="card-title">Family Statistics</div>
+                            <div class="card-content">
+                                <div>Members: 847</div>
+                                <div>Branches: 12</div>
+                                <div>Verified: 95%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-header">
+                        <div class="component-name">Card with Badge</div>
+                    </div>
+                    <div class="component-preview">
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <div class="card-title">Pending Review</div>
+                                    <div class="card-content">New member awaiting approval</div>
+                                </div>
+                                <span class="badge badge-warning">3 days</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Badges -->
+        <div style="margin-top: 2rem;">
+            <h3 style="color: var(--cyan); font-size: 1.2rem; margin-bottom: 1rem;">Badges & Labels</h3>
+            <div class="component-grid">
+                <div class="component-card">
+                    <div class="component-header">
+                        <div class="component-name">Badge Variants</div>
+                    </div>
+                    <div class="component-preview" style="gap: 0.5rem;">
+                        <span class="badge badge-info">Information</span>
+                        <span class="badge badge-success">Success</span>
+                        <span class="badge badge-warning">Warning</span>
+                        <span class="badge badge-error">Error</span>
+                    </div>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-header">
+                        <div class="component-name">Status Badges</div>
+                    </div>
+                    <div class="component-preview" style="gap: 0.5rem;">
+                        <span class="badge badge-success">✓ Verified</span>
+                        <span class="badge badge-warning">⏳ Pending</span>
+                        <span class="badge badge-error">✗ Rejected</span>
+                        <span class="badge badge-info">ⓘ Archived</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        <div style="margin-top: 2rem;">
+            <h3 style="color: var(--cyan); font-size: 1.2rem; margin-bottom: 1rem;">Alerts & Messages</h3>
+            <div class="alert alert-info">ℹ️ Information: This is a standard information message for user guidance.</div>
+            <div class="alert alert-success">✓ Success: Your changes have been saved successfully.</div>
+            <div class="alert alert-warning">⚠️ Warning: Please review your data before proceeding.</div>
+            <div class="alert alert-error">✕ Error: An error occurred. Please try again or contact support.</div>
+        </div>
+
+        <!-- Icons -->
+        <h2 class="section-title">Icon System</h2>
+        <p class="section-description">Consistent icons for common actions and states throughout the application.</p>
+
+        <div class="icon-grid">
+            <div class="icon-box">
+                <div class="icon-display">🏠</div>
+                <div class="icon-name">Home</div>
+            </div>
+            <div class="icon-box">
+                <div class="icon-display">🌳</div>
+                <div class="icon-name">Tree</div>
+            </div>
+            <div class="icon-box">
+                <div class="icon-display">👥</div>
+                <div class="icon-name">Members</div>
+            </div>
+            <div class="icon-box">
+                <div class="icon-display">📔</div>
+                <div class="icon-name">Journal</div>
+            </div>
+            <div class="icon-box">
+                <div class="icon-display">🖼️</div>
+                <div class="icon-name">Gallery</div>
+            </div>
+            <div class="icon-box">
+                <div class="icon-display">⚙️</div>
+                <div class="icon-name">Settings</div>
+            </div>
+            <div class="icon-box">
+                <div class="icon-display">🔍</div>
+                <div class="icon-name">Search</div>
+            </div>
+            <div class="icon-box">
+                <div class="icon-display">✓</div>
+                <div class="icon-name">Success</div>
+            </div>
+            <div class="icon-box">
+                <div class="icon-display">✕</div>
+                <div class="icon-name">Close</div>
+            </div>
+            <div class="icon-box">
+                <div class="icon-display">ℹ️</div>
+                <div class="icon-name">Info</div>
+            </div>
+            <div class="icon-box">
+                <div class="icon-display">⚠️</div>
+                <div class="icon-name">Warning</div>
+            </div>
+            <div class="icon-box">
+                <div class="icon-display">📤</div>
+                <div class="icon-name">Upload</div>
+            </div>
+        </div>
+
+        <!-- Responsive Breakpoints -->
+        <h2 class="section-title">Responsive Breakpoints</h2>
+        <p class="section-description">Mobile-first responsive design breakpoints for consistent layout across all device sizes.</p>
+
+        <div class="breakpoint-list">
+            <div class="breakpoint-row">
+                <div class="breakpoint-name">Mobile</div>
+                <div class="breakpoint-value">320px - 768px</div>
+                <div class="breakpoint-description">Single column layout, stacked components, full-width inputs</div>
+            </div>
+            <div class="breakpoint-row">
+                <div class="breakpoint-name">Tablet</div>
+                <div class="breakpoint-value">768px - 1024px</div>
+                <div class="breakpoint-description">Two-column layouts, sidebar navigation, grid layouts</div>
+            </div>
+            <div class="breakpoint-row">
+                <div class="breakpoint-name">Desktop</div>
+                <div class="breakpoint-value">1024px - 1440px</div>
+                <div class="breakpoint-description">Three+ column layouts, full-featured interface, side panels</div>
+            </div>
+            <div class="breakpoint-row">
+                <div class="breakpoint-name">Large Desktop</div>
+                <div class="breakpoint-value">1440px+</div>
+                <div class="breakpoint-description">Maximum content width with padding, advanced layouts</div>
+            </div>
+        </div>
+
+        <!-- RTL Guidelines -->
+        <h2 class="section-title">RTL (Right-to-Left) Guidelines</h2>
+        <p class="section-description">Design principles and implementation guidelines for Arabic language support.</p>
+
+        <div class="guideline-box">
+            <div class="guideline-title">Core RTL Principles</div>
+            <div class="guideline-item">
+                <div class="guideline-icon">↔️</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Text Direction</div>
+                    <div>All text flows from right to left in Arabic. Use CSS direction: rtl; on parent containers and components.</div>
+                </div>
+            </div>
+            <div class="guideline-item">
+                <div class="guideline-icon">🔄</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Layout Mirroring</div>
+                    <div>Navigation sidebars, buttons, and icons should mirror positions. Use flexbox row-reverse or logical properties.</div>
+                </div>
+            </div>
+            <div class="guideline-item">
+                <div class="guideline-icon">🎯</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Visual Hierarchy</div>
+                    <div>Important elements appear on the right. Reading patterns start from right side of interfaces.</div>
+                </div>
+            </div>
+            <div class="guideline-item">
+                <div class="guideline-icon">📝</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Numbers & Latin Text</div>
+                    <div>Preserve left-to-right for numbers, dates, emails. Use unicode-bidi: embed; for mixed content.</div>
+                </div>
+            </div>
+            <div class="guideline-item">
+                <div class="guideline-icon">🎨</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Icons & Imagery</div>
+                    <div>Mirror directional icons (arrows, chevrons). Keep symbolic icons unchanged if culturally neutral.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accessibility Guidelines -->
+        <h2 class="section-title">Accessibility Guidelines</h2>
+        <p class="section-description">Standards for creating an inclusive design that works for all users.</p>
+
+        <div class="guideline-box">
+            <div class="guideline-title">WCAG 2.1 Compliance</div>
+            <div class="guideline-item">
+                <div class="guideline-icon">🔤</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Color Contrast</div>
+                    <div>All text meets WCAG AA contrast ratio of 4.5:1 for normal text, 3:1 for large text.</div>
+                </div>
+            </div>
+            <div class="guideline-item">
+                <div class="guideline-icon">⌨️</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Keyboard Navigation</div>
+                    <div>All interactive elements accessible via Tab key. Visible focus indicators on all states.</div>
+                </div>
+            </div>
+            <div class="guideline-item">
+                <div class="guideline-icon">🎤</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Screen Reader Support</div>
+                    <div>Semantic HTML, ARIA labels, proper heading hierarchy, alt text for images.</div>
+                </div>
+            </div>
+            <div class="guideline-item">
+                <div class="guideline-icon">🎯</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Touch Targets</div>
+                    <div>Minimum 44x44px click/touch targets for mobile accessibility.</div>
+                </div>
+            </div>
+            <div class="guideline-item">
+                <div class="guideline-icon">⏱️</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Motion & Animation</div>
+                    <div>Respect prefers-reduced-motion. Avoid automatic animations lasting over 5 seconds.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Patterns -->
+        <h2 class="section-title">Form Patterns</h2>
+        <p class="section-description">Standard patterns for common form interactions and validations.</p>
+
+        <div class="guideline-box">
+            <div class="guideline-title">Form Best Practices</div>
+            <div class="guideline-item">
+                <div class="guideline-icon">🏷️</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Labels</div>
+                    <div>Always use explicit labels associated with inputs. Position above on mobile, beside on desktop.</div>
+                </div>
+            </div>
+            <div class="guideline-item">
+                <div class="guideline-icon">✓</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Validation</div>
+                    <div>Provide real-time validation feedback. Clear error messages indicating what and how to fix.</div>
+                </div>
+            </div>
+            <div class="guideline-item">
+                <div class="guideline-icon">💾</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Progress Indication</div>
+                    <div>Show progress for multi-step forms. Allow saving and resuming incomplete forms.</div>
+                </div>
+            </div>
+            <div class="guideline-item">
+                <div class="guideline-icon">⌛</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Loading States</div>
+                    <div>Provide feedback during form submission. Disable submit button to prevent duplicates.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Display Patterns -->
+        <h2 class="section-title">Data Display Patterns</h2>
+        <p class="section-description">Patterns for displaying complex data, lists, and hierarchies.</p>
+
+        <div class="guideline-box">
+            <div class="guideline-title">Data Visualization Standards</div>
+            <div class="guideline-item">
+                <div class="guideline-icon">📊</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Tables</div>
+                    <div>Sticky headers, sortable columns, consistent alignment. Responsive stacking on mobile.</div>
+                </div>
+            </div>
+            <div class="guideline-item">
+                <div class="guideline-icon">📋</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Lists</div>
+                    <div>Clear hierarchy, adequate spacing, scannable items. Support filtering and sorting.</div>
+                </div>
+            </div>
+            <div class="guideline-item">
+                <div class="guideline-icon">🎨</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Member Cards</div>
+                    <div>Consistent layout showing name, photo, relationship, and key information in scannable format.</div>
+                </div>
+            </div>
+            <div class="guideline-item">
+                <div class="guideline-icon">🌳</div>
+                <div class="guideline-content">
+                    <div class="guideline-label">Tree Nodes</div>
+                    <div>Interactive nodes with relationship indicators, color-coding by gender, click for details.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add interactive demo functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            // Button demos
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.addEventListener('mouseover', function() {
+                    if (!this.disabled) {
+                        this.style.opacity = '0.8';
+                    }
+                });
+                btn.addEventListener('mouseout', function() {
+                    this.style.opacity = '1';
+                });
+            });
+
+            // Input focus effects
+            document.querySelectorAll('.input-field').forEach(input => {
+                input.addEventListener('focus', function() {
+                    if (!this.disabled) {
+                        this.style.boxShadow = '0 0 8px rgba(0, 212, 255, 0.3)';
+                    }
+                });
+                input.addEventListener('blur', function() {
+                    this.style.boxShadow = 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
