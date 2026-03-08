@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #0F1629;
+    --foreground: #E0E0E0;
+    --surface: #1E2444;
+    --surface-hover: #1E2A4A;
+    --border-color: #2A3F5F;
+    --text-primary: #E0E0E0;
+    --text-muted: #909090;
+  }
+
+  * {
+    border-color: var(--border-color);
+  }
+
+  body {
+    color: var(--foreground);
+    background: var(--background);
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--background);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3A4F7F;
+  }
+
+  /* Focus visible ring */
+  *:focus-visible {
+    outline: 2px solid #00D4FF;
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

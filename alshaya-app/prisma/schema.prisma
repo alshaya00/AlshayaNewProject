@@ -1,0 +1,929 @@
+// Al-Shaya Family Tree Application - Prisma Schema
+// PostgreSQL provider with 53 models
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Gender {
+  Male
+  Female
+}
+
+enum MemberStatus {
+  Living
+  Deceased
+}
+
+enum UserRole {
+  MEMBER
+  BRANCH_LEADER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum DuplicateStatus {
+  PENDING
+  REVIEWED
+  MERGED
+  REJECTED
+  UNRESOLVED
+}
+
+enum PendingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum DeliveryStatus {
+  PENDING
+  SENT
+  FAILED
+  BOUNCED
+}
+
+enum RsvpStatus {
+  YES
+  NO
+  MAYBE
+}
+
+enum ImportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum JournalStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum SnapshotType {
+  MANUAL
+  AUTOMATIC
+}
+
+enum AuditSeverity {
+  INFO
+  WARN
+  ERROR
+  CRITICAL
+}
+
+enum OtpPurpose {
+  LOGIN
+  REGISTRATION
+  PASSWORD_RESET
+  EMAIL_VERIFICATION
+}
+
+enum BroadcastStatus {
+  DRAFT
+  SCHEDULED
+  SENT
+  CANCELLED
+}
+
+// ─── Core Family Tree Models ─────────────────────────────────────────────────
+
+/// 1. FamilyMember - Central model for the family tree
+model FamilyMember {
+  id                    String       @id // format P0001
+  firstName             String
+  fatherName            String?
+  grandfatherName        String?
+  greatGrandfatherName   String?
+  familyName            String       @default("آل شايع")
+  fullNameAr            String?
+  fullNameEn            String?
+  gender                Gender
+  birthYear             Int?
+  deathYear             Int?
+  status                MemberStatus @default(Living)
+  phone                 String?
+  email                 String?
+  generation            Int?         // 1-20
+  branch                String?
+  fatherId              String?
+  sonsCount             Int          @default(0)
+  daughtersCount        Int          @default(0)
+  notes                 String?
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+  deletedAt             DateTime?
+  deletedBy             String?
+  deletedReason         String?
+
+  // Relations
+  father        FamilyMember?  @relation("ParentChild", fields: [fatherId], references: [id], onDelete: SetNull)
+  children      FamilyMember[] @relation("ParentChild")
+  photos        MemberPhoto[]
+  journals      FamilyJournal[]
+  changeHistory ChangeHistory[]
+  breastfeedingRelationships BreastfeedingRelationship[]
+
+  @@index([fatherId])
+  @@index([generation])
+  @@index([status])
+  @@index([fullNameAr])
+  @@index([fullNameEn])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@index([fatherId, generation])
+}
+
+/// 2. ChangeHistory - Tracks changes to family members
+model ChangeHistory {
+  id           Int          @id @default(autoincrement())
+  memberId     String
+  changedBy    String
+  changedAt    DateTime     @default(now())
+  fieldName    String
+  oldValue     String?
+  newValue     String?
+  fullSnapshot String?
+  ipAddress    String?
+  batchId      String?
+
+  member FamilyMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@index([memberId])
+  @@index([changedAt])
+}
+
+/// 3. Snapshot - Point-in-time snapshots of the tree
+model Snapshot {
+  id           Int          @id @default(autoincrement())
+  snapshotData String
+  snapshotType SnapshotType
+  description  String?
+  createdBy    String
+  createdAt    DateTime     @default(now())
+}
+
+/// 4. DuplicateFlag - Flags potential duplicate members
+model DuplicateFlag {
+  id                 Int             @id @default(autoincrement())
+  primaryMemberId    String
+  duplicateMemberId  String
+  similarity         Float
+  status             DuplicateStatus @default(PENDING)
+  reviewedBy         String?
+  reviewedAt         DateTime?
+  resolutionReason   String?
+  mergeStrategy      String?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+}
+
+// ─── Authentication Models ───────────────────────────────────────────────────
+
+/// 5. User - Application users
+model User {
+  id                   String     @id @default(uuid())
+  email                String     @unique
+  passwordHash         String
+  fullName             String
+  role                 UserRole   @default(MEMBER)
+  status               UserStatus @default(ACTIVE)
+  emailVerified        Boolean    @default(false)
+  emailVerifiedAt      DateTime?
+  phoneNumber          String?
+  phoneVerified        Boolean    @default(false)
+  twoFactorEnabled     Boolean    @default(false)
+  twoFactorSecret      String?
+  twoFactorBackupCodes String?
+  lastLoginAt          DateTime?
+  lastLoginIp          String?
+  failedLoginAttempts  Int        @default(0)
+  accountLockedUntil   DateTime?
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  // Relations
+  sessions              Session[]
+  loginHistory          LoginHistory[]
+  passwordResets        PasswordReset[]
+  emailVerifications    EmailVerification[]
+  notifications         Notification[]
+  searchHistory         SearchHistory[]
+  activityLogs          ActivityLog[]
+  invitesSent           Invite[]               @relation("InviteSender")
+  permissionOverrides   UserPermissionOverride[]
+  broadcastRecipients   BroadcastRecipient[]
+  gatheringAttendees    GatheringAttendee[]
+  invitationRedemptions InvitationRedemption[]
+
+  @@index([email])
+  @@index([role])
+}
+
+/// 6. Session - Active user sessions
+model Session {
+  id         String   @id @default(uuid())
+  token      String   @unique
+  userId     String
+  expiresAt  DateTime
+  ipAddress  String?
+  userAgent  String?
+  deviceName String?
+  rememberMe Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+/// 7. LoginHistory - Record of login attempts
+model LoginHistory {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  ipAddress String?
+  userAgent String?
+  status    String
+  reason    String?
+  timestamp DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// 8. OtpCode - One-time passwords
+model OtpCode {
+  id        Int        @id @default(autoincrement())
+  code      String
+  phone     String?
+  email     String?
+  purpose   OtpPurpose
+  expiresAt DateTime
+  usedAt    DateTime?
+  attempts  Int        @default(0)
+  createdAt DateTime   @default(now())
+}
+
+/// 9. PasswordReset - Password reset tokens
+model PasswordReset {
+  id        Int       @id @default(autoincrement())
+  token     String    @unique
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// 10. EmailVerification - Email verification tokens
+model EmailVerification {
+  id        Int       @id @default(autoincrement())
+  token     String    @unique
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// 11. Invite - Invitation codes for new users
+model Invite {
+  id         Int      @id @default(autoincrement())
+  code       String   @unique
+  role       UserRole
+  invitedBy  String
+  redeemedBy String?
+  expiresAt  DateTime?
+  status     String   @default("ACTIVE")
+  createdAt  DateTime @default(now())
+
+  inviter User @relation("InviteSender", fields: [invitedBy], references: [id], onDelete: Cascade)
+}
+
+/// 12. AccessRequest - Requests from users wanting to join
+model AccessRequest {
+  id                Int           @id @default(autoincrement())
+  fullName          String
+  email             String
+  phone             String?
+  familyMemberId    String?
+  relationshipClaim String?
+  status            PendingStatus @default(PENDING)
+  reviewedBy        String?
+  reviewedAt        DateTime?
+  reviewNotes       String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
+
+// ─── Permission Models ───────────────────────────────────────────────────────
+
+/// 13. PermissionMatrix - Global permission matrix
+model PermissionMatrix {
+  id          String   @id @default("default")
+  permissions String
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?
+}
+
+/// 14. Permission - Individual permission definitions
+model Permission {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  labelAr     String?
+  labelEn     String?
+  category    String?
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+/// 15. PermissionCategory - Categories for permissions
+model PermissionCategory {
+  id           Int      @id @default(autoincrement())
+  key          String   @unique
+  labelAr      String?
+  labelEn      String?
+  displayOrder Int      @default(0)
+}
+
+/// 16. RoleDefaultPermission - Default permissions per role
+model RoleDefaultPermission {
+  id            Int      @id @default(autoincrement())
+  role          UserRole
+  permissionKey String
+  granted       Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  @@unique([role, permissionKey])
+}
+
+/// 17. UserPermissionOverride - Per-user permission overrides
+model UserPermissionOverride {
+  id            Int      @id @default(autoincrement())
+  userId        String
+  permissionKey String
+  granted       Boolean
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permissionKey])
+}
+
+// ─── Configuration Models ────────────────────────────────────────────────────
+
+/// 18. SiteSettings - Global site configuration
+model SiteSettings {
+  id                     String   @id @default("default")
+  siteNameAr             String   @default("آل شايع")
+  siteNameEn             String   @default("Al-Shaya")
+  defaultLanguage        String   @default("ar")
+  sessionDurationMinutes Int      @default(480)
+  registrationPolicy     String   @default("INVITE_ONLY")
+  maintenanceMode        Boolean  @default(false)
+  updatedAt              DateTime @updatedAt
+  updatedBy              String?
+}
+
+/// 19. PrivacySettings - Privacy configuration
+model PrivacySettings {
+  id                   String   @id @default("default")
+  profileVisibility    String   @default("AUTHENTICATED")
+  showPhoneToRoles     String   @default("[\"ADMIN\"]")
+  showEmailToRoles     String   @default("[\"ADMIN\"]")
+  showBirthYearToRoles String   @default("[\"ADMIN\"]")
+  updatedAt            DateTime @updatedAt
+}
+
+/// 20. SystemConfig - System-wide configuration
+model SystemConfig {
+  id                    String   @id @default("default")
+  defaultTreeView       String   @default("circular")
+  dateFormat            String   @default("gregorian")
+  birthYearMin          Int      @default(1400)
+  birthYearMax          Int      @default(2025)
+  allowBirthdayDisplay  Boolean  @default(true)
+  updatedAt             DateTime @updatedAt
+}
+
+/// 21. FeatureFlag - Feature toggles
+model FeatureFlag {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  label       String?
+  enabled     Boolean  @default(true)
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+/// 22. ApiServiceConfig - External API service configuration
+model ApiServiceConfig {
+  id          Int      @id @default(autoincrement())
+  serviceName String   @unique
+  provider    String?
+  apiKey      String?
+  isTestMode  Boolean  @default(false)
+  config      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── Communications Models ───────────────────────────────────────────────────
+
+/// 23. Notification - User notifications
+model Notification {
+  id        Int       @id @default(autoincrement())
+  userId    String
+  titleAr   String?
+  titleEn   String?
+  messageAr String?
+  messageEn String?
+  type      String
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// 24. Broadcast - Announcements and meeting invitations
+model Broadcast {
+  id               Int             @id @default(autoincrement())
+  titleAr          String?
+  titleEn          String?
+  descriptionAr    String?
+  descriptionEn    String?
+  announcementDate DateTime?
+  meetingDate      DateTime?
+  meetingLocation  String?
+  meetingUrl       String?
+  status           BroadcastStatus @default(DRAFT)
+  rsvpDeadline     DateTime?
+  createdBy        String?
+  publishedAt      DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  recipients BroadcastRecipient[]
+}
+
+/// 25. BroadcastRecipient - Recipients of broadcasts
+model BroadcastRecipient {
+  id             Int            @id @default(autoincrement())
+  broadcastId    Int
+  userId         String?
+  email          String?
+  phone          String?
+  deliveryStatus DeliveryStatus @default(PENDING)
+  rsvpStatus     RsvpStatus?
+  rsvpAt         DateTime?
+  sentAt         DateTime?
+  createdAt      DateTime       @default(now())
+
+  broadcast Broadcast @relation(fields: [broadcastId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([broadcastId])
+  @@index([userId])
+}
+
+/// 26. EmailLog - Email delivery log
+model EmailLog {
+  id           Int            @id @default(autoincrement())
+  toEmail      String
+  template     String?
+  subject      String?
+  status       DeliveryStatus @default(PENDING)
+  errorMessage String?
+  sentAt       DateTime?
+  createdAt    DateTime       @default(now())
+}
+
+/// 27. SmsLog - SMS delivery log
+model SmsLog {
+  id           Int            @id @default(autoincrement())
+  toPhone      String
+  message      String?
+  status       DeliveryStatus @default(PENDING)
+  errorMessage String?
+  sentAt       DateTime?
+  createdAt    DateTime       @default(now())
+}
+
+// ─── Content Models ──────────────────────────────────────────────────────────
+
+/// 28. FamilyJournal - Family stories and articles
+model FamilyJournal {
+  id          Int           @id @default(autoincrement())
+  memberId    String?
+  titleAr     String?
+  titleEn     String?
+  contentAr   String?
+  contentEn   String?
+  category    String?
+  pdfUrl      String?
+  viewCount   Int           @default(0)
+  isFeatured  Boolean       @default(false)
+  status      JournalStatus @default(DRAFT)
+  createdBy   String?
+  approvedBy  String?
+  publishedAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  member FamilyMember? @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  media  JournalMedia[]
+
+  @@index([memberId])
+  @@index([status])
+}
+
+/// 29. JournalCategory - Categories for journal entries
+model JournalCategory {
+  id           Int      @id @default(autoincrement())
+  key          String   @unique
+  labelAr      String?
+  labelEn      String?
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+}
+
+/// 30. JournalMedia - Media attachments for journals
+model JournalMedia {
+  id           Int      @id @default(autoincrement())
+  journalId    Int
+  mediaUrl     String
+  mediaType    String?
+  caption      String?
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  journal FamilyJournal @relation(fields: [journalId], references: [id], onDelete: Cascade)
+
+  @@index([journalId])
+}
+
+// ─── Media Models ────────────────────────────────────────────────────────────
+
+/// 31. AlbumFolder - Photo album folders
+model AlbumFolder {
+  id           Int      @id @default(autoincrement())
+  name         String
+  description  String?
+  isSystem     Boolean  @default(false)
+  displayOrder Int      @default(0)
+  color        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  photos MemberPhoto[]
+}
+
+/// 32. MemberPhoto - Photos of family members
+model MemberPhoto {
+  id             Int      @id @default(autoincrement())
+  memberId       String
+  photoUrl       String
+  category       String?
+  isProfilePhoto Boolean  @default(false)
+  isPublic       Boolean  @default(true)
+  albumId        Int?
+  displayOrder   Int      @default(0)
+  uploadedBy     String?
+  createdAt      DateTime @default(now())
+
+  member FamilyMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  album  AlbumFolder? @relation(fields: [albumId], references: [id], onDelete: SetNull)
+
+  @@index([memberId])
+  @@index([albumId])
+}
+
+/// 33. PendingImage - Images awaiting approval
+model PendingImage {
+  id          Int           @id @default(autoincrement())
+  imagePath   String
+  memberId    String?
+  uploadedBy  String?
+  status      PendingStatus @default(PENDING)
+  reviewedBy  String?
+  reviewedAt  DateTime?
+  reviewNotes String?
+  createdAt   DateTime      @default(now())
+}
+
+// ─── Operations Models ───────────────────────────────────────────────────────
+
+/// 34. SearchHistory - User search history
+model SearchHistory {
+  id          Int      @id @default(autoincrement())
+  userId      String?
+  query       String
+  resultCount Int      @default(0)
+  clickCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+}
+
+/// 35. ImportJob - Data import jobs
+model ImportJob {
+  id            Int          @id @default(autoincrement())
+  fileName      String
+  fileType      String?
+  status        ImportStatus @default(PENDING)
+  totalRows     Int          @default(0)
+  successCount  Int          @default(0)
+  errorCount    Int          @default(0)
+  conflictCount Int          @default(0)
+  errors        String?
+  importedBy    String?
+  startedAt     DateTime?
+  completedAt   DateTime?
+  createdAt     DateTime     @default(now())
+}
+
+/// 36. ExportJob - Data export jobs
+model ExportJob {
+  id             Int       @id @default(autoincrement())
+  format         String
+  filters        String?
+  selectedFields String?
+  downloadUrl    String?
+  expiresAt      DateTime?
+  exportedBy     String?
+  createdAt      DateTime  @default(now())
+}
+
+// ─── Audit & Logging ─────────────────────────────────────────────────────────
+
+/// 37. AuditLog - Security and compliance audit trail
+model AuditLog {
+  id            Int           @id @default(autoincrement())
+  userId        String?
+  action        String
+  resource      String
+  resourceId    String?
+  previousState String?
+  newState      String?
+  ipAddress     String?
+  severity      AuditSeverity @default(INFO)
+  createdAt     DateTime      @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+/// 38. ActivityLog - General activity logging
+model ActivityLog {
+  id           Int      @id @default(autoincrement())
+  userId       String?
+  activity     String
+  resourceType String?
+  resourceId   String?
+  ipAddress    String?
+  metadata     String?
+  createdAt    DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([activity])
+  @@index([createdAt])
+}
+
+// ─── Events ──────────────────────────────────────────────────────────────────
+
+/// 39. Gathering - Family gatherings and events
+model Gathering {
+  id           Int       @id @default(autoincrement())
+  titleAr      String?
+  titleEn      String?
+  descriptionAr String?
+  descriptionEn String?
+  startDate    DateTime?
+  endDate      DateTime?
+  location     String?
+  organizerId  String?
+  isPublic     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  attendees GatheringAttendee[]
+}
+
+/// 40. GatheringAttendee - Attendees for gatherings
+model GatheringAttendee {
+  id           Int        @id @default(autoincrement())
+  gatheringId  Int
+  userId       String?
+  attendeeName String?
+  rsvpStatus   RsvpStatus @default(MAYBE)
+  createdAt    DateTime   @default(now())
+
+  gathering Gathering @relation(fields: [gatheringId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([gatheringId, userId])
+  @@index([gatheringId])
+}
+
+// ─── Special Cases ───────────────────────────────────────────────────────────
+
+/// 41. BreastfeedingRelationship - Milk kinship records (Islamic law)
+model BreastfeedingRelationship {
+  id             Int      @id @default(autoincrement())
+  memberId       String
+  nurserName     String?
+  milkFatherName String?
+  status         String   @default("CONFIRMED")
+  notes          String?
+  verifiedBy     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  member FamilyMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@index([memberId])
+}
+
+/// 42. PendingMember - Members awaiting approval
+model PendingMember {
+  id              Int           @id @default(autoincrement())
+  firstName       String
+  fatherName      String?
+  grandfatherName String?
+  familyName      String?
+  fullNameAr      String?
+  fullNameEn      String?
+  gender          Gender?
+  birthYear       Int?
+  fatherId        String?
+  phone           String?
+  email           String?
+  status          PendingStatus @default(PENDING)
+  submittedBy     String?
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  reviewNotes     String?
+  createdAt       DateTime      @default(now())
+}
+
+/// 43. BranchEntryLink - Entry links for specific branches
+model BranchEntryLink {
+  id        Int       @id @default(autoincrement())
+  token     String    @unique
+  branchId  String
+  maxUses   Int       @default(1)
+  usedCount Int       @default(0)
+  expiresAt DateTime?
+  createdBy String?
+  createdAt DateTime  @default(now())
+}
+
+// ─── Remaining Models ────────────────────────────────────────────────────────
+
+/// 44. Blocklist - Blocked emails/phones
+model Blocklist {
+  id           Int       @id @default(autoincrement())
+  email        String?
+  phone        String?
+  reason       String?
+  linkedUserId String?
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
+}
+
+/// 45. CreditsCategory - Categories for credits/acknowledgements
+model CreditsCategory {
+  id           Int      @id @default(autoincrement())
+  key          String   @unique
+  labelAr      String?
+  labelEn      String?
+  description  String?
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+}
+
+/// 46. InvitationCode - Invitation codes for family members
+model InvitationCode {
+  id         Int       @id @default(autoincrement())
+  code       String    @unique
+  memberId   String?
+  redeemedBy String?
+  redeemedAt DateTime?
+  expiresAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  redemptions InvitationRedemption[]
+}
+
+/// 47. InvitationRedemption - Records of redeemed invitations
+model InvitationRedemption {
+  id               Int      @id @default(autoincrement())
+  invitationCodeId Int
+  userId           String
+  redeemedAt       DateTime @default(now())
+
+  invitationCode InvitationCode @relation(fields: [invitationCodeId], references: [id], onDelete: Cascade)
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([invitationCodeId])
+  @@index([userId])
+}
+
+/// 48. ExportField - Configurable export fields
+model ExportField {
+  id           Int      @id @default(autoincrement())
+  key          String
+  label        String?
+  categoryId   Int?
+  isDefault    Boolean  @default(true)
+  displayOrder Int      @default(0)
+
+  category ExportFieldCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([categoryId])
+}
+
+/// 49. ExportFieldCategory - Categories for export fields
+model ExportFieldCategory {
+  id           Int      @id @default(autoincrement())
+  key          String   @unique
+  label        String?
+  displayOrder Int      @default(0)
+
+  fields ExportField[]
+}
+
+/// 50. ScheduledJob - Cron-like scheduled jobs
+model ScheduledJob {
+  id             Int       @id @default(autoincrement())
+  jobName        String    @unique
+  cronExpression String
+  lastRunAt      DateTime?
+  nextRunAt      DateTime?
+  lastError      String?
+  isEnabled      Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+/// 51. BackupConfig - Backup configuration
+model BackupConfig {
+  id           Int       @id @default(autoincrement())
+  interval     String    @default("daily")
+  retention    Int       @default(30)
+  isEnabled    Boolean   @default(true)
+  lastBackupAt DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+/// 52. EventType - Types of family events
+model EventType {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  labelAr   String?
+  labelEn   String?
+  color     String?
+  icon      String?
+  createdAt DateTime @default(now())
+}
+
+/// 53. Admin (legacy) - Legacy admin table
+model Admin {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  accessCode String?
+  fullName   String?
+  role       String   @default("ADMIN")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
